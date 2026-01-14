@@ -175,7 +175,7 @@
                     <label>TU WHATSAPP</label>
                     <input type="number" id="edit-wa">
                 </div>
-                <button class="btn-main" onclick="saveSettings()">GUARDAR CAMBIOS</button>
+                <button class="btn-main" id="btn-save-settings" onclick="saveSettings()">GUARDAR CAMBIOS</button>
             </div>
         </div>
 
@@ -254,13 +254,11 @@
             }
         };
 
-        // --- ARREGLO BOTÓN GOOGLE ---
         window.handleGoogleLogin = async () => {
             try {
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
-                
                 const userRef = doc(db, "usuarios", user.uid);
                 const userDoc = await getDoc(userRef);
                 
@@ -279,7 +277,7 @@
                 window.location.reload();
             } catch (e) { 
                 console.error(e);
-                alert("Error de Google: Verifica que el dominio esté autorizado en Firebase."); 
+                alert("Error de Google Auth."); 
             }
         };
 
@@ -306,7 +304,15 @@
         function loadApp(uid) {
             onSnapshot(doc(db, "usuarios", uid), d => {
                 if(!d.exists()) { logout(); return; }
-                currentUser = d.data(); updateUI();
+                currentUser = d.data(); 
+                updateUI();
+                
+                // Carga automática de información en los inputs cuando el usuario entra
+                const editNickInput = document.getElementById('edit-nick');
+                const editWaInput = document.getElementById('edit-wa');
+                if(editNickInput && !editNickInput.matches(':focus')) editNickInput.value = currentUser.nick || "";
+                if(editWaInput && !editWaInput.matches(':focus')) editWaInput.value = currentUser.whatsapp || "";
+
                 document.getElementById('splash').style.display = 'none';
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'block';
@@ -321,9 +327,6 @@
             document.getElementById('p-img').src = currentUser.avatar;
             document.getElementById('p-nick').innerHTML = currentUser.nick + (currentUser.verificado ? ' <small style="color:var(--neon)">✔️</small>' : '');
             
-            document.getElementById('edit-nick').value = currentUser.nick;
-            document.getElementById('edit-wa').value = currentUser.whatsapp || "";
-
             const p = currentUser.puntos;
             let nivel = "RECLUTA"; let pct = (p/100)*100;
             if(p >= 100) { nivel = "ESPECIALISTA"; pct = ((p-100)/400)*100; }
@@ -341,11 +344,29 @@
             });
         }
 
+        // --- GUARDADO PERSISTENTE EN LA CUENTA ---
         window.saveSettings = async () => {
+            const btn = document.getElementById('btn-save-settings');
             const newNick = document.getElementById('edit-nick').value;
             const newWA = document.getElementById('edit-wa').value;
-            await updateDoc(doc(db, "usuarios", currentUser.uid), { nick: newNick, whatsapp: newWA });
-            alert("Ajustes Guardados");
+            
+            if(!newNick) return alert("El Nickname es obligatorio");
+            
+            btn.innerText = "GUARDANDO...";
+            btn.disabled = true;
+
+            try {
+                await updateDoc(doc(db, "usuarios", currentUser.uid), { 
+                    nick: newNick, 
+                    whatsapp: newWA 
+                });
+                alert("Perfil actualizado correctamente");
+            } catch (e) {
+                alert("Error al guardar los cambios.");
+            } finally {
+                btn.innerText = "GUARDAR CAMBIOS";
+                btn.disabled = false;
+            }
         };
 
         function initFeed() {
