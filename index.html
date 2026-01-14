@@ -3,76 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZONA GAMER | Acceso Restringido</title>
+    <title>ZONA GAMER | Elite Ops</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: #030508; --card: #0d1117; --neon: #00f2ff; --text: #ffffff; 
-            --success: #39FF14; --error: #ff3e3e; --glass: rgba(255, 255, 255, 0.03); 
+            --success: #39FF14; --gold: #ffcc00; --error: #ff3131; --glass: rgba(255, 255, 255, 0.03); 
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+        body { 
+            margin: 0; background: var(--bg); color: var(--text); 
+            font-family: 'Rajdhani', sans-serif; overflow-x: hidden;
+        }
 
-        /* --- NOTIFICACIONES --- */
-        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; width: 90%; max-width: 350px; pointer-events: none; }
+        /* --- NOTIFICACIONES INTERNAS --- */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; width: 90%; max-width: 400px; pointer-events: none; }
         .toast { 
-            background: rgba(0, 0, 0, 0.95); border: 1px solid var(--neon); color: #fff;
-            padding: 12px 20px; border-radius: 8px; margin-bottom: 10px; font-family: 'Orbitron';
-            font-size: 0.65rem; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
-            animation: toastIn 0.4s ease forwards; backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.9); border: 1px solid var(--neon); color: #fff;
+            padding: 15px 20px; border-radius: 12px; margin-bottom: 10px; font-family: 'Orbitron';
+            font-size: 0.7rem; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+            animation: toastIn 0.5s ease forwards; backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: center; text-align: center;
         }
         @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- PANTALLA DE ACCESO (MEJORADA) --- */
+        /* --- PANTALLA DE ACCESO --- */
         #auth-screen { 
             position: fixed; inset: 0; 
             background: radial-gradient(circle at center, #0a1921 0%, #030406 100%);
             z-index: 8000; display: flex; align-items: center; justify-content: center; padding: 20px; 
         }
-        
         .auth-card { 
-            background: var(--card); width: 100%; max-width: 400px; padding: 40px; 
-            border-radius: 20px; border: 1px solid rgba(0, 242, 255, 0.1); 
-            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: var(--card); width: 100%; max-width: 380px; padding: 40px 30px; 
+            border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); text-align: center; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-
-        .auth-header h2 { font-family: 'Orbitron'; color: var(--neon); margin: 0; font-size: 1.5rem; letter-spacing: 2px; }
-        .auth-header p { font-size: 0.75rem; color: #555; margin-bottom: 30px; }
-
-        .form-group { position: relative; margin-bottom: 15px; text-align: left; }
+        .form-group { text-align: left; margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.6rem; color: var(--neon); font-family: 'Orbitron'; margin-bottom: 5px; margin-left: 5px; }
 
-        input { 
-            width: 100%; padding: 14px; background: rgba(0,0,0,0.3); 
-            border: 1px solid #1f2937; color: #fff; border-radius: 12px; 
-            font-family: 'Rajdhani'; font-size: 1rem; transition: 0.3s;
-        }
-        input:focus { border-color: var(--neon); background: rgba(0, 242, 255, 0.02); }
+        input { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid #1f2937; color: #fff; border-radius: 12px; font-family: 'Rajdhani'; font-size: 1rem; }
+        input:focus { border-color: var(--neon); }
 
-        .btn-main { 
-            width: 100%; padding: 16px; background: var(--neon); color: #000; 
-            border: none; border-radius: 12px; font-family: 'Orbitron'; 
-            font-weight: 700; cursor: pointer; margin-top: 10px;
-            transition: 0.3s; text-transform: uppercase; font-size: 0.8rem;
-        }
-        .btn-main:active { transform: scale(0.98); }
+        .btn-main { width: 100%; padding: 16px; background: var(--neon); color: #000; border: none; border-radius: 15px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; transition: 0.3s; }
+        .btn-main:active { transform: scale(0.95); }
 
-        .switch-mode { margin-top: 25px; font-size: 0.8rem; color: #666; }
-        .switch-mode b { color: var(--neon); cursor: pointer; text-decoration: underline; }
+        /* --- NAVEGACIÓN --- */
+        nav { background: rgba(3, 5, 8, 0.8); backdrop-filter: blur(15px); padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .nav-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--neon); object-fit: cover; }
 
-        /* --- APP CONTENT --- */
-        #app { display: none; }
-        nav { padding: 15px 25px; background: #000; border-bottom: 1px solid #1f2937; display: flex; justify-content: space-between; align-items: center; }
-        .nav-avatar { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--neon); }
+        .tab-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 450px; background: rgba(13, 17, 23, 0.9); backdrop-filter: blur(20px); display: flex; border-radius: 25px; padding: 10px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 15px 35px rgba(0,0,0,0.5); z-index: 2000; }
+        .tab { flex: 1; text-align: center; font-family: 'Orbitron'; font-size: 0.55rem; color: #444; transition: 0.3s; cursor: pointer; }
+        .tab.active { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
 
-        .section { display: none; padding: 20px; max-width: 500px; margin: 0 auto; }
+        /* --- SECCIONES --- */
+        .section { display: none; padding: 20px; max-width: 500px; margin: 0 auto 100px auto; animation: fadeInUp 0.4s ease forwards; }
         .section.active { display: block; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #0d1117; display: flex; padding: 15px 0; border-top: 1px solid #1f2937; }
-        .tab { flex: 1; text-align: center; font-family: 'Orbitron'; font-size: 0.6rem; color: #444; cursor: pointer; }
-        .tab.active { color: var(--neon); }
+        /* --- CHAT & CARDS --- */
+        .card-ui { background: var(--card); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; margin-bottom: 15px; }
+        #chat-box { height: 55vh; display: flex; flex-direction: column; overflow: hidden; }
+        #chat-msgs { flex: 1; overflow-y: auto; padding-bottom: 10px; }
+        .msg { font-size: 0.85rem; padding: 10px; border-radius: 12px; background: var(--glass); margin-bottom: 8px; border-left: 2px solid var(--neon); }
+        .msg.admin { border-left-color: var(--gold); background: rgba(255, 204, 0, 0.05); }
+        .msg b { color: var(--neon); display: block; font-size: 0.65rem; }
     </style>
 </head>
 <body>
@@ -81,68 +76,91 @@
 
     <div id="auth-screen">
         <div class="auth-card">
-            <div class="auth-header">
-                <h2 id="auth-title">LOGIN</h2>
-                <p id="auth-desc">INGRESA TUS CREDENCIALES DE ACCESO</p>
+            <h2 id="auth-title" style="font-family:'Orbitron'; color:var(--neon); margin:0;">LOGIN</h2>
+            <p id="auth-desc" style="font-size:0.7rem; color:#555; margin-bottom:30px;">INTRODUCE TUS CREDENCIALES</p>
+            
+            <div class="form-group" id="nick-group" style="display:none">
+                <label>GAMER TAG</label>
+                <input type="text" id="reg-nick" placeholder="Nombre de usuario">
+            </div>
+            <div class="form-group">
+                <label>CORREO ELECTRÓNICO</label>
+                <input type="email" id="auth-email" placeholder="usuario@gmail.com">
+            </div>
+            <div class="form-group">
+                <label>CONTRASEÑA</label>
+                <input type="password" id="auth-pass" placeholder="••••••••">
             </div>
 
-            <div id="auth-form">
-                <div class="form-group" id="nick-group" style="display: none;">
-                    <label>NOMBRE DE USUARIO</label>
-                    <input type="text" id="reg-nick" placeholder="Ej: Ghost_Player">
-                </div>
-                
-                <div class="form-group">
-                    <label>CORREO ELECTRÓNICO</label>
-                    <input type="email" id="auth-email" placeholder="usuario@correo.com">
-                </div>
-
-                <div class="form-group">
-                    <label>CONTRASEÑA</label>
-                    <input type="password" id="auth-pass" placeholder="••••••••">
-                </div>
-
-                <button class="btn-main" onclick="processAuth()" id="btn-text">INICIAR SESIÓN</button>
-            </div>
-
-            <div class="switch-mode">
-                <span id="switch-msg">¿No tienes cuenta de operativo?</span> 
-                <b onclick="toggleAuth()">SOLICITAR REGISTRO</b>
-            </div>
+            <button class="btn-main" onclick="handleAuth()" id="btn-auth">INGRESAR</button>
+            <p style="font-size:0.7rem; margin-top:25px; color:#444;">
+                <span id="switch-msg">¿Eres nuevo operativo?</span> 
+                <b onclick="toggleAuth()" style="color:var(--neon); cursor:pointer;">REGÍSTRATE</b>
+            </p>
         </div>
     </div>
 
-    <div id="app">
+    <div id="app" style="display:none">
         <nav>
-            <div style="font-family:'Orbitron'; font-size:0.8rem;">ZONA <span id="neon-accent">GAMER</span></div>
-            <img id="u-avatar" class="nav-avatar" src="" onclick="switchTab('sec-perfil')">
+            <div style="font-family:'Orbitron'; font-size:0.8rem;">ZONA <span id="n-accent" style="color:var(--neon)">GAMER</span></div>
+            <div style="display:flex; align-items:center; gap:12px;" onclick="switchTab('sec-perfil')">
+                <div style="text-align:right">
+                    <div id="n-nick" style="font-weight:700; font-size:0.8rem;">---</div>
+                    <div id="n-pts" style="color:var(--success); font-size:0.6rem; font-weight:bold;">0 PTS</div>
+                </div>
+                <img id="n-img" class="nav-avatar" src="">
+            </div>
         </nav>
 
         <div id="sec-feed" class="section active">
-            <h3 style="font-family:'Orbitron'; font-size:0.7rem; color:#444;">FEED DE NOTICIAS</h3>
-            <div id="misiones-container"></div>
+            <h3 style="font-family:'Orbitron'; font-size:0.6rem; color:#444;">OPERACIONES ACTIVAS</h3>
+            <div id="list-misiones"></div>
+        </div>
+
+        <div id="sec-chat" class="section">
+            <div id="chat-box" class="card-ui">
+                <div id="chat-msgs"></div>
+                <div style="display:flex; gap:10px; padding-top:15px; border-top:1px solid #111;">
+                    <input type="text" id="chat-in" placeholder="Escribir..." style="margin:0;">
+                    <button onclick="sendChat()" style="background:var(--neon); border:none; padding:0 20px; border-radius:12px; font-weight:bold;">></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="sec-rank" class="section">
+            <h3 style="font-family:'Orbitron'; font-size:0.6rem; color:#444;">TOP OPERATIVOS</h3>
+            <div id="list-rank"></div>
         </div>
 
         <div id="sec-perfil" class="section">
-            <div style="text-align:center; background:var(--card); padding:30px; border-radius:20px;">
-                <img id="p-avatar" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--neon);" src="">
-                <h2 id="p-nick" style="font-family:'Orbitron';">---</h2>
-                <button class="btn-main" onclick="logout()" style="background:var(--error); color:#fff; font-size:0.6rem; padding:8px;">CERRAR SESIÓN</button>
+            <div style="text-align:center; background:var(--glass); padding:40px 20px; border-radius:30px; border:1px solid rgba(255,255,255,0.03);">
+                <img id="p-img" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--neon);" src="">
+                <h2 id="p-nick" style="font-family:'Orbitron'; margin:15px 0;">---</h2>
+                <div id="p-bar-bg" style="background:#000; height:6px; border-radius:10px; margin:20px 0;">
+                    <div id="p-bar" style="height:100%; background:var(--neon); width:0%; transition:1s;"></div>
+                </div>
+                <div style="margin-top:30px;">
+                    <input type="number" id="p-wa" placeholder="WhatsApp">
+                    <button class="btn-main" style="padding:10px;" onclick="saveProfile()">ACTUALIZAR</button>
+                </div>
+                <button onclick="logout()" style="background:none; border:none; color:var(--error); font-size:0.6rem; margin-top:40px; font-family:'Orbitron'; cursor:pointer;">DESCONECTAR</button>
             </div>
         </div>
 
         <div class="tab-bar">
             <div class="tab active" onclick="switchTab('sec-feed', this)">MISIONES</div>
+            <div class="tab" onclick="switchTab('sec-chat', this)">CHAT</div>
+            <div class="tab" onclick="switchTab('sec-rank', this)">RANK</div>
             <div class="tab" onclick="switchTab('sec-perfil', this)">PERFIL</div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove, increment, collection, query, orderBy, limit, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // CONFIGURACIÓN (Usa la tuya)
+        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAyGsnbyvxTEzvtgOXSmU_5Hj6gS6TOWKM",
             authDomain: "gaming-team-18b95.firebaseapp.com",
@@ -156,9 +174,10 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        let isRegister = false;
+        let me = null;
+        let isReg = false;
 
-        // --- SISTEMA DE NOTIFICACIONES ---
+        // --- NOTIFICACIONES ---
         window.notify = (msg) => {
             const container = document.getElementById('toast-container');
             const t = document.createElement('div');
@@ -168,64 +187,58 @@
             setTimeout(() => t.remove(), 3000);
         };
 
-        // --- LÓGICA DE INTERFAZ AUTH ---
+        // --- AUTH ---
         window.toggleAuth = () => {
-            isRegister = !isRegister;
-            document.getElementById('auth-title').innerText = isRegister ? 'REGISTRO' : 'LOGIN';
-            document.getElementById('auth-desc').innerText = isRegister ? 'CREA TU IDENTIDAD DE COMBATE' : 'INGRESA TUS CREDENCIALES DE ACCESO';
-            document.getElementById('nick-group').style.display = isRegister ? 'block' : 'none';
-            document.getElementById('btn-text').innerText = isRegister ? 'CREAR CUENTA' : 'INICIAR SESIÓN';
-            document.getElementById('switch-msg').innerText = isRegister ? '¿Ya tienes cuenta?' : '¿No tienes cuenta de operativo?';
+            isReg = !isReg;
+            document.getElementById('auth-title').innerText = isReg ? 'REGISTRO' : 'LOGIN';
+            document.getElementById('nick-group').style.display = isReg ? 'block' : 'none';
+            document.getElementById('btn-auth').innerText = isReg ? 'CREAR CUENTA' : 'INGRESAR';
         };
 
-        // --- PROCESAR AUTH ---
-        window.processAuth = async () => {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            const nick = document.getElementById('reg-nick').value;
+        window.handleAuth = async () => {
+            const e = document.getElementById('auth-email').value;
+            const p = document.getElementById('auth-pass').value;
+            const n = document.getElementById('reg-nick').value;
 
-            if(!email || !pass) return notify("COMPLETA LOS CAMPOS");
+            if(!e || !p) return notify("COMPLETA LOS CAMPOS");
 
             try {
-                if(isRegister) {
-                    if(!nick) return notify("ELIGE UN NICK");
-                    const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    // Crear documento en Firestore
+                if(isReg) {
+                    if(!n) return notify("ELIGE UN NICK");
+                    const res = await createUserWithEmailAndPassword(auth, e, p);
                     await setDoc(doc(db, "usuarios", res.user.uid), {
-                        uid: res.user.uid, nick: nick, email: email, puntos: 0, 
-                        admin: false, avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${nick}`
+                        uid: res.user.uid, nick: n, email: e, puntos: 0, 
+                        whatsapp: "", admin: false, verificado: false,
+                        avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${n}`
                     });
-                    notify("REGISTRO EXITOSO");
+                    notify("REGISTRO COMPLETADO");
                 } else {
-                    await signInWithEmailAndPassword(auth, email, pass);
-                    notify("ACCESO CONCEDIDO");
+                    await signInWithEmailAndPassword(auth, e, p);
                 }
-            } catch (err) {
-                if(err.code === 'auth/user-not-found') notify("USUARIO NO REGISTRADO");
-                else if(err.code === 'auth/wrong-password') notify("CONTRASEÑA INCORRECTA");
-                else notify("ERROR: " + err.code);
-            }
+            } catch (err) { notify("ERROR: " + err.code); }
         };
 
-        // --- CONTROL DE SESIÓN ---
         onAuthStateChanged(auth, user => {
             if(user) {
                 onSnapshot(doc(db, "usuarios", user.uid), d => {
-                    const data = d.data();
-                    if(data) {
-                        document.getElementById('u-avatar').src = data.avatar;
-                        document.getElementById('p-avatar').src = data.avatar;
-                        document.getElementById('p-nick').innerText = data.nick;
+                    me = d.data();
+                    if(me) {
+                        document.getElementById('n-nick').innerText = me.nick;
+                        document.getElementById('n-pts').innerText = me.puntos + " PTS";
+                        document.getElementById('n-img').src = me.avatar;
+                        document.getElementById('p-img').src = me.avatar;
+                        document.getElementById('p-nick').innerText = me.nick;
+                        document.getElementById('p-wa').value = me.whatsapp || "";
+                        document.getElementById('p-bar').style.width = Math.min((me.puntos/1000)*100, 100) + "%";
                         document.getElementById('auth-screen').style.display = 'none';
                         document.getElementById('app').style.display = 'block';
                     }
                 });
-                // Sincronizar Color Neon
                 onSnapshot(doc(db, "config", "global"), d => {
                     if(d.exists()) {
-                        const color = d.data().colorNeon;
-                        document.documentElement.style.setProperty('--neon', color);
-                        document.getElementById('neon-accent').style.color = color;
+                        const c = d.data().colorNeon;
+                        document.documentElement.style.setProperty('--neon', c);
+                        document.getElementById('n-accent').style.color = c;
                     }
                 });
             } else {
@@ -234,12 +247,78 @@
             }
         });
 
-        // --- NAVEGACIÓN ---
+        // --- FUNCIONES ---
         window.switchTab = (id, el) => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             if(el) el.classList.add('active');
+            if(id === 'sec-feed') loadMisiones();
+            if(id === 'sec-chat') loadChat();
+            if(id === 'sec-rank') loadRank();
+        };
+
+        function loadChat() {
+            const q = query(collection(db, "chat_global"), orderBy("timestamp", "desc"), limit(40));
+            onSnapshot(q, snap => {
+                const box = document.getElementById('chat-msgs'); box.innerHTML = "";
+                let msgs = []; snap.forEach(d => msgs.unshift(d.data()));
+                msgs.forEach(m => {
+                    const isAdm = m.role === 'admin';
+                    box.innerHTML += `<div class="msg ${isAdm?'admin':''}"><b>${m.nick}${isAdm?' ⭐':''}</b>${m.text}</div>`;
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+
+        window.sendChat = async () => {
+            const i = document.getElementById('chat-in');
+            if(!i.value.trim()) return;
+            await addDoc(collection(db, "chat_global"), {
+                uid: me.uid, nick: me.nick, text: i.value, role: me.admin ? 'admin' : 'user', timestamp: serverTimestamp()
+            });
+            i.value = "";
+        };
+
+        function loadMisiones() {
+            onSnapshot(collection(db, "torneos"), snap => {
+                const list = document.getElementById('list-misiones'); list.innerHTML = "";
+                snap.forEach(d => {
+                    const m = d.data();
+                    const isIn = (m.jugadores || []).some(j => j.uid === me.uid);
+                    list.innerHTML += `
+                        <div class="card-ui">
+                            <h4 style="margin:0; font-family:'Orbitron'; font-size:0.8rem;">${m.nombre}</h4>
+                            <p style="font-size:0.6rem; color:#555; margin:10px 0;">${m.desc}</p>
+                            <button class="btn-main" style="padding:8px; font-size:0.5rem; background:${isIn?'#000':''}; color:${isIn?'var(--success)':''}" onclick="join('${d.id}', ${isIn})">
+                                ${isIn ? 'REGISTRADO' : 'UNIRSE'}
+                            </button>
+                        </div>`;
+                });
+            });
+        }
+
+        window.join = async (id, ya) => {
+            const r = doc(db, "torneos", id);
+            if(!ya) await updateDoc(r, { jugadores: arrayUnion({uid: me.uid, nick: me.nick}), inscritos_count: increment(1) });
+            else await updateDoc(r, { jugadores: arrayRemove({uid: me.uid, nick: me.nick}), inscritos_count: increment(-1) });
+            notify(ya ? "MISIÓN CANCELADA" : "INSCRIPCIÓN EXITOSA");
+        };
+
+        function loadRank() {
+            const q = query(collection(db, "usuarios"), orderBy("puntos", "desc"), limit(15));
+            onSnapshot(q, snap => {
+                const list = document.getElementById('list-rank'); list.innerHTML = "";
+                snap.forEach(d => {
+                    const u = d.data();
+                    list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; background:var(--glass); border-radius:10px; margin-bottom:5px;"><b>${u.nick}</b> <span style="color:var(--neon)">${u.puntos} PTS</span></div>`;
+                });
+            });
+        }
+
+        window.saveProfile = async () => {
+            await updateDoc(doc(db, "usuarios", me.uid), { whatsapp: document.getElementById('p-wa').value });
+            notify("PERFIL ACTUALIZADO");
         };
 
         window.logout = () => signOut(auth).then(() => location.reload());
