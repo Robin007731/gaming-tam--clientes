@@ -3,118 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OPERATIVO | ZONA GAMER</title>
+    <title>ZONA GAMER | ACCESO OPERATIVO</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
-        :root { 
-            --neon: #00f2ff; --bg: #030508; --card: #0d1117; 
-            --success: #39FF14; --gold: #ffd700; --error: #ff3131;
-        }
-
+        :root { --neon: #00f2ff; --bg: #030508; --card: #0d1117; --success: #39FF14; --error: #ff3131; }
         * { box-sizing: border-box; }
-        body { 
-            margin: 0; background: var(--bg); color: #e0e6ed; 
-            font-family: 'Rajdhani', sans-serif; padding-bottom: 50px;
-        }
+        body { margin: 0; background: var(--bg); color: #e0e6ed; font-family: 'Rajdhani', sans-serif; }
 
-        /* Notificación de Sistema */
-        #system-alert { 
-            display: none; background: var(--neon); color: #000; padding: 12px;
-            font-family: 'Orbitron'; font-size: 0.7rem; text-align: center;
-            position: sticky; top: 0; z-index: 1000; box-shadow: 0 5px 15px rgba(0,242,255,0.3);
-        }
+        /* Pantallas */
+        .screen { display: none; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .active { display: flex; }
 
-        header { 
-            padding: 20px; text-align: center; background: var(--card);
-            border-bottom: 1px solid #1a1f26;
-        }
+        /* Login Card */
+        .auth-card { background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid #1a1f26; width: 100%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #222; color: #fff; margin-bottom: 15px; border-radius: 5px; }
+        .btn { width: 100%; padding: 12px; background: var(--neon); border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.3s; color: #000; }
+        .btn:hover { box-shadow: 0 0 15px var(--neon); }
 
-        .container { max-width: 500px; margin: auto; padding: 15px; }
+        /* Panel Principal */
+        #main-header { width: 100%; background: var(--card); padding: 15px; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; }
+        .content { width: 100%; max-width: 500px; margin-top: 20px; }
+        
+        .xp-card { background: linear-gradient(145deg, #0d1117, #05070a); padding: 30px; border-radius: 20px; border: 1px solid #1a1f26; text-align: center; margin-bottom: 20px; }
+        .xp-value { font-family: 'Orbitron'; font-size: 3rem; color: var(--success); text-shadow: 0 0 15px rgba(57,255,20,0.3); }
 
-        /* Card de Puntos Principal */
-        .main-stats { 
-            background: linear-gradient(145deg, #0d1117, #05070a);
-            padding: 30px 20px; border-radius: 20px; border: 1px solid #1a1f26;
-            text-align: center; margin-bottom: 25px; position: relative;
-            overflow: hidden;
-        }
-        .main-stats::before {
-            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0,242,255,0.05) 0%, transparent 70%);
-        }
-
-        .xp-value { 
-            font-family: 'Orbitron'; font-size: 3.5rem; color: var(--success); 
-            text-shadow: 0 0 20px rgba(57,255,20,0.4); margin: 10px 0;
-        }
-
-        /* Ranking Pequeño */
-        .mini-leaderboard {
-            background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 25px;
-        }
-        .rank-item {
-            display: flex; justify-content: space-between; padding: 10px 0;
-            border-bottom: 1px solid #1a1f26; font-size: 0.9rem;
-        }
-        .rank-item:last-child { border: none; }
-
-        /* Misiones */
-        .mission-card {
-            background: #0d1117; border-radius: 10px; padding: 15px;
-            margin-bottom: 15px; border-left: 4px solid var(--neon);
-        }
-        .btn-join {
-            width: 100%; padding: 10px; background: transparent; border: 1px solid var(--neon);
-            color: var(--neon); font-family: 'Orbitron'; cursor: pointer; border-radius: 5px;
-            margin-top: 10px; transition: 0.3s;
-        }
-        .btn-join:hover { background: var(--neon); color: #000; }
-
-        .tag { font-size: 0.6rem; background: #1a1f26; padding: 3px 8px; border-radius: 5px; color: var(--neon); }
-
-        footer { text-align: center; padding: 20px; color: #444; font-size: 0.7rem; font-family: 'Fira Code'; }
+        .mission-card { background: var(--card); border-left: 4px solid var(--neon); padding: 15px; border-radius: 5px; margin-bottom: 15px; }
+        
+        #system-msg { background: var(--neon); color: #000; width: 100%; padding: 10px; font-weight: bold; text-align: center; font-family: 'Orbitron'; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="system-alert">SISTEMA CONECTADO</div>
+    <div id="system-msg">MENSAJE RECIBIDO</div>
 
-    <header>
-        <div style="font-family:'Orbitron'; color:var(--neon); letter-spacing:2px; font-size:0.8rem;">OPERATIVO_ID</div>
-        <div id="display-nick" style="font-size:1.5rem; font-weight:700;">...</div>
-    </header>
-
-    <div class="container">
-        <div class="main-stats">
-            <div style="font-family:'Orbitron'; font-size:0.7rem; color:#555;">EXPERIENCIA ACUMULADA</div>
-            <div id="display-xp" class="xp-value">0</div>
-            <div style="color:var(--neon); letter-spacing:3px; font-size:0.8rem;">LEVEL ACCOMPLISHED</div>
+    <div id="auth-screen" class="screen active">
+        <div class="auth-card">
+            <h2 style="font-family:'Orbitron'; color:var(--neon)">ACCESO_OPERATIVO</h2>
+            <p style="font-size: 0.8rem; color: #666;">Ingresa tus credenciales para conectar</p>
+            <input type="email" id="email" placeholder="Correo Electrónico">
+            <input type="password" id="pass" placeholder="Contraseña">
+            <button class="btn" onclick="handleAuth()">INGRESAR AL SISTEMA</button>
+            <p id="auth-error" style="color:var(--error); font-size:0.8rem; margin-top:10px;"></p>
         </div>
-
-        <div class="mini-leaderboard">
-            <div style="font-family:'Orbitron'; font-size:0.7rem; color:var(--gold); margin-bottom:10px;">🏆 TOP 3 GLOBAL</div>
-            <div id="top-ranking-list">
-                </div>
-        </div>
-
-        <h3 style="font-family:'Orbitron'; font-size:0.8rem; margin-bottom:15px; color:var(--neon);">MISIONES DISPONIBLES</h3>
-        <div id="mission-container">
-            </div>
     </div>
 
-    <footer>
-        DESIGNED FOR GAMING TEAM v4.0<br>
-        CONNECTION_ENCRYPTED_BY_FIREBASE
-    </footer>
+    <div id="main-screen" class="screen">
+        <header id="main-header">
+            <div style="font-family:'Orbitron'; font-size:0.8rem; color:var(--neon)" id="nick-name">ID: ...</div>
+            <button onclick="logout()" style="background:none; border:1px solid #333; color:#555; cursor:pointer; font-size:0.7rem;">SALIR</button>
+        </header>
+
+        <div class="content">
+            <div class="xp-card">
+                <div style="font-family:'Orbitron'; font-size:0.7rem; color:#444;">XP TOTAL ACUMULADA</div>
+                <div id="user-xp" class="xp-value">0</div>
+                <div style="font-size:0.8rem; letter-spacing:3px;">NIVEL_OPERATIVO</div>
+            </div>
+
+            <h3 style="font-family:'Orbitron'; font-size:0.8rem; margin-bottom:15px; color:var(--neon);">MISIONES ACTUALES</h3>
+            <div id="mission-list">
+                </div>
+        </div>
+    </div>
 
     <script>
-        // CONFIGURACIÓN (Usa la misma que en el Admin)
+        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAyGsnbyvxTEzvtgOXSmU_5Hj6gS6TOWKM",
             authDomain: "gaming-team-18b95.firebaseapp.com",
@@ -125,88 +84,80 @@
         };
 
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        // 1. SINCRONIZACIÓN DE PERFIL Y AUTENTICACIÓN
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                // Escuchar datos del usuario actual al instante
-                db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
-                    if (doc.exists) {
-                        const u = doc.data();
-                        document.getElementById('display-nick').innerText = u.nick.toUpperCase();
-                        document.getElementById('display-xp').innerText = u.puntos || 0;
-                    } else {
-                        // SI EL ADMIN BORRA AL USUARIO, SE CIERRA LA SESIÓN SOLA
-                        alert("TU ACCESO HA SIDO REVOCADO POR EL ADMINISTRADOR");
-                        auth.signOut().then(() => location.href = 'index.html');
-                    }
-                });
-            } else {
-                location.href = 'index.html';
-            }
-        });
+        // --- MANEJO DE VISTAS ---
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
 
-        // 2. SINCRONIZACIÓN DE RANKING (TOP 3)
-        db.collection("usuarios").orderBy("puntos", "desc").limit(3).onSnapshot(snap => {
-            const list = document.getElementById('top-ranking-list');
-            list.innerHTML = "";
-            let i = 1;
-            snap.forEach(doc => {
-                const u = doc.data();
-                list.innerHTML += `
-                    <div class="rank-item">
-                        <span>${i}. ${u.nick}</span>
-                        <span style="color:var(--success)">${u.puntos} XP</span>
-                    </div>
-                `;
-                i++;
+        // --- LÓGICA DE LOGIN ---
+        window.handleAuth = () => {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
+            auth.signInWithEmailAndPassword(e, p).catch(err => {
+                document.getElementById('auth-error').innerText = "ERROR: Credenciales no encontradas.";
             });
-        });
-
-        // 3. SINCRONIZACIÓN DE MISIONES
-        db.collection("torneos").where("active", "==", true).onSnapshot(snap => {
-            const container = document.getElementById('mission-container');
-            container.innerHTML = "";
-            
-            if(snap.empty) {
-                container.innerHTML = "<p style='color:#444; font-size:0.8rem;'>No hay misiones activas en este momento...</p>";
-            }
-
-            snap.forEach(doc => {
-                const m = doc.data();
-                container.innerHTML += `
-                    <div class="mission-card">
-                        <div style="display:flex; justify-content:space-between;">
-                            <b style="color:#fff;">${m.nombre}</b>
-                            <span class="tag">CUPO: ${m.inscritos_count || 0}/${m.capacidad}</span>
-                        </div>
-                        <p style="font-size:0.8rem; color:#666; margin:10px 0;">${m.desc}</p>
-                        <button class="btn-join" onclick="inscribirse('${doc.id}')">SOLICITAR ACCESO</button>
-                    </div>
-                `;
-            });
-        });
-
-        // 4. SINCRONIZACIÓN DE MENSAJES DE ADMIN (BROADCAST)
-        db.collection("chat_global").orderBy("timestamp", "desc").limit(1).onSnapshot(snap => {
-            if (!snap.empty) {
-                const data = snap.docs[0].data();
-                const alertDiv = document.getElementById('system-alert');
-                alertDiv.innerText = "SISTEMA: " + data.text;
-                alertDiv.style.display = 'block';
-                // Ocultar mensaje después de 12 segundos
-                setTimeout(() => alertDiv.style.display = 'none', 12000);
-            }
-        });
-
-        // FUNCIÓN DE INSCRIPCIÓN
-        window.inscribirse = (id) => {
-            alert("¡SOLICITUD ENVIADA!\nEl administrador revisará tu perfil para autorizar tu cupo.");
-            // Aquí podrías añadir un registro en una colección "solicitudes" si quisieras
         };
 
+        // --- ESCUCHA DE ESTADO (EL "MOTOR" DEL CLIENTE) ---
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                showScreen('main-screen');
+                initSincronizacion(user.uid);
+            } else {
+                showScreen('auth-screen');
+            }
+        });
+
+        // --- SINCRONIZACIÓN EN TIEMPO REAL ---
+        function initSincronizacion(uid) {
+            // 1. Sincronizar mis Puntos y Nick
+            db.collection("usuarios").doc(uid).onSnapshot(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('user-xp').innerText = data.puntos || 0;
+                    document.getElementById('nick-name').innerText = "ID: " + data.nick.toUpperCase();
+                } else {
+                    // Si el admin te borra, te saca del sistema
+                    auth.signOut();
+                }
+            });
+
+            // 2. Sincronizar Misiones (Torneos creados en Admin)
+            db.collection("torneos").where("active", "==", true).onSnapshot(snap => {
+                const list = document.getElementById('mission-list');
+                list.innerHTML = "";
+                snap.forEach(doc => {
+                    const m = doc.data();
+                    list.innerHTML += `
+                        <div class="mission-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <b style="font-family:'Orbitron'; font-size:0.8rem;">${m.nombre}</b>
+                                <span style="font-size:0.7rem; color:var(--neon)">CUPOS: ${m.capacidad}</span>
+                            </div>
+                            <p style="font-size:0.8rem; color:#666; margin:8px 0;">${m.desc}</p>
+                            <button onclick="alert('Inscripción enviada')" style="width:100%; padding:5px; background:none; border:1px solid var(--neon); color:var(--neon); cursor:pointer;">INSCRIBIRSE</button>
+                        </div>
+                    `;
+                });
+            });
+
+            // 3. Sincronizar Mensajes de Sistema (Broadcast)
+            db.collection("chat_global").orderBy("timestamp", "desc").limit(1).onSnapshot(snap => {
+                if (!snap.empty) {
+                    const msg = snap.docs[0].data();
+                    const alertBox = document.getElementById('system-msg');
+                    alertBox.innerText = "SISTEMA: " + msg.text;
+                    alertBox.style.display = 'block';
+                    setTimeout(() => alertBox.style.display = 'none', 10000);
+                }
+            });
+        }
+
+        window.logout = () => auth.signOut();
     </script>
 </body>
 </html>
