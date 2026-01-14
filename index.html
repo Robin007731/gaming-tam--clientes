@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZONA GAMER | Plataforma Operativa</title>
+    <title>ZONA GAMER | Operativo Elite</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -18,7 +18,7 @@
             font-family: 'Rajdhani', sans-serif; overflow-x: hidden; height: 100vh;
         }
 
-        /* --- PANTALLA DE CARGA --- */
+        /* --- SPLASH --- */
         #splash {
             position: fixed; inset: 0; background: var(--bg); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -28,7 +28,7 @@
             text-shadow: 0 0 20px var(--neon); animation: pulse 1.5s infinite; 
         }
 
-        /* --- PANTALLA DE AUTH --- */
+        /* --- AUTH SCREEN --- */
         #auth-screen {
             position: fixed; inset: 0; background: radial-gradient(circle at center, #0a1921 0%, #030406 100%);
             display: none; align-items: center; justify-content: center; z-index: 8000; padding: 20px;
@@ -51,6 +51,21 @@
             font-weight: bold; cursor: pointer; margin-top: 10px;
         }
 
+        /* BOTÓN GOOGLE */
+        .btn-google {
+            width: 100%; padding: 12px; background: #fff; color: #000; 
+            border: none; border-radius: 12px; font-family: 'Orbitron'; 
+            font-weight: bold; font-size: 0.7rem; cursor: pointer; 
+            margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .divider {
+            display: flex; align-items: center; text-align: center;
+            margin: 20px 0; color: #444; font-size: 0.6rem; font-family: 'Orbitron';
+        }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #222; }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
+
         /* --- APP INTERFACE --- */
         #app { display: none; padding-bottom: 90px; }
         nav { 
@@ -61,36 +76,35 @@
         }
         .nav-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--neon); object-fit: cover; }
 
-        .section { display: none; padding: 20px; max-width: 500px; margin: 0 auto; animation: slideUp 0.4s ease forwards; }
+        .section { display: none; padding: 20px; max-width: 500px; margin: 0 auto; animation: slideUp 0.4s ease; }
         .section.active { display: block; }
 
-        /* MISIONES */
+        /* MISIONES CARDS */
         .post { background: var(--card); border-radius: 20px; margin-bottom: 20px; border: 1px solid #1f2937; overflow: hidden; }
         .post-body { padding: 20px; }
         .post-title { font-family: 'Orbitron'; font-size: 1.1rem; color: #fff; margin: 0; }
         .btn-action { width: 100%; padding: 14px; border-radius: 12px; border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; margin-top: 15px; }
         .state-unirme { background: var(--neon); color: #000; }
         .state-inscrito { background: rgba(57, 255, 20, 0.1); color: var(--success); border: 1px solid var(--success); }
-        .state-abandonar { background: var(--error); color: #fff; animation: shake 0.2s infinite; }
 
-        /* PERFIL */
+        /* PERFIL & PROGRESS */
         .progress-container { background: #000; height: 10px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--neon); width: 0%; transition: 0.8s; }
+        .progress-bar { height: 100%; background: var(--neon); width: 0%; transition: 0.8s; box-shadow: 0 0 10px var(--neon); }
         .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
         .avatar-opt { width: 100%; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
         .avatar-opt.selected { border-color: var(--neon); box-shadow: 0 0 10px var(--neon); }
 
         /* RANKING */
         .rank-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: var(--glass); border-radius: 15px; margin-bottom: 8px; border: 1px solid #1f2937; }
-        
-        /* MENU INFERIOR */
+        .rank-pos { font-family: 'Orbitron'; width: 25px; font-weight: bold; }
+
+        /* TAB BAR */
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: #0d1117; display: flex; border-top: 1px solid #1f2937; padding: 10px 0; z-index: 1000; }
         .tab { flex: 1; text-align: center; font-family: 'Orbitron'; font-size: 0.6rem; color: #555; cursor: pointer; }
         .tab.active { color: var(--neon); }
 
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
     </style>
 </head>
 <body>
@@ -143,11 +157,26 @@
                     <div class="progress-container"><div id="p-bar" class="progress-bar"></div></div>
                 </div>
 
-                <small style="color:#444; font-family:'Orbitron'; font-size:0.55rem;">SELECCIONAR AVATAR</small>
+                <small style="color:#444; font-family:'Orbitron'; font-size:0.55rem;">AVATARES</small>
                 <div class="avatar-grid" id="avatar-selector"></div>
 
-                <button class="btn-action" onclick="contactAdmin()" style="background:#25D366; color:#fff;">SOPORTE WHATSAPP</button>
-                <button onclick="logout()" style="background:none; border:none; color:#444; font-family:'Orbitron'; font-size:0.6rem; cursor:pointer; margin-top:20px;">DESCONECTAR</button>
+                <button class="btn-action" onclick="contactAdmin()" style="background:#25D366; color:#fff;">WHATSAPP SOPORTE</button>
+                <button onclick="logout()" style="background:none; border:none; color:#444; font-family:'Orbitron'; font-size:0.6rem; cursor:pointer; margin-top:15px;">DESCONECTAR</button>
+            </div>
+        </div>
+
+        <div id="sec-ajustes" class="section">
+            <h2 style="font-family:'Orbitron'; font-size:0.7rem; color:#555; margin-bottom:15px;">CONFIGURACIÓN DE PERFIL</h2>
+            <div style="background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid #1f2937;">
+                <div class="input-box">
+                    <label>CAMBIAR NICKNAME</label>
+                    <input type="text" id="edit-nick" placeholder="Nuevo Nick">
+                </div>
+                <div class="input-box">
+                    <label>ACTUALIZAR WHATSAPP</label>
+                    <input type="number" id="edit-wa" placeholder="Nuevo número">
+                </div>
+                <button class="btn-main" onclick="saveSettings()">GUARDAR CAMBIOS</button>
             </div>
         </div>
 
@@ -155,12 +184,14 @@
             <div class="tab active" onclick="switchTab('sec-feed', this)">MISIONES</div>
             <div class="tab" onclick="switchTab('sec-rank', this)">RANKING</div>
             <div class="tab" onclick="switchTab('sec-perfil', this)">PERFIL</div>
+            <div class="tab" onclick="switchTab('sec-ajustes', this)">AJUSTES</div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, doc, setDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove, increment, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAyGsnbyvxTEzvtgOXSmU_5Hj6gS6TOWKM",
@@ -173,6 +204,8 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
         let currentUser = null;
         let isLogin = true;
@@ -200,25 +233,45 @@
 
         window.renderForm = () => {
             const form = document.getElementById('auth-form');
+            const googleBtn = `
+                <div class="divider">O</div>
+                <button class="btn-google" onclick="handleGoogleLogin()">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> GOOGLE LOGIN
+                </button>`;
+
             if(isLogin) {
                 document.getElementById('auth-title').innerText = "ACCESO";
-                document.getElementById('auth-msg').innerText = "¿Eres nuevo?";
-                document.getElementById('auth-btn-toggle').innerText = "REGÍSTRATE";
                 form.innerHTML = `
                     <div class="input-box"><label>CORREO</label><input type="email" id="l-email"></div>
-                    <div class="input-box"><label>CONTRASEÑA</label><input type="password" id="l-pass"></div>
-                    <button class="btn-main" onclick="handleLogin()">ENTRAR A ZONA GAMER</button>`;
+                    <div class="input-box"><label>PASS</label><input type="password" id="l-pass"></div>
+                    <button class="btn-main" onclick="handleLogin()">ENTRAR</button>${googleBtn}`;
             } else {
                 document.getElementById('auth-title').innerText = "REGISTRO";
-                document.getElementById('auth-msg').innerText = "¿Ya tienes cuenta?";
-                document.getElementById('auth-btn-toggle').innerText = "LOGIN";
                 form.innerHTML = `
-                    <div class="input-box"><label>NICK NAME</label><input type="text" id="r-nick"></div>
+                    <div class="input-box"><label>NICK</label><input type="text" id="r-nick"></div>
                     <div class="input-box"><label>WHATSAPP</label><input type="number" id="r-wa"></div>
                     <div class="input-box"><label>CORREO</label><input type="email" id="r-email"></div>
-                    <div class="input-box"><label>CONTRASEÑA</label><input type="password" id="r-pass"></div>
-                    <button class="btn-main" onclick="handleRegister()">CREAR OPERATIVO</button>`;
+                    <div class="input-box"><label>PASS</label><input type="password" id="r-pass"></div>
+                    <button class="btn-main" onclick="handleRegister()">CREAR CUENTA</button>${googleBtn}`;
             }
+        };
+
+        window.handleGoogleLogin = async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                const q = query(collection(db, "usuarios"), where("email", "==", user.email));
+                const snap = await getDocs(q);
+                
+                if (snap.empty) {
+                    const uid = "USR-" + Date.now();
+                    await setDoc(doc(db, "usuarios", uid), { uid, email: user.email, nick: user.displayName.split(' ')[0], whatsapp: "", puntos: 0, avatar: user.photoURL });
+                    localStorage.setItem('squad_uid', uid);
+                } else {
+                    localStorage.setItem('squad_uid', snap.docs[0].id);
+                }
+                window.location.reload();
+            } catch (e) { alert("Error Google Login"); }
         };
 
         window.handleRegister = async () => {
@@ -227,15 +280,9 @@
             const pass = document.getElementById('r-pass').value;
             const wa = document.getElementById('r-wa').value;
             if(!email || !nick || !pass) return alert("Completa los datos");
-            
-            const q = query(collection(db, "usuarios"), where("email", "==", email));
-            const snap = await getDocs(q);
-            if(!snap.empty) return alert("El correo ya existe");
-
             const uid = "USR-" + Date.now();
             await setDoc(doc(db, "usuarios", uid), { uid, email, pass, nick, whatsapp: wa, puntos: 0, avatar: AVATARES[0] });
-            localStorage.setItem('squad_uid', uid); 
-            window.location.reload();
+            localStorage.setItem('squad_uid', uid); window.location.reload();
         };
 
         window.handleLogin = async () => {
@@ -243,11 +290,8 @@
             const pass = document.getElementById('l-pass').value;
             const q = query(collection(db, "usuarios"), where("email", "==", email), where("pass", "==", pass));
             const snap = await getDocs(q);
-            if(snap.empty) alert("Credenciales incorrectas");
-            else { 
-                localStorage.setItem('squad_uid', snap.docs[0].id); 
-                window.location.reload(); 
-            }
+            if(snap.empty) alert("Error de acceso");
+            else { localStorage.setItem('squad_uid', snap.docs[0].id); window.location.reload(); }
         };
 
         function loadApp(uid) {
@@ -258,9 +302,7 @@
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'block';
             });
-            onSnapshot(doc(db, "config", "global"), d => { 
-                if(d.exists()) document.documentElement.style.setProperty('--neon', d.data().colorNeon); 
-            });
+            onSnapshot(doc(db, "config", "global"), d => { if(d.exists()) document.documentElement.style.setProperty('--neon', d.data().colorNeon); });
             initFeed(); initRank();
         }
 
@@ -270,6 +312,10 @@
             document.getElementById('p-img').src = currentUser.avatar;
             document.getElementById('p-nick').innerText = currentUser.nick;
             
+            // Cargar datos en los inputs de ajustes
+            document.getElementById('edit-nick').value = currentUser.nick;
+            document.getElementById('edit-wa').value = currentUser.whatsapp || "";
+
             const p = currentUser.puntos;
             let nivel = "RECLUTA"; let pct = (p/100)*100;
             if(p >= 100) { nivel = "ESPECIALISTA"; pct = ((p-100)/400)*100; }
@@ -287,6 +333,14 @@
             });
         }
 
+        window.saveSettings = async () => {
+            const newNick = document.getElementById('edit-nick').value;
+            const newWA = document.getElementById('edit-wa').value;
+            if(!newNick) return alert("El nick no puede estar vacío");
+            await updateDoc(doc(db, "usuarios", currentUser.uid), { nick: newNick, whatsapp: newWA });
+            alert("¡Ajustes guardados!");
+        };
+
         function initFeed() {
             onSnapshot(collection(db, "torneos"), snap => {
                 const list = document.getElementById('feed-list'); list.innerHTML = "";
@@ -298,7 +352,7 @@
                             <h3 class="post-title">${t.nombre}</h3>
                             <p style="color:#666; font-size:0.8rem; margin:10px 0;">${t.desc}</p>
                             <button id="btn-${ds.id}" class="btn-action ${ya ? 'state-inscrito' : 'state-unirme'}" onclick="handleJoin('${ds.id}', ${ya})">
-                                ${ya ? '✓ INSCRITO' : 'UNIRME AHORA'}
+                                ${ya ? '✓ INSCRITO' : 'UNIRME'}
                             </button>
                         </div></div>`;
                 });
@@ -308,12 +362,9 @@
         window.handleJoin = async (id, ya) => {
             if(!ya) await updateDoc(doc(db, "torneos", id), { jugadores: arrayUnion({ uid: currentUser.uid, nick: currentUser.nick, avatar: currentUser.avatar }), inscritos_count: increment(1) });
             else {
-                const btn = document.getElementById(`btn-${id}`);
-                if(confirmID !== id) { 
-                    confirmID = id; btn.innerText = "¿ABANDONAR?"; btn.classList.add('state-abandonar');
-                    setTimeout(()=> { confirmID = null; btn.innerText = "✓ INSCRITO"; btn.classList.remove('state-abandonar'); }, 3000); 
+                if(confirm("¿Seguro que quieres abandonar la misión?")) {
+                    await updateDoc(doc(db, "torneos", id), { jugadores: arrayRemove({ uid: currentUser.uid, nick: currentUser.nick, avatar: currentUser.avatar }), inscritos_count: increment(-1) });
                 }
-                else { await updateDoc(doc(db, "torneos", id), { jugadores: arrayRemove({ uid: currentUser.uid, nick: currentUser.nick, avatar: currentUser.avatar }), inscritos_count: increment(-1) }); confirmID = null; }
             }
         };
 
@@ -322,7 +373,7 @@
                 const list = document.getElementById('rank-list'); list.innerHTML = ""; let i = 1;
                 snap.forEach(d => {
                     const u = d.data();
-                    list.innerHTML += `<div class="rank-item"><div style="width:25px; font-weight:bold;">#${i}</div><img src="${u.avatar}" style="width:30px; border-radius:50%;"><div style="flex:1"><b>${u.nick}</b></div><div style="color:var(--neon)">${u.puntos}</div></div>`;
+                    list.innerHTML += `<div class="rank-item"><div class="rank-pos">#${i}</div><img src="${u.avatar}" style="width:30px; height:30px; border-radius:50%;"><div style="flex:1"><b>${u.nick}</b></div><div>${u.puntos}</div></div>`;
                     i++;
                 });
             });
@@ -334,7 +385,7 @@
             if(el) { document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
         };
 
-        window.contactAdmin = () => { window.location.href = `https://wa.me/5491122334455?text=Hola Admin de ZONA GAMER, soy ${currentUser.nick}`; };
+        window.contactAdmin = () => { window.location.href = `https://wa.me/5491122334455?text=Hola, soy ${currentUser.nick}`; };
         window.logout = () => { localStorage.clear(); window.location.reload(); };
     </script>
 </body>
