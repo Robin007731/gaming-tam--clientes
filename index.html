@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA OPERATIVO | ACCESO</title>
-    
+    <title>ZONA GAMER | REGISTRO Y ACCESO</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -14,72 +13,65 @@
     <style>
         :root { --neon: #00f2ff; --bg: #030508; --card: #0d1117; --success: #39FF14; --error: #ff3131; }
         * { box-sizing: border-box; }
-        body { margin: 0; background: var(--bg); color: #e0e6ed; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+        body { margin: 0; background: var(--bg); color: #e0e6ed; font-family: 'Rajdhani', sans-serif; }
 
-        /* Pantallas */
         .screen { display: none; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .active { display: flex; }
 
-        /* Auth Card */
-        .auth-card { background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid #1a1f26; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        input { width: 100%; padding: 12px; background: #000; border: 1px solid #222; color: #fff; margin-bottom: 12px; border-radius: 5px; font-family: 'Rajdhani'; }
-        .btn { width: 100%; padding: 14px; background: var(--neon); border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; border-radius: 5px; color: #000; transition: 0.3s; }
-        .btn:hover { box-shadow: 0 0 20px var(--neon); transform: translateY(-2px); }
+        /* Tarjetas de Formulario */
+        .auth-card { background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid #1a1f26; width: 100%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #222; color: #fff; margin-bottom: 12px; border-radius: 5px; }
+        .btn { width: 100%; padding: 14px; background: var(--neon); border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; border-radius: 5px; color: #000; }
+        
+        .toggle-link { font-size: 0.8rem; color: #666; margin-top: 15px; cursor: pointer; text-decoration: underline; }
 
         /* Dashboard */
-        header { width: 100%; background: var(--card); padding: 15px 20px; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; z-index: 100; }
+        header { width: 100%; background: var(--card); padding: 15px; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; z-index: 100; }
         .content { width: 100%; max-width: 500px; margin-top: 100px; }
-        
-        /* Stats Card */
-        .xp-card { background: linear-gradient(145deg, #0d1117, #020406); padding: 40px 20px; border-radius: 20px; border: 1px solid #1a1f26; text-align: center; margin-bottom: 25px; position: relative; }
-        .xp-label { font-family: 'Orbitron'; font-size: 0.7rem; color: #555; letter-spacing: 2px; }
-        .xp-num { font-family: 'Orbitron'; font-size: 4rem; color: var(--success); text-shadow: 0 0 20px rgba(57,255,20,0.4); line-height: 1; margin: 15px 0; }
-
-        /* Misiones */
-        .mission-item { background: var(--card); border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 4px solid var(--neon); position: relative; }
-        .cupo-badge { position: absolute; top: 10px; right: 10px; font-size: 0.6rem; background: #000; padding: 3px 7px; border-radius: 4px; color: var(--neon); border: 1px solid #222; }
-
-        /* Sistema de Alerta */
-        #sys-alert { position: fixed; top: 70px; left: 0; width: 100%; background: var(--neon); color: #000; padding: 10px; font-family: 'Orbitron'; font-size: 0.7rem; text-align: center; font-weight: bold; display: none; z-index: 99; animation: slideDown 0.5s; }
-        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+        .xp-card { background: #000; padding: 40px 20px; border-radius: 20px; border: 1px solid #1a1f26; text-align: center; margin-bottom: 20px; }
+        .xp-num { font-family: 'Orbitron'; font-size: 3.5rem; color: var(--success); }
+        .mission-item { background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--neon); }
     </style>
 </head>
 <body>
 
-    <div id="sys-alert">SISTEMA: MENSAJE RECIBIDO</div>
-
-    <div id="auth-screen" class="screen active">
+    <div id="login-screen" class="screen active">
         <div class="auth-card">
-            <h1 style="font-family:'Orbitron'; color:var(--neon); font-size: 1.2rem; margin-bottom: 20px;">INICIAR_SESIÓN</h1>
-            <input type="email" id="email" placeholder="Correo Electrónico">
-            <input type="password" id="pass" placeholder="Contraseña">
-            <button class="btn" onclick="handleAuth()">CONECTAR</button>
-            <p id="auth-error" style="color:var(--error); font-size: 0.8rem; margin-top: 15px;"></p>
-            <p style="font-size: 0.7rem; color: #444; margin-top: 20px;">Si no tienes cuenta, contacta al Administrador.</p>
+            <h2 style="font-family:'Orbitron'; color:var(--neon)">ACCESO</h2>
+            <input type="email" id="login-email" placeholder="Correo">
+            <input type="password" id="login-pass" placeholder="Contraseña">
+            <button class="btn" onclick="login()">CONECTAR</button>
+            <div class="toggle-link" onclick="showScreen('reg-screen')">¿No tienes cuenta? Regístrate aquí</div>
+        </div>
+    </div>
+
+    <div id="reg-screen" class="screen">
+        <div class="auth-card">
+            <h2 style="font-family:'Orbitron'; color:var(--neon)">NUEVO_USUARIO</h2>
+            <input type="text" id="reg-nick" placeholder="Nombre de Usuario (Nick)">
+            <input type="email" id="reg-email" placeholder="Correo Electrónico">
+            <input type="password" id="reg-pass" placeholder="Contraseña (Mín. 6 caracteres)">
+            <button class="btn" onclick="registrar()">CREAR CUENTA</button>
+            <div class="toggle-link" onclick="showScreen('login-screen')">¿Ya tienes cuenta? Inicia sesión</div>
         </div>
     </div>
 
     <div id="main-screen" class="screen">
         <header>
-            <div style="font-family:'Orbitron'; font-size:0.8rem;" id="user-nick">USUARIO</div>
-            <button onclick="logout()" style="background:none; border:none; color:var(--error); font-family:'Orbitron'; font-size:0.6rem; cursor:pointer;">[ DESCONECTAR ]</button>
+            <div id="user-nick" style="font-family:'Orbitron'; color:var(--neon)">...</div>
+            <button onclick="logout()" style="background:none; border:none; color:var(--error); cursor:pointer;">SALIR</button>
         </header>
-
         <div class="content">
             <div class="xp-card">
-                <div class="xp-label">EXPERIENCIA TOTAL</div>
-                <div id="user-xp" class="xp-num">0000</div>
-                <div class="xp-label" style="color:var(--neon)">NIVEL OPERATIVO ACTIVO</div>
+                <div style="font-size:0.7rem; color:#555;">EXPERIENCIA TOTAL</div>
+                <div id="user-xp" class="xp-num">0</div>
             </div>
-
-            <div style="font-family:'Orbitron'; font-size:0.7rem; margin-bottom:15px; color:#555;">MISIONES_DISPONIBLES</div>
-            <div id="mission-container">
-                </div>
+            <h3 style="font-family:'Orbitron'; font-size:0.8rem;">MISIONES ACTIVAS</h3>
+            <div id="mission-container"></div>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAyGsnbyvxTEzvtgOXSmU_5Hj6gS6TOWKM",
             authDomain: "gaming-team-18b95.firebaseapp.com",
@@ -93,26 +85,45 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // MANEJO DE VISTAS
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        // LOGIN
-        window.handleAuth = () => {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('pass').value;
-            if(!e || !p) return;
-            auth.signInWithEmailAndPassword(e, p).catch(err => {
-                document.getElementById('auth-error').innerText = "ERROR: Credenciales Inválidas";
-            });
+        // LÓGICA DE REGISTRO
+        window.registrar = () => {
+            const nick = document.getElementById('reg-nick').value;
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+
+            if(!nick || !email || !pass) return alert("Completa todos los campos");
+
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then(cred => {
+                    // Crear el perfil en Firestore inmediatamente
+                    return db.collection("usuarios").doc(cred.user.uid).set({
+                        nick: nick,
+                        puntos: 0,
+                        email: email,
+                        fecha_registro: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                })
+                .then(() => {
+                    alert("¡Cuenta creada con éxito!");
+                })
+                .catch(err => alert("Error: " + err.message));
         };
 
-        // ESCUCHA DE ESTADO Y EXPULSIÓN
+        // LÓGICA DE LOGIN
+        window.login = () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            auth.signInWithEmailAndPassword(email, pass).catch(err => alert("Acceso denegado"));
+        };
+
+        // MONITOR DE ESTADO Y SINCRONIZACIÓN
         auth.onAuthStateChanged(user => {
             if (user) {
-                // MONITOR DE PERFIL (Sincronización y Expulsión)
                 db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
                     if (doc.exists) {
                         const d = doc.data();
@@ -120,42 +131,22 @@
                         document.getElementById('user-nick').innerText = d.nick.toUpperCase();
                         showScreen('main-screen');
                     } else {
-                        // LOGICA DE EXPULSIÓN: Si el admin borra el perfil, doc.exists es falso
-                        alert("SISTEMA: Tu perfil ha sido eliminado. Cerrando conexión...");
+                        // SI EL ADMIN BORRA EL PERFIL, SE CIERRA SESIÓN
                         auth.signOut();
                     }
                 });
 
-                // CARGA DE MISIONES
+                // Cargar Misiones
                 db.collection("torneos").where("active", "==", true).onSnapshot(snap => {
                     const container = document.getElementById('mission-container');
                     container.innerHTML = "";
                     snap.forEach(doc => {
                         const m = doc.data();
-                        container.innerHTML += `
-                            <div class="mission-item">
-                                <div class="cupo-badge">CUPO: ${m.inscritos_count || 0}/${m.capacidad}</div>
-                                <b style="font-size:0.9rem;">${m.nombre}</b>
-                                <p style="font-size:0.75rem; color:#666; margin:8px 0;">${m.desc}</p>
-                                <button onclick="alert('Inscripción enviada')" style="width:100%; padding:6px; background:none; border:1px solid var(--neon); color:var(--neon); cursor:pointer; font-size:0.7rem; font-family:'Orbitron';">SOLICITAR ACCESO</button>
-                            </div>
-                        `;
+                        container.innerHTML += `<div class="mission-item"><b>${m.nombre}</b><br><small>${m.desc}</small></div>`;
                     });
                 });
-
-                // ESCUCHA DE MENSAJES BROADCAST
-                db.collection("chat_global").orderBy("timestamp", "desc").limit(1).onSnapshot(snap => {
-                    if(!snap.empty) {
-                        const msg = snap.docs[0].data();
-                        const alertBox = document.getElementById('sys-alert');
-                        alertBox.innerText = "SISTEMA: " + msg.text;
-                        alertBox.style.display = 'block';
-                        setTimeout(() => alertBox.style.display = 'none', 10000);
-                    }
-                });
-
             } else {
-                showScreen('auth-screen');
+                showScreen('login-screen');
             }
         });
 
