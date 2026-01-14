@@ -62,8 +62,6 @@
             margin: 20px 0; color: #444; font-size: 0.6rem; font-family: 'Orbitron';
         }
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #222; }
-        .divider:not(:empty)::before { margin-right: .5em; }
-        .divider:not(:empty)::after { margin-left: .5em; }
 
         /* --- APP INTERFACE --- */
         #app { display: none; padding-bottom: 90px; }
@@ -78,7 +76,7 @@
         .section { display: none; padding: 20px; max-width: 500px; margin: 0 auto; animation: slideUp 0.4s ease; }
         .section.active { display: block; }
 
-        /* MISIONES */
+        /* POSTS */
         .post { background: var(--card); border-radius: 20px; margin-bottom: 20px; border: 1px solid #1f2937; overflow: hidden; }
         .post-body { padding: 20px; }
         .post-title { font-family: 'Orbitron'; font-size: 1.1rem; color: #fff; margin: 0; }
@@ -86,7 +84,7 @@
         .state-unirme { background: var(--neon); color: #000; }
         .state-inscrito { background: rgba(57, 255, 20, 0.1); color: var(--success); border: 1px solid var(--success); }
 
-        /* PROGRESO */
+        /* PROGRESS */
         .progress-container { background: #000; height: 10px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--neon); width: 0%; transition: 0.8s; box-shadow: 0 0 10px var(--neon); }
         .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
@@ -110,7 +108,7 @@
 
     <div id="splash">
         <div class="loader-logo">ZONA GAMER</div>
-        <p style="font-family:'Orbitron'; font-size:0.6rem; color:#444; margin-top:15px; letter-spacing:5px;">SISTEMA OPERATIVO v3.0</p>
+        <p style="font-family:'Orbitron'; font-size:0.6rem; color:#444; margin-top:15px; letter-spacing:5px;">INICIANDO SISTEMA...</p>
     </div>
 
     <div id="auth-screen">
@@ -190,7 +188,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove, increment, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAyGsnbyvxTEzvtgOXSmU_5Hj6gS6TOWKM",
@@ -208,24 +206,56 @@
 
         let currentUser = null;
         let isLogin = true;
-
         const AVATARES = [
             "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix", "https://api.dicebear.com/7.x/adventurer/svg?seed=Aneka",
             "https://api.dicebear.com/7.x/adventurer/svg?seed=Jack", "https://api.dicebear.com/7.x/adventurer/svg?seed=Milo",
             "https://api.dicebear.com/7.x/adventurer/svg?seed=Luna", "https://api.dicebear.com/7.x/adventurer/svg?seed=Buddy"
         ];
 
-        window.onload = () => {
+        // --- MANEJO DE RESULTADO DE REDIRECT (CLAVE PARA MÓVILES) ---
+        getRedirectResult(auth).then((result) => {
+            if (result && result.user) {
+                procesarUsuarioGoogle(result.user);
+            } else {
+                verificarSesion();
+            }
+        }).catch((e) => {
+            console.error("Error en redirect:", e);
+            alert("Error al vincular con Google. Revisa los dominios en Firebase.");
+            verificarSesion();
+        });
+
+        function verificarSesion() {
             const savedUID = localStorage.getItem('squad_uid');
-            setTimeout(() => {
-                if(savedUID) loadApp(savedUID);
-                else { 
-                    document.getElementById('splash').style.display = 'none'; 
-                    document.getElementById('auth-screen').style.display = 'flex'; 
-                    renderForm(); 
-                }
-            }, 2000);
+            if(savedUID) loadApp(savedUID);
+            else {
+                document.getElementById('splash').style.display = 'none'; 
+                document.getElementById('auth-screen').style.display = 'flex'; 
+                renderForm(); 
+            }
+        }
+
+        window.handleGoogleLogin = () => {
+            signInWithRedirect(auth, provider);
         };
+
+        async function procesarUsuarioGoogle(user) {
+            const userRef = doc(db, "usuarios", user.uid);
+            const userDoc = await getDoc(userRef);
+            if (!userDoc.exists()) {
+                await setDoc(userRef, {
+                    uid: user.uid,
+                    email: user.email,
+                    nick: user.displayName.split(' ')[0],
+                    whatsapp: "", 
+                    puntos: 0,
+                    avatar: user.photoURL || AVATARES[0],
+                    verificado: false
+                });
+            }
+            localStorage.setItem('squad_uid', user.uid);
+            window.location.reload();
+        }
 
         window.toggleAuth = () => { isLogin = !isLogin; renderForm(); };
 
@@ -234,7 +264,7 @@
             const googleBtn = `
                 <div class="divider">O</div>
                 <button class="btn-google" onclick="handleGoogleLogin()">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> GOOGLE LOGIN
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> ENTRAR CON GOOGLE
                 </button>`;
 
             if(isLogin) {
@@ -254,33 +284,6 @@
             }
         };
 
-        window.handleGoogleLogin = async () => {
-            try {
-                provider.setCustomParameters({ prompt: 'select_account' });
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                const userRef = doc(db, "usuarios", user.uid);
-                const userDoc = await getDoc(userRef);
-                
-                if (!userDoc.exists()) {
-                    await setDoc(userRef, {
-                        uid: user.uid,
-                        email: user.email,
-                        nick: user.displayName.split(' ')[0],
-                        whatsapp: "", 
-                        puntos: 0,
-                        avatar: user.photoURL || AVATARES[0],
-                        verificado: false
-                    });
-                }
-                localStorage.setItem('squad_uid', user.uid);
-                window.location.reload();
-            } catch (e) { 
-                console.error(e);
-                alert("Error de Google Auth."); 
-            }
-        };
-
         window.handleRegister = async () => {
             const email = document.getElementById('r-email').value;
             const nick = document.getElementById('r-nick').value;
@@ -297,7 +300,7 @@
             const pass = document.getElementById('l-pass').value;
             const q = query(collection(db, "usuarios"), where("email", "==", email), where("pass", "==", pass));
             const snap = await getDocs(q);
-            if(snap.empty) alert("Error de acceso");
+            if(snap.empty) alert("Datos incorrectos");
             else { localStorage.setItem('squad_uid', snap.docs[0].id); window.location.reload(); }
         };
 
@@ -307,11 +310,11 @@
                 currentUser = d.data(); 
                 updateUI();
                 
-                // Carga automática de información en los inputs cuando el usuario entra
-                const editNickInput = document.getElementById('edit-nick');
-                const editWaInput = document.getElementById('edit-wa');
-                if(editNickInput && !editNickInput.matches(':focus')) editNickInput.value = currentUser.nick || "";
-                if(editWaInput && !editWaInput.matches(':focus')) editWaInput.value = currentUser.whatsapp || "";
+                // Carga automática persistente en Ajustes
+                const editNick = document.getElementById('edit-nick');
+                const editWa = document.getElementById('edit-wa');
+                if(editNick && !editNick.matches(':focus')) editNick.value = currentUser.nick || "";
+                if(editWa && !editWa.matches(':focus')) editWa.value = currentUser.whatsapp || "";
 
                 document.getElementById('splash').style.display = 'none';
                 document.getElementById('auth-screen').style.display = 'none';
@@ -344,29 +347,18 @@
             });
         }
 
-        // --- GUARDADO PERSISTENTE EN LA CUENTA ---
         window.saveSettings = async () => {
             const btn = document.getElementById('btn-save-settings');
             const newNick = document.getElementById('edit-nick').value;
             const newWA = document.getElementById('edit-wa').value;
-            
-            if(!newNick) return alert("El Nickname es obligatorio");
+            if(!newNick) return alert("Nick obligatorio");
             
             btn.innerText = "GUARDANDO...";
-            btn.disabled = true;
-
             try {
-                await updateDoc(doc(db, "usuarios", currentUser.uid), { 
-                    nick: newNick, 
-                    whatsapp: newWA 
-                });
-                alert("Perfil actualizado correctamente");
-            } catch (e) {
-                alert("Error al guardar los cambios.");
-            } finally {
-                btn.innerText = "GUARDAR CAMBIOS";
-                btn.disabled = false;
-            }
+                await updateDoc(doc(db, "usuarios", currentUser.uid), { nick: newNick, whatsapp: newWA });
+                alert("Perfil actualizado en tu cuenta.");
+            } catch (e) { alert("Error al guardar."); }
+            btn.innerText = "GUARDAR CAMBIOS";
         };
 
         function initFeed() {
@@ -389,7 +381,7 @@
 
         window.handleJoin = async (id, ya) => {
             if(!ya) await updateDoc(doc(db, "torneos", id), { jugadores: arrayUnion({ uid: currentUser.uid, nick: currentUser.nick, avatar: currentUser.avatar }), inscritos_count: increment(1) });
-            else if(confirm("¿Quieres salir de la misión?")) await updateDoc(doc(db, "torneos", id), { jugadores: arrayRemove({ uid: currentUser.uid, nick: currentUser.nick, avatar: currentUser.avatar }), inscritos_count: increment(-1) });
+            else if(confirm("¿Salir de la misión?")) await updateDoc(doc(db, "torneos", id), { jugadores: arrayRemove({ uid: currentUser.uid, nick: currentUser.nick, avatar: currentUser.avatar }), inscritos_count: increment(-1) });
         };
 
         function initRank() {
@@ -409,7 +401,7 @@
             if(el) { document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
         };
 
-        window.contactAdmin = () => { window.location.href = `https://wa.me/59898324329?text=Hola, soy ${currentUser.nick}`; };
+        window.contactAdmin = () => { window.location.href = `https://wa.me/5491122334455?text=Hola, soy ${currentUser.nick}`; };
         window.logout = () => { localStorage.clear(); window.location.reload(); };
     </script>
 </body>
