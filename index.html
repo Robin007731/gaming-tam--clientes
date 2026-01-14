@@ -3,79 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZONA GAMER | Elite Ops</title>
+    <title>ZONA GAMER | Official Client</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: #050608; --card: #0d1117; --neon: #00f2ff; --text: #ffffff; 
-            --success: #39FF14; --glass: rgba(255, 255, 255, 0.05); 
+            --success: #39FF14; --gold: #ffcc00; --glass: rgba(255, 255, 255, 0.05); 
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            margin: 0; background: var(--bg); color: var(--text); 
-            font-family: 'Rajdhani', sans-serif; overflow-x: hidden;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
 
-        /* --- SPLASH SCREEN --- */
+        /* --- CARGA --- */
         #splash {
             position: fixed; inset: 0; background: var(--bg); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .loader-logo { 
-            font-family: 'Orbitron'; font-size: 2.2rem; color: var(--neon); 
-            text-shadow: 0 0 20px var(--neon); animation: pulse 1.5s infinite; 
-        }
+        .loader-logo { font-family: 'Orbitron'; font-size: 2.2rem; color: var(--neon); text-shadow: 0 0 20px var(--neon); animation: pulse 1.5s infinite; }
 
-        /* --- AUTH SCREEN --- */
+        /* --- LOGIN --- */
         #auth-screen {
             position: fixed; inset: 0; background: radial-gradient(circle at center, #0a1921 0%, #030406 100%);
             display: none; align-items: center; justify-content: center; z-index: 8000; padding: 20px;
         }
-        .auth-card { 
-            background: var(--card); width: 100%; max-width: 400px; padding: 30px; 
-            border-radius: 25px; border: 1px solid rgba(0, 242, 255, 0.2); 
-        }
-        .input-box { margin-bottom: 15px; }
-        label { display: block; font-size: 0.65rem; font-family: 'Orbitron'; color: var(--neon); margin-bottom: 5px; }
-        input { 
-            width: 100%; padding: 12px; background: rgba(0,0,0,0.5); 
-            border: 1px solid #222; color: #fff; border-radius: 10px; font-family: 'Rajdhani';
-        }
-        .btn-main { 
-            width: 100%; padding: 16px; background: var(--neon); color: #000; 
-            border: none; border-radius: 12px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer;
-        }
-        .btn-google {
-            width: 100%; padding: 12px; background: #fff; color: #000; 
-            border: none; border-radius: 12px; font-family: 'Orbitron'; 
-            font-weight: bold; font-size: 0.7rem; cursor: pointer; 
-            margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
+        .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 30px; border-radius: 25px; border: 1px solid rgba(0, 242, 255, 0.2); text-align: center; }
+        input { width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid #222; color: #fff; border-radius: 10px; margin-bottom: 10px; font-family: 'Rajdhani'; }
+        .btn-main { width: 100%; padding: 16px; background: var(--neon); color: #000; border: none; border-radius: 12px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; }
+        .btn-google { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 12px; font-family: 'Orbitron'; font-weight: bold; font-size: 0.7rem; margin-top: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-        /* --- APP INTERFACE --- */
-        #app { display: none; padding-bottom: 90px; }
-        nav { 
-            position: sticky; top: 0; background: rgba(13, 17, 23, 0.9); 
-            backdrop-filter: blur(10px); padding: 15px 20px; 
-            border-bottom: 1px solid rgba(0,242,255,0.2); 
-            display: flex; justify-content: space-between; align-items: center; z-index: 1000; 
-        }
+        /* --- APP --- */
+        #app { display: none; padding-bottom: 80px; }
+        nav { position: sticky; top: 0; background: rgba(13, 17, 23, 0.9); backdrop-filter: blur(10px); padding: 15px 20px; border-bottom: 1px solid rgba(0,242,255,0.2); display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
         .nav-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--neon); object-fit: cover; }
 
         .section { display: none; padding: 20px; max-width: 500px; margin: 0 auto; animation: slideUp 0.4s ease; }
         .section.active { display: block; }
 
-        /* POSTS & RANKING */
-        .post { background: var(--card); border-radius: 20px; margin-bottom: 20px; border: 1px solid #1f2937; padding: 20px; }
-        .rank-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: var(--glass); border-radius: 15px; margin-bottom: 8px; }
-        
-        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
-        .avatar-opt { width: 100%; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
-        .avatar-opt.selected { border-color: var(--neon); }
+        /* MISIONES */
+        .post { background: var(--card); border-radius: 20px; margin-bottom: 20px; border: 1px solid #1f2937; overflow: hidden; padding: 20px; }
+        .btn-action { width: 100%; padding: 14px; border-radius: 12px; border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .state-unirme { background: var(--neon); color: #000; }
+        .state-inscrito { background: rgba(57, 255, 20, 0.1); color: var(--success); border: 1px solid var(--success); }
 
-        /* TAB BAR */
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #0d1117; display: flex; border-top: 1px solid #1f2937; padding: 10px 0; }
+        /* PERFIL & PROGRESS */
+        .progress-container { background: #000; height: 10px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--neon); width: 0%; transition: 0.8s; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+        .avatar-opt { width: 100%; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+        .avatar-opt.selected { border-color: var(--neon); box-shadow: 0 0 10px var(--neon); }
+
+        /* RANKING */
+        .rank-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: var(--glass); border-radius: 15px; margin-bottom: 8px; border: 1px solid #1f2937; }
+
+        /* TABS */
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #0d1117; display: flex; border-top: 1px solid #1f2937; padding: 10px 0; z-index: 1000; }
         .tab { flex: 1; text-align: center; font-family: 'Orbitron'; font-size: 0.6rem; color: #555; cursor: pointer; }
         .tab.active { color: var(--neon); }
 
@@ -91,55 +72,50 @@
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2 id="auth-title" style="text-align:center; font-family:'Orbitron'; color:var(--neon);">ACCESO</h2>
+            <h2 id="auth-title" style="font-family:'Orbitron'; color:var(--neon);">ACCESO</h2>
             <div id="auth-form"></div>
-            <div style="text-align:center; margin-top:20px; font-size:0.8rem;">
-                <span id="auth-msg">¿Eres nuevo?</span> 
-                <b id="auth-btn-toggle" onclick="toggleAuth()" style="color:var(--neon); cursor:pointer;">REGÍSTRATE</b>
-            </div>
+            <p style="font-size:0.8rem;">¿Nuevo? <b onclick="toggleAuth()" style="color:var(--neon); cursor:pointer;">REGÍSTRATE</b></p>
         </div>
     </div>
 
     <div id="app">
         <nav>
-            <div style="font-family:'Orbitron'; font-weight:700;">ZONA <span style="color:var(--neon)">GAMER</span></div>
-            <div style="display:flex; align-items:center; gap:12px;" onclick="switchTab('sec-perfil')">
-                <div style="text-align:right"><b id="nav-pts" style="color:var(--success); display:block;">0</b><small style="font-size:0.5rem;">PTS</small></div>
+            <div style="font-family:'Orbitron';">ZONA <span style="color:var(--neon)">GAMER</span></div>
+            <div style="display:flex; align-items:center; gap:10px;" onclick="switchTab('sec-perfil')">
+                <b id="nav-pts" style="color:var(--success);">0</b>
                 <img id="nav-img" class="nav-avatar" src="">
             </div>
         </nav>
 
         <div id="sec-feed" class="section active">
-            <h2 style="font-family:'Orbitron'; font-size:0.7rem; color:#555;">MISIONES</h2>
+            <h3 style="font-family:'Orbitron'; font-size:0.7rem; color:#555;">MISIONES DISPONIBLES</h3>
             <div id="feed-list"></div>
         </div>
 
         <div id="sec-rank" class="section">
-            <h2 style="font-family:'Orbitron'; font-size:0.7rem; color:#555;">RANKING</h2>
+            <h3 style="font-family:'Orbitron'; font-size:0.7rem; color:#555;">TOP OPERATIVOS</h3>
             <div id="rank-list"></div>
         </div>
 
         <div id="sec-perfil" class="section">
-            <div style="background: var(--card); padding: 25px; border-radius: 25px; text-align:center;">
+            <div style="background:var(--card); padding:25px; border-radius:25px; text-align:center; border:1px solid #1f2937;">
                 <img id="p-img" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--neon);" src="">
-                <h2 id="p-nick" style="font-family:'Orbitron';">---</h2>
+                <h2 id="p-nick" style="font-family:'Orbitron'; margin:10px 0;">---</h2>
+                <div id="p-nivel" style="color:var(--neon); font-size:0.7rem; font-family:'Orbitron';">NIVEL 1</div>
+                <div class="progress-container"><div id="p-bar" class="progress-bar"></div></div>
                 <div class="avatar-grid" id="avatar-selector"></div>
-                <button onclick="logout()" style="background:none; border:none; color:#444; font-family:'Orbitron'; font-size:0.6rem;">CERRAR SESIÓN</button>
+                <button onclick="logout()" style="background:none; border:none; color:#444; font-family:'Orbitron'; font-size:0.6rem; cursor:pointer;">LOGOUT</button>
             </div>
         </div>
 
         <div id="sec-ajustes" class="section">
-            <h2 style="font-family:'Orbitron'; font-size:0.7rem; color:#555;">AJUSTES DE CUENTA</h2>
-            <div style="background: var(--card); padding: 20px; border-radius: 20px;">
-                <div class="input-box">
-                    <label>TU NICKNAME</label>
-                    <input type="text" id="edit-nick">
-                </div>
-                <div class="input-box">
-                    <label>TU WHATSAPP</label>
-                    <input type="number" id="edit-wa">
-                </div>
-                <button class="btn-main" id="btn-save" onclick="saveSettings()">GUARDAR EN MI CUENTA</button>
+            <h3 style="font-family:'Orbitron'; font-size:0.7rem; color:#555;">DATOS DE CUENTA</h3>
+            <div style="background:var(--card); padding:20px; border-radius:20px; border:1px solid #1f2937;">
+                <label style="font-size:0.6rem; color:var(--neon);">NICKNAME</label>
+                <input type="text" id="edit-nick">
+                <label style="font-size:0.6rem; color:var(--neon);">WHATSAPP</label>
+                <input type="number" id="edit-wa">
+                <button class="btn-main" id="btn-save" onclick="saveSettings()">GUARDAR CAMBIOS</button>
             </div>
         </div>
 
@@ -153,7 +129,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove, increment, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -174,111 +150,141 @@
         let isLogin = true;
         const AVATARES = ["https://api.dicebear.com/7.x/adventurer/svg?seed=Felix", "https://api.dicebear.com/7.x/adventurer/svg?seed=Aneka", "https://api.dicebear.com/7.x/adventurer/svg?seed=Jack", "https://api.dicebear.com/7.x/adventurer/svg?seed=Milo"];
 
-        // --- 1. PROCESAR LOGIN DE GOOGLE (REDIRECT) ---
+        // --- MANEJO DE LOGIN ---
         getRedirectResult(auth).then(async (result) => {
-            if (result && result.user) {
-                await procesarUsuarioGoogle(result.user);
-            } else {
-                verificarSesion();
-            }
-        }).catch(() => verificarSesion());
+            if (result?.user) await procesarUsuarioGoogle(result.user);
+            else verificarSesion();
+        }).catch(verificarSesion);
 
         function verificarSesion() {
             const savedUID = localStorage.getItem('squad_uid');
             if(savedUID) loadApp(savedUID);
-            else { 
-                document.getElementById('splash').style.display = 'none'; 
-                document.getElementById('auth-screen').style.display = 'flex'; 
-                renderForm(); 
-            }
+            else { document.getElementById('splash').style.display='none'; document.getElementById('auth-screen').style.display='flex'; renderForm(); }
         }
 
-        window.handleGoogleLogin = () => {
-            signInWithRedirect(auth, provider);
-        };
+        window.handleGoogleLogin = () => signInWithRedirect(auth, provider);
 
         async function procesarUsuarioGoogle(user) {
             const userRef = doc(db, "usuarios", user.uid);
             const userDoc = await getDoc(userRef);
             if (!userDoc.exists()) {
-                await setDoc(userRef, {
-                    uid: user.uid, email: user.email,
-                    nick: user.displayName.split(' ')[0],
-                    whatsapp: "", puntos: 0, verificado: false,
-                    avatar: user.photoURL || AVATARES[0]
-                });
+                await setDoc(userRef, { uid: user.uid, email: user.email, nick: user.displayName.split(' ')[0], whatsapp: "", puntos: 0, avatar: user.photoURL || AVATARES[0], verificado: false });
             }
             localStorage.setItem('squad_uid', user.uid);
             window.location.reload();
         }
-
-        // --- 2. GESTIÓN DE PERFIL PERSISTENTE ---
-        function loadApp(uid) {
-            onSnapshot(doc(db, "usuarios", uid), d => {
-                if(!d.exists()) { logout(); return; }
-                currentUser = d.data();
-                
-                // Actualizar interfaz y cargar automáticamente los inputs de ajustes
-                document.getElementById('nav-pts').innerText = currentUser.puntos;
-                document.getElementById('nav-img').src = currentUser.avatar;
-                document.getElementById('p-img').src = currentUser.avatar;
-                document.getElementById('p-nick').innerHTML = currentUser.nick + (currentUser.verificado ? ' ✔️' : '');
-                
-                const inputNick = document.getElementById('edit-nick');
-                const inputWa = document.getElementById('edit-wa');
-                if(!inputNick.matches(':focus')) inputNick.value = currentUser.nick || "";
-                if(!inputWa.matches(':focus')) inputWa.value = currentUser.whatsapp || "";
-
-                document.getElementById('splash').style.display = 'none';
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app').style.display = 'block';
-            });
-            initRank();
-        }
-
-        window.saveSettings = async () => {
-            const nick = document.getElementById('edit-nick').value;
-            const wa = document.getElementById('edit-wa').value;
-            const btn = document.getElementById('btn-save');
-            
-            if(!nick) return alert("El Nick es obligatorio");
-            
-            btn.innerText = "GUARDANDO...";
-            await updateDoc(doc(db, "usuarios", currentUser.uid), { nick: nick, whatsapp: wa });
-            alert("Información guardada en tu cuenta.");
-            btn.innerText = "GUARDAR EN MI CUENTA";
-        };
-
-        // --- 3. FUNCIONES DE APOYO ---
-        window.toggleAuth = () => { isLogin = !isLogin; renderForm(); };
-        window.renderForm = () => {
-            const form = document.getElementById('auth-form');
-            const googleBtn = `<button class="btn-google" onclick="handleGoogleLogin()">GOOGLE LOGIN</button>`;
-            if(isLogin) {
-                form.innerHTML = `<input type="email" id="l-email" placeholder="Correo"><br><br><input type="password" id="l-pass" placeholder="Pass"><br><br><button class="btn-main" onclick="handleLogin()">ENTRAR</button>${googleBtn}`;
-            } else {
-                form.innerHTML = `<input type="text" id="r-nick" placeholder="Nick"><input type="email" id="r-email" placeholder="Correo"><input type="password" id="r-pass" placeholder="Pass"><button class="btn-main" onclick="handleRegister()">CREAR</button>${googleBtn}`;
-            }
-        };
 
         window.handleLogin = async () => {
             const e = document.getElementById('l-email').value;
             const p = document.getElementById('l-pass').value;
             const q = query(collection(db, "usuarios"), where("email", "==", e), where("pass", "==", p));
             const s = await getDocs(q);
-            if(s.empty) alert("Error");
+            if(s.empty) alert("Datos incorrectos");
             else { localStorage.setItem('squad_uid', s.docs[0].id); window.location.reload(); }
         };
 
-        function initRank() {
-            onSnapshot(query(collection(db, "usuarios"), orderBy("puntos", "desc"), limit(10)), s => {
-                const l = document.getElementById('rank-list'); l.innerHTML = "";
-                s.forEach(d => {
-                    const u = d.data();
-                    l.innerHTML += `<div class="rank-item"><b>${u.nick}</b> <span>${u.puntos} PTS</span></div>`;
+        window.handleRegister = async () => {
+            const n = document.getElementById('r-nick').value;
+            const e = document.getElementById('r-email').value;
+            const p = document.getElementById('r-pass').value;
+            const w = document.getElementById('r-wa').value;
+            if(!n || !e || !p) return alert("Completa los campos");
+            const uid = "USR-" + Date.now();
+            await setDoc(doc(db, "usuarios", uid), { uid, email: e, pass: p, nick: n, whatsapp: w, puntos: 0, avatar: AVATARES[0] });
+            localStorage.setItem('squad_uid', uid); window.location.reload();
+        };
+
+        // --- NÚCLEO DE LA APP ---
+        function loadApp(uid) {
+            onSnapshot(doc(db, "usuarios", uid), d => {
+                if(!d.exists()) { logout(); return; }
+                currentUser = d.data();
+                updateUI();
+                document.getElementById('splash').style.display='none';
+                document.getElementById('auth-screen').style.display='none';
+                document.getElementById('app').style.display='block';
+            });
+            onSnapshot(doc(db, "config", "global"), d => { if(d.exists()) document.documentElement.style.setProperty('--neon', d.data().colorNeon); });
+            initFeed(); initRank();
+        }
+
+        function updateUI() {
+            document.getElementById('nav-pts').innerText = currentUser.puntos;
+            document.getElementById('nav-img').src = currentUser.avatar;
+            document.getElementById('p-img').src = currentUser.avatar;
+            document.getElementById('p-nick').innerHTML = currentUser.nick + (currentUser.verificado ? ' <span style="color:var(--neon)">✔️</span>' : '');
+            
+            // Llenar ajustes automáticamente
+            const iNick = document.getElementById('edit-nick');
+            const iWa = document.getElementById('edit-wa');
+            if(!iNick.matches(':focus')) iNick.value = currentUser.nick || "";
+            if(!iWa.matches(':focus')) iWa.value = currentUser.whatsapp || "";
+
+            // Progreso
+            const p = currentUser.puntos;
+            const pct = Math.min((p / 500) * 100, 100);
+            document.getElementById('p-bar').style.width = pct + "%";
+            document.getElementById('p-nivel').innerText = p >= 500 ? "OPERATIVO ELITE" : "RECLUTA";
+
+            // Avatares
+            const sel = document.getElementById('avatar-selector'); sel.innerHTML = "";
+            AVATARES.forEach(url => {
+                const img = document.createElement('img'); img.src = url;
+                img.className = `avatar-opt ${currentUser.avatar === url ? 'selected' : ''}`;
+                img.onclick = () => updateDoc(doc(db, "usuarios", currentUser.uid), { avatar: url });
+                sel.appendChild(img);
+            });
+        }
+
+        window.saveSettings = async () => {
+            const nick = document.getElementById('edit-nick').value;
+            const wa = document.getElementById('edit-wa').value;
+            await updateDoc(doc(db, "usuarios", currentUser.uid), { nick, whatsapp: wa });
+            alert("Perfil actualizado!");
+        };
+
+        function initFeed() {
+            onSnapshot(collection(db, "torneos"), snap => {
+                const list = document.getElementById('feed-list'); list.innerHTML = "";
+                snap.forEach(ds => {
+                    const t = ds.data(); if(t.estado !== 'activo') return;
+                    const ya = (t.jugadores || []).some(j => j.uid === currentUser.uid);
+                    list.innerHTML += `
+                        <div class="post">
+                            <h4 style="margin:0; font-family:'Orbitron';">${t.nombre}</h4>
+                            <p style="font-size:0.8rem; color:#666;">${t.desc}</p>
+                            <button class="btn-action ${ya ? 'state-inscrito' : 'state-unirme'}" onclick="handleJoin('${ds.id}', ${ya})">
+                                ${ya ? '✓ YA ESTÁS DENTRO' : 'UNIRME AHORA'}
+                            </button>
+                        </div>`;
                 });
             });
         }
+
+        window.handleJoin = async (id, ya) => {
+            const ref = doc(db, "torneos", id);
+            const userObj = { uid: currentUser.uid, nick: currentUser.nick };
+            if(!ya) await updateDoc(ref, { jugadores: arrayUnion(userObj), inscritos_count: increment(1) });
+            else if(confirm("¿Quieres abandonar la misión?")) await updateDoc(ref, { jugadores: arrayRemove(userObj), inscritos_count: increment(-1) });
+        };
+
+        function initRank() {
+            onSnapshot(query(collection(db, "usuarios"), orderBy("puntos", "desc"), limit(15)), snap => {
+                const list = document.getElementById('rank-list'); list.innerHTML = "";
+                snap.forEach(d => {
+                    const u = d.data();
+                    list.innerHTML += `<div class="rank-item"><b>${u.nick}</b> <span style="margin-left:auto; color:var(--neon)">${u.puntos} PTS</span></div>`;
+                });
+            });
+        }
+
+        window.toggleAuth = () => { isLogin = !isLogin; renderForm(); };
+        window.renderForm = () => {
+            const f = document.getElementById('auth-form');
+            const gBtn = `<button class="btn-google" onclick="handleGoogleLogin()">GOOGLE LOGIN</button>`;
+            if(isLogin) f.innerHTML = `<input type="email" id="l-email" placeholder="Correo"><input type="password" id="l-pass" placeholder="Pass"><button class="btn-main" onclick="handleLogin()">ENTRAR</button>${gBtn}`;
+            else f.innerHTML = `<input type="text" id="r-nick" placeholder="Nick"><input type="number" id="r-wa" placeholder="WhatsApp"><input type="email" id="r-email" placeholder="Correo"><input type="password" id="r-pass" placeholder="Pass"><button class="btn-main" onclick="handleRegister()">CREAR CUENTA</button>${gBtn}`;
+        };
 
         window.switchTab = (id, el) => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
