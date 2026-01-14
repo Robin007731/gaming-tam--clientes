@@ -51,7 +51,6 @@
             font-weight: bold; cursor: pointer; margin-top: 10px;
         }
 
-        /* BOTÓN GOOGLE */
         .btn-google {
             width: 100%; padding: 12px; background: #fff; color: #000; 
             border: none; border-radius: 12px; font-family: 'Orbitron'; 
@@ -79,7 +78,7 @@
         .section { display: none; padding: 20px; max-width: 500px; margin: 0 auto; animation: slideUp 0.4s ease; }
         .section.active { display: block; }
 
-        /* MISIONES CARDS */
+        /* MISIONES */
         .post { background: var(--card); border-radius: 20px; margin-bottom: 20px; border: 1px solid #1f2937; overflow: hidden; }
         .post-body { padding: 20px; }
         .post-title { font-family: 'Orbitron'; font-size: 1.1rem; color: #fff; margin: 0; }
@@ -87,7 +86,7 @@
         .state-unirme { background: var(--neon); color: #000; }
         .state-inscrito { background: rgba(57, 255, 20, 0.1); color: var(--success); border: 1px solid var(--success); }
 
-        /* PERFIL & PROGRESS */
+        /* PROGRESO */
         .progress-container { background: #000; height: 10px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--neon); width: 0%; transition: 0.8s; box-shadow: 0 0 10px var(--neon); }
         .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
@@ -160,21 +159,21 @@
                 <small style="color:#444; font-family:'Orbitron'; font-size:0.55rem;">AVATARES</small>
                 <div class="avatar-grid" id="avatar-selector"></div>
 
-                <button class="btn-action" onclick="contactAdmin()" style="background:#25D366; color:#fff;">WHATSAPP SOPORTE</button>
+                <button class="btn-action" onclick="contactAdmin()" style="background:#25D366; color:#fff;">SOPORTE</button>
                 <button onclick="logout()" style="background:none; border:none; color:#444; font-family:'Orbitron'; font-size:0.6rem; cursor:pointer; margin-top:15px;">DESCONECTAR</button>
             </div>
         </div>
 
         <div id="sec-ajustes" class="section">
-            <h2 style="font-family:'Orbitron'; font-size:0.7rem; color:#555; margin-bottom:15px;">CONFIGURACIÓN DE PERFIL</h2>
+            <h2 style="font-family:'Orbitron'; font-size:0.7rem; color:#555; margin-bottom:15px;">AJUSTES DE PERFIL</h2>
             <div style="background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid #1f2937;">
                 <div class="input-box">
-                    <label>CAMBIAR NICKNAME</label>
-                    <input type="text" id="edit-nick" placeholder="Nuevo Nick">
+                    <label>TU NICKNAME</label>
+                    <input type="text" id="edit-nick">
                 </div>
                 <div class="input-box">
-                    <label>ACTUALIZAR WHATSAPP</label>
-                    <input type="number" id="edit-wa" placeholder="Nuevo número">
+                    <label>TU WHATSAPP</label>
+                    <input type="number" id="edit-wa">
                 </div>
                 <button class="btn-main" onclick="saveSettings()">GUARDAR CAMBIOS</button>
             </div>
@@ -190,7 +189,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove, increment, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove, increment, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -209,7 +208,6 @@
 
         let currentUser = null;
         let isLogin = true;
-        let confirmID = null;
 
         const AVATARES = [
             "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix", "https://api.dicebear.com/7.x/adventurer/svg?seed=Aneka",
@@ -256,22 +254,33 @@
             }
         };
 
+        // --- ARREGLO BOTÓN GOOGLE ---
         window.handleGoogleLogin = async () => {
             try {
+                provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
-                const q = query(collection(db, "usuarios"), where("email", "==", user.email));
-                const snap = await getDocs(q);
                 
-                if (snap.empty) {
-                    const uid = "USR-" + Date.now();
-                    await setDoc(doc(db, "usuarios", uid), { uid, email: user.email, nick: user.displayName.split(' ')[0], whatsapp: "", puntos: 0, avatar: user.photoURL });
-                    localStorage.setItem('squad_uid', uid);
-                } else {
-                    localStorage.setItem('squad_uid', snap.docs[0].id);
+                const userRef = doc(db, "usuarios", user.uid);
+                const userDoc = await getDoc(userRef);
+                
+                if (!userDoc.exists()) {
+                    await setDoc(userRef, {
+                        uid: user.uid,
+                        email: user.email,
+                        nick: user.displayName.split(' ')[0],
+                        whatsapp: "", 
+                        puntos: 0,
+                        avatar: user.photoURL || AVATARES[0],
+                        verificado: false
+                    });
                 }
+                localStorage.setItem('squad_uid', user.uid);
                 window.location.reload();
-            } catch (e) { alert("Error Google Login"); }
+            } catch (e) { 
+                console.error(e);
+                alert("Error de Google: Verifica que el dominio esté autorizado en Firebase."); 
+            }
         };
 
         window.handleRegister = async () => {
@@ -310,9 +319,8 @@
             document.getElementById('nav-pts').innerText = currentUser.puntos;
             document.getElementById('nav-img').src = currentUser.avatar;
             document.getElementById('p-img').src = currentUser.avatar;
-            document.getElementById('p-nick').innerText = currentUser.nick;
+            document.getElementById('p-nick').innerHTML = currentUser.nick + (currentUser.verificado ? ' <small style="color:var(--neon)">✔️</small>' : '');
             
-            // Cargar datos en los inputs de ajustes
             document.getElementById('edit-nick').value = currentUser.nick;
             document.getElementById('edit-wa').value = currentUser.whatsapp || "";
 
@@ -336,9 +344,8 @@
         window.saveSettings = async () => {
             const newNick = document.getElementById('edit-nick').value;
             const newWA = document.getElementById('edit-wa').value;
-            if(!newNick) return alert("El nick no puede estar vacío");
             await updateDoc(doc(db, "usuarios", currentUser.uid), { nick: newNick, whatsapp: newWA });
-            alert("¡Ajustes guardados!");
+            alert("Ajustes Guardados");
         };
 
         function initFeed() {
@@ -351,7 +358,7 @@
                         <div class="post"><div class="post-body">
                             <h3 class="post-title">${t.nombre}</h3>
                             <p style="color:#666; font-size:0.8rem; margin:10px 0;">${t.desc}</p>
-                            <button id="btn-${ds.id}" class="btn-action ${ya ? 'state-inscrito' : 'state-unirme'}" onclick="handleJoin('${ds.id}', ${ya})">
+                            <button class="btn-action ${ya ? 'state-inscrito' : 'state-unirme'}" onclick="handleJoin('${ds.id}', ${ya})">
                                 ${ya ? '✓ INSCRITO' : 'UNIRME'}
                             </button>
                         </div></div>`;
@@ -361,11 +368,7 @@
 
         window.handleJoin = async (id, ya) => {
             if(!ya) await updateDoc(doc(db, "torneos", id), { jugadores: arrayUnion({ uid: currentUser.uid, nick: currentUser.nick, avatar: currentUser.avatar }), inscritos_count: increment(1) });
-            else {
-                if(confirm("¿Seguro que quieres abandonar la misión?")) {
-                    await updateDoc(doc(db, "torneos", id), { jugadores: arrayRemove({ uid: currentUser.uid, nick: currentUser.nick, avatar: currentUser.avatar }), inscritos_count: increment(-1) });
-                }
-            }
+            else if(confirm("¿Quieres salir de la misión?")) await updateDoc(doc(db, "torneos", id), { jugadores: arrayRemove({ uid: currentUser.uid, nick: currentUser.nick, avatar: currentUser.avatar }), inscritos_count: increment(-1) });
         };
 
         function initRank() {
@@ -373,7 +376,7 @@
                 const list = document.getElementById('rank-list'); list.innerHTML = ""; let i = 1;
                 snap.forEach(d => {
                     const u = d.data();
-                    list.innerHTML += `<div class="rank-item"><div class="rank-pos">#${i}</div><img src="${u.avatar}" style="width:30px; height:30px; border-radius:50%;"><div style="flex:1"><b>${u.nick}</b></div><div>${u.puntos}</div></div>`;
+                    list.innerHTML += `<div class="rank-item"><div class="rank-pos">#${i}</div><img src="${u.avatar}" style="width:30px; border-radius:50%;"><div style="flex:1"><b>${u.nick}</b></div><div>${u.puntos}</div></div>`;
                     i++;
                 });
             });
@@ -385,9 +388,8 @@
             if(el) { document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
         };
 
-        window.contactAdmin = () => { window.location.href = `https://wa.me/59898324329?text=Hola, soy ${currentUser.nick}`; };
+        window.contactAdmin = () => { window.location.href = `https://wa.me/5491122334455?text=Hola, soy ${currentUser.nick}`; };
         window.logout = () => { localStorage.clear(); window.location.reload(); };
     </script>
 </body>
 </html>
-
