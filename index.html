@@ -3,75 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZONA GAMER | Master Client</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <title>ZONA GAMER | Tactical Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Orbitron:wght@700&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --bg: #030508; --card: #0d1117; --neon: #00f2ff; --text: #ffffff; 
-            --success: #39FF14; --gold: #ffcc00; --error: #ff3131; --glass: rgba(255, 255, 255, 0.03); 
+            --bg: #020406; --card: #0a0e14; --neon: #00f2ff; --text: #e0e6ed; 
+            --success: #39FF14; --gold: #ffcc00; --error: #ff3131; --glass: rgba(0, 242, 255, 0.03); 
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { 
             margin: 0; background: var(--bg); color: var(--text); 
             font-family: 'Rajdhani', sans-serif; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% -20%, rgba(0, 242, 255, 0.08), transparent);
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
 
         /* --- NOTIFICACIONES --- */
-        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; width: 90%; max-width: 400px; pointer-events: none; }
+        #toast-container { position: fixed; bottom: 100px; right: 20px; z-index: 10000; pointer-events: none; }
         .toast { 
             background: rgba(0, 0, 0, 0.9); border: 1px solid var(--neon); color: #fff;
-            padding: 12px 20px; border-radius: 12px; margin-bottom: 10px; font-family: 'Orbitron';
-            font-size: 0.65rem; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            animation: toastIn 0.4s ease forwards; backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: center;
+            padding: 12px 20px; border-radius: 4px; margin-top: 10px; font-family: 'Fira Code';
+            font-size: 0.7rem; box-shadow: 0 0 15px var(--neon);
+            animation: toastIn 0.3s ease forwards;
         }
-        @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* --- AUTH SCREEN --- */
+        /* --- ACCESO --- */
         #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 8000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: var(--card); width: 100%; max-width: 380px; padding: 40px 30px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .form-group { text-align: left; margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 0.6rem; color: var(--neon); font-family: 'Orbitron'; margin-bottom: 5px; margin-left: 5px; letter-spacing: 1px; }
-        input { width: 100%; padding: 14px; background: rgba(0,0,0,0.4); border: 1px solid #1f2937; color: #fff; border-radius: 12px; font-family: 'Rajdhani'; font-size: 1rem; transition: 0.3s; }
-        input:focus { border-color: var(--neon); background: rgba(0, 242, 255, 0.02); }
+        .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 40px; border: 1px solid var(--neon); position: relative; box-shadow: 0 0 40px rgba(0, 242, 255, 0.1); }
+        .auth-card::before { content: 'SYSTEM_AUTH'; position: absolute; top: -10px; left: 20px; background: var(--bg); color: var(--neon); padding: 0 10px; font-family: 'Orbitron'; font-size: 0.7rem; }
 
-        .btn-main { width: 100%; padding: 16px; background: var(--neon); color: #000; border: none; border-radius: 15px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; transition: 0.3s; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
-        .btn-main:active { transform: scale(0.95); }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #1a1f26; color: var(--neon); border-radius: 0; font-family: 'Fira Code'; font-size: 0.9rem; margin-bottom: 15px; }
+        input:focus { border-color: var(--neon); outline: none; box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
 
-        /* --- NAV & TABS --- */
-        nav { background: rgba(3, 5, 8, 0.85); backdrop-filter: blur(15px); padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .nav-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--neon); padding: 2px; cursor: pointer; }
+        .btn-main { width: 100%; padding: 15px; background: var(--neon); color: #000; border: none; font-family: 'Orbitron'; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%); }
+        .btn-main:hover { filter: brightness(1.2); letter-spacing: 1px; }
 
-        .tab-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 450px; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(20px); display: flex; border-radius: 20px; padding: 8px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 2000; }
-        .tab { flex: 1; text-align: center; font-family: 'Orbitron'; font-size: 0.55rem; color: #555; transition: 0.3s; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; }
-        .tab.active { color: var(--neon); text-shadow: 0 0 8px var(--neon); }
+        /* --- DASHBOARD --- */
+        nav { background: rgba(2, 4, 6, 0.9); padding: 15px 25px; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 8px var(--success); }
 
-        /* --- CONTENT SECTIONS --- */
-        .section { display: none; padding: 20px; max-width: 500px; margin: 0 auto 100px auto; animation: fadeInUp 0.4s ease forwards; }
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; border-top: 1px solid #1a1f26; padding: 5px 0; z-index: 2000; }
+        .tab { flex: 1; text-align: center; font-family: 'Orbitron'; font-size: 0.6rem; color: #444; padding: 12px; transition: 0.3s; cursor: pointer; }
+        .tab.active { color: var(--neon); background: rgba(0, 242, 255, 0.05); }
+
+        /* --- SECCIONES --- */
+        .section { display: none; padding: 20px; max-width: 600px; margin: 0 auto 80px auto; animation: scanline 0.4s ease-out; }
         .section.active { display: block; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- UI COMPONENTS --- */
-        .card-ui { background: var(--card); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; margin-bottom: 15px; }
-        
-        #chat-msgs { height: 50vh; overflow-y: auto; padding-right: 5px; }
-        .msg { font-size: 0.85rem; padding: 12px; border-radius: 15px; background: rgba(255,255,255,0.02); margin-bottom: 10px; border-left: 3px solid var(--neon); position: relative; }
-        .msg.admin { border-left-color: var(--gold); background: rgba(255, 204, 0, 0.03); }
-        .msg b { color: var(--neon); display: block; font-size: 0.7rem; margin-bottom: 4px; text-transform: uppercase; }
-        .msg.admin b { color: var(--gold); }
+        .card-ui { background: rgba(10, 14, 20, 0.8); border: 1px solid #1a1f26; padding: 20px; margin-bottom: 15px; position: relative; }
+        .card-header { font-family: 'Orbitron'; font-size: 0.65rem; color: var(--neon); border-bottom: 1px solid #1a1f26; padding-bottom: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; }
 
-        .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 15px; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
-        .rank-item:nth-child(1) { border-color: var(--gold); background: rgba(255, 204, 0, 0.05); }
-        .rank-img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid #333; }
+        /* --- ESTADÍSTICAS --- */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .stat-box { background: #000; padding: 15px; border: 1px solid #1a1f26; text-align: center; }
+        .stat-val { display: block; font-family: 'Orbitron'; font-size: 1.2rem; color: var(--success); }
+        .stat-lbl { font-size: 0.55rem; color: #555; text-transform: uppercase; }
 
-        .badge { font-size: 0.55rem; padding: 3px 8px; border-radius: 5px; font-family: 'Orbitron'; font-weight: bold; margin: 0 4px; }
-        .badge-verif { background: var(--neon); color: #000; }
-        .badge-admin { background: var(--gold); color: #000; }
+        /* --- CHAT --- */
+        #chat-msgs { height: 45vh; overflow-y: auto; font-family: 'Fira Code'; font-size: 0.8rem; }
+        .msg { margin-bottom: 12px; padding: 8px; border-left: 2px solid #1a1f26; }
+        .msg b { color: var(--neon); margin-right: 8px; font-size: 0.75rem; }
+        .msg.admin { background: rgba(255, 204, 0, 0.02); border-left-color: var(--gold); }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 10px; }
+        @keyframes scanline { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -80,89 +78,94 @@
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2 id="auth-title" style="font-family:'Orbitron'; color:var(--neon); margin:0; letter-spacing:3px;">SYSTEM ACCESS</h2>
-            <p id="auth-desc" style="font-size:0.7rem; color:#555; margin-bottom:30px; font-family:'Orbitron';">VERIFICA TU IDENTIDAD</p>
-            
-            <div id="nick-group" class="form-group" style="display:none">
-                <label>OPERATIVE NAME</label>
-                <input type="text" id="reg-nick" placeholder="Gamer Tag">
+            <h2 style="font-family:'Orbitron'; color:var(--neon); margin:0 0 10px 0;">IDENTITY_CHECK</h2>
+            <div id="nick-group" style="display:none">
+                <input type="text" id="reg-nick" placeholder="> OPERATIVE_NICK">
             </div>
-            <div class="form-group">
-                <label>ENCRYPTED EMAIL</label>
-                <input type="email" id="auth-email" placeholder="email@dominio.com">
-            </div>
-            <div class="form-group">
-                <label>ACCESS KEY</label>
-                <input type="password" id="auth-pass" placeholder="••••••••">
-            </div>
+            <input type="email" id="auth-email" placeholder="> EMAIL_ADDRESS">
+            <input type="password" id="auth-pass" placeholder="> ACCESS_KEY">
 
-            <button class="btn-main" onclick="handleAuth()" id="btn-auth">ESTABLISH LINK</button>
+            <button class="btn-main" onclick="handleAuth()" id="btn-auth">EXECUTE_LOGIN</button>
             
-            <div style="margin-top:25px; font-size:0.75rem; color:#444;">
-                <span id="switch-msg">¿Nuevo recluta?</span> 
-                <b onclick="toggleAuth()" style="color:var(--neon); cursor:pointer; text-decoration:underline;">SOLICITAR REGISTRO</b>
-            </div>
+            <p style="margin-top:20px; font-size:0.7rem; color:#444; font-family:'Fira Code';">
+                <span id="switch-msg">NOT_REGISTERED?</span> 
+                <b onclick="toggleAuth()" style="color:var(--neon); cursor:pointer;">[CREATE_ID]</b>
+            </p>
         </div>
     </div>
 
     <div id="app" style="display:none">
         <nav>
-            <div style="font-family:'Orbitron'; font-size:0.8rem; font-weight:bold; letter-spacing:1px;">ZONA <span id="n-accent" style="color:var(--neon)">GAMER</span></div>
-            <div style="display:flex; align-items:center; gap:12px;" onclick="switchTab('sec-perfil')">
+            <div style="font-family:'Orbitron'; font-size:0.8rem;">
+                <span class="status-dot"></span> <span id="n-accent">OPERATIVE_LINK</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:15px;" onclick="switchTab('sec-perfil')">
                 <div style="text-align:right">
-                    <div id="n-nick" style="font-weight:700; font-size:0.8rem; text-transform:uppercase;">---</div>
-                    <div id="n-pts" style="color:var(--success); font-size:0.65rem; font-weight:bold; font-family:'Orbitron';">0 PTS</div>
+                    <div id="n-nick" style="font-weight:700; font-size:0.75rem; font-family:'Fira Code';">---</div>
+                    <div id="n-pts" style="color:var(--neon); font-size:0.6rem; font-family:'Orbitron';">0 XP</div>
                 </div>
-                <img id="n-img" class="nav-avatar" src="">
+                <img id="n-img" style="width:35px; height:35px; border:1px solid var(--neon);" src="">
             </div>
         </nav>
 
         <div id="sec-feed" class="section active">
-            <h3 style="font-family:'Orbitron'; font-size:0.6rem; color:#444; letter-spacing:2px; margin-bottom:20px;">OPERACIONES DISPONIBLES</h3>
+            <div class="card-header">ACTIVE_MISSIONS <span id="mission-count">0</span></div>
             <div id="list-misiones"></div>
         </div>
 
         <div id="sec-chat" class="section">
-            <div class="card-ui" style="padding:15px;">
+            <div class="card-ui">
+                <div class="card-header">SECURE_CHANNEL <span>ONLINE</span></div>
                 <div id="chat-msgs"></div>
-                <div style="display:flex; gap:10px; padding-top:15px; border-top:1px solid #1f2937;">
-                    <input type="text" id="chat-in" placeholder="Transmitir mensaje..." style="margin:0; font-size:0.9rem;">
-                    <button onclick="sendChat()" style="background:var(--neon); border:none; width:50px; border-radius:12px; font-weight:bold; cursor:pointer;">></button>
+                <div style="display:flex; gap:5px; margin-top:15px;">
+                    <input type="text" id="chat-in" placeholder="Escribir comando..." style="margin:0; flex:1;">
+                    <button onclick="sendChat()" style="background:var(--neon); border:none; width:40px; cursor:pointer;">></button>
                 </div>
             </div>
         </div>
 
         <div id="sec-rank" class="section">
-            <h3 style="font-family:'Orbitron'; font-size:0.6rem; color:#444; letter-spacing:2px; margin-bottom:20px;">TOP OPERATIVOS</h3>
+            <div class="card-header">GLOBAL_LEADERBOARD <span>TOP_20</span></div>
             <div id="list-rank"></div>
         </div>
 
         <div id="sec-perfil" class="section">
-            <div style="text-align:center; background:linear-gradient(180deg, var(--card), #050608); padding:40px 20px; border-radius:30px; border:1px solid rgba(255,255,255,0.05);">
-                <img id="p-img" style="width:110px; height:110px; border-radius:50%; border:3px solid var(--neon); padding:5px; box-shadow: 0 0 20px rgba(0,242,255,0.1);" src="">
-                <h2 id="p-nick" style="font-family:'Orbitron'; margin:15px 0 5px 0; text-transform:uppercase;">---</h2>
-                <div id="p-badges" style="margin-bottom:20px;"></div>
-                
-                <div style="text-align:left; font-family:'Orbitron'; font-size:0.6rem; color:#444; margin-bottom:8px;">PROGRESO DE NIVEL</div>
-                <div style="background:#000; height:8px; border-radius:10px; overflow:hidden; border:1px solid #111;">
-                    <div id="p-bar" style="height:100%; background:var(--neon); width:0%; transition:1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67); box-shadow: 0 0 10px var(--neon);"></div>
+            <div class="card-ui">
+                <div class="card-header">OPERATIVE_DATA <span>LVL_01</span></div>
+                <div style="display:flex; gap:20px; align-items:center;">
+                    <img id="p-img" style="width:80px; height:80px; border:2px solid var(--neon);" src="">
+                    <div style="flex:1">
+                        <h2 id="p-nick" style="font-family:'Orbitron'; margin:0; color:var(--neon);">---</h2>
+                        <div id="p-badges" style="margin-top:5px;"></div>
+                    </div>
                 </div>
 
-                <div style="margin-top:40px; text-align:left;">
-                    <label style="font-size:0.6rem; color:var(--neon); font-family:'Orbitron'; margin-left:10px;">WHATSAPP LINK</label>
-                    <input type="number" id="p-wa" placeholder="Ej: 549110000000" style="margin-top:5px;">
-                    <button class="btn-main" style="padding:12px; margin-top:10px;" onclick="saveProfile()">ACTUALIZAR DATOS</button>
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <span class="stat-val" id="st-pts">0</span>
+                        <span class="stat-lbl">TOTAL_XP</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-val" style="color:var(--neon)" id="st-rank">#--</span>
+                        <span class="stat-lbl">GLOBAL_RANK</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:30px;">
+                    <label style="font-size:0.6rem; color:#555; font-family:'Orbitron';">COMM_LINK (WHATSAPP)</label>
+                    <input type="number" id="p-wa" placeholder="Format: 54911...">
+                    <button class="btn-main" onclick="saveProfile()">UPDATE_CENTRAL</button>
                 </div>
                 
-                <button onclick="logout()" style="background:none; border:none; color:#333; font-size:0.6rem; margin-top:50px; font-family:'Orbitron'; cursor:pointer; letter-spacing:1px;">TERMINAR SESIÓN [OFFLINE]</button>
+                <button onclick="logout()" style="background:none; border:none; color:var(--error); font-size:0.6rem; margin-top:40px; font-family:'Orbitron'; cursor:pointer; width:100%;">[ TERMINATE_SESSION ]</button>
             </div>
         </div>
 
         <div class="tab-bar">
-            <div class="tab active" onclick="switchTab('sec-feed', this)"><span>Feed</span></div>
-            <div class="tab" onclick="switchTab('sec-chat', this)"><span>Chat</span></div>
-            <div class="tab" onclick="switchTab('sec-rank', this)"><span>Rank</span></div>
-            <div class="tab" onclick="switchTab('sec-perfil', this)"><span>Perfil</span></div>
+            <div class="tab active" onclick="switchTab('sec-feed', this)">MISSIONS</div>
+            <div class="tab" onclick="switchTab('sec-chat', this)">CHAT</div>
+            <div class="tab" onclick="switchTab('sec-rank', this)">RANK</div>
+            <div class="tab" onclick="switchTab('sec-perfil', this)">PROFILE</div>
         </div>
     </div>
 
@@ -187,59 +190,57 @@
         let me = null;
         let isReg = false;
 
-        // --- SISTEMA DE ALERTAS ---
         window.notify = (msg) => {
             const container = document.getElementById('toast-container');
             const t = document.createElement('div');
             t.className = 'toast';
-            t.innerText = msg;
+            t.innerText = `> ${msg}`;
             container.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
+            setTimeout(() => t.remove(), 4000);
         };
 
-        // --- LÓGICA DE AUTH ---
         window.toggleAuth = () => {
             isReg = !isReg;
-            document.getElementById('auth-title').innerText = isReg ? 'REGISTRO' : 'SYSTEM ACCESS';
+            document.getElementById('auth-title').innerText = isReg ? 'REGISTRATION' : 'IDENTITY_CHECK';
             document.getElementById('nick-group').style.display = isReg ? 'block' : 'none';
-            document.getElementById('btn-auth').innerText = isReg ? 'INITIALIZE ACCOUNT' : 'ESTABLISH LINK';
+            document.getElementById('btn-auth').innerText = isReg ? 'INITIALIZE_ID' : 'EXECUTE_LOGIN';
         };
 
         window.handleAuth = async () => {
             const e = document.getElementById('auth-email').value;
             const p = document.getElementById('auth-pass').value;
             const n = document.getElementById('reg-nick').value;
-            if(!e || !p) return notify("CAMPOS REQUERIDOS");
+            if(!e || !p) return notify("DATA_REQUIRED");
             try {
                 if(isReg) {
-                    if(!n) return notify("NICK REQUERIDO");
+                    if(!n) return notify("NICK_REQUIRED");
                     const res = await createUserWithEmailAndPassword(auth, e, p);
                     await setDoc(doc(db, "usuarios", res.user.uid), {
                         uid: res.user.uid, nick: n, email: e, puntos: 0, 
                         whatsapp: "", admin: false, verificado: false,
-                        avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${n}`
+                        avatar: `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${n}`
                     });
+                    notify("ID_CREATED_SUCCESSFULLY");
                 } else { await signInWithEmailAndPassword(auth, e, p); }
-            } catch (err) { notify("ACCESO DENEGADO: " + err.code); }
+            } catch (err) { notify("ERR_CODE: " + err.code); }
         };
 
-        // --- MONITOR DE SESIÓN ---
         onAuthStateChanged(auth, user => {
             if(user) {
                 onSnapshot(doc(db, "usuarios", user.uid), d => {
                     me = d.data();
                     if(me) {
                         document.getElementById('n-nick').innerText = me.nick;
-                        document.getElementById('n-pts').innerText = me.puntos + " PTS";
+                        document.getElementById('n-pts').innerText = me.puntos + " XP";
                         document.getElementById('n-img').src = me.avatar;
                         document.getElementById('p-img').src = me.avatar;
                         document.getElementById('p-nick').innerText = me.nick;
+                        document.getElementById('st-pts').innerText = me.puntos;
                         document.getElementById('p-wa').value = me.whatsapp || "";
-                        document.getElementById('p-bar').style.width = Math.min((me.puntos/1500)*100, 100) + "%";
                         
                         let bHtml = "";
-                        if(me.verificado) bHtml += `<span class="badge badge-verif">VERIFICADO</span>`;
-                        if(me.admin) bHtml += `<span class="badge badge-admin">ADMIN</span>`;
+                        if(me.verificado) bHtml += `<span style="color:var(--neon); font-size:0.6rem; border:1px solid var(--neon); padding:2px 5px; margin-right:5px;">[VERIFIED]</span>`;
+                        if(me.admin) bHtml += `<span style="color:var(--gold); font-size:0.6rem; border:1px solid var(--gold); padding:2px 5px;">[ADMIN]</span>`;
                         document.getElementById('p-badges').innerHTML = bHtml;
 
                         document.getElementById('auth-screen').style.display = 'none';
@@ -250,7 +251,6 @@
                     if(d.exists()) {
                         const c = d.data().colorNeon;
                         document.documentElement.style.setProperty('--neon', c);
-                        document.getElementById('n-accent').style.color = c;
                     }
                 });
             } else {
@@ -259,7 +259,6 @@
             }
         });
 
-        // --- FUNCIONES CORE ---
         window.switchTab = (id, el) => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -277,7 +276,7 @@
                 let msgs = []; snap.forEach(d => msgs.unshift(d.data()));
                 msgs.forEach(m => {
                     const isAdm = m.role === 'admin';
-                    box.innerHTML += `<div class="msg ${isAdm?'admin':''}"><b>${m.nick}${isAdm?' [SYSTEM]':''}</b>${m.text}</div>`;
+                    box.innerHTML += `<div class="msg ${isAdm?'admin':''}"><b>${m.nick}:</b> ${m.text}</div>`;
                 });
                 box.scrollTop = box.scrollHeight;
             });
@@ -295,19 +294,17 @@
         function loadMisiones() {
             onSnapshot(collection(db, "torneos"), snap => {
                 const list = document.getElementById('list-misiones'); list.innerHTML = "";
+                document.getElementById('mission-count').innerText = snap.size;
                 snap.forEach(d => {
                     const m = d.data();
                     const isIn = (m.jugadores || []).some(j => j.uid === me.uid);
                     list.innerHTML += `
-                        <div class="card-ui">
-                            <h4 style="margin:0; font-family:'Orbitron'; font-size:0.75rem; color:var(--neon);">${m.nombre}</h4>
-                            <p style="font-size:0.65rem; color:#888; margin:10px 0;">${m.desc}</p>
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <small style="font-size:0.55rem; color:#444;">${m.inscritos_count || 0} OPERATIVOS</small>
-                                <button class="btn-main" style="width:auto; padding:8px 15px; font-size:0.55rem; background:${isIn?'#000':''}; color:${isIn?'var(--success)':''}" onclick="joinM('${d.id}', ${isIn})">
-                                    ${isIn ? 'VINCULADO' : 'ACEPTAR'}
-                                </button>
-                            </div>
+                        <div class="card-ui" style="border-left:4px solid ${isIn ? 'var(--success)' : 'var(--neon)'}">
+                            <div style="font-family:'Orbitron'; font-size:0.8rem; margin-bottom:5px;">${m.nombre}</div>
+                            <div style="font-size:0.65rem; color:#666; margin-bottom:15px;">${m.desc}</div>
+                            <button class="btn-main" style="padding:8px; font-size:0.6rem;" onclick="joinM('${d.id}', ${isIn})">
+                                ${isIn ? 'STATUS: ACTIVE' : 'ACCEPT_MISSION'}
+                            </button>
                         </div>`;
                 });
             });
@@ -317,7 +314,7 @@
             const r = doc(db, "torneos", id);
             if(!ya) await updateDoc(r, { jugadores: arrayUnion({uid: me.uid, nick: me.nick}), inscritos_count: increment(1) });
             else await updateDoc(r, { jugadores: arrayRemove({uid: me.uid, nick: me.nick}), inscritos_count: increment(-1) });
-            notify(ya ? "VÍNCULO ROTO" : "MISIÓN SINCRONIZADA");
+            notify(ya ? "MISSION_ABORTED" : "LINK_ESTABLISHED");
         };
 
         function loadRank() {
@@ -327,12 +324,13 @@
                 let i = 1;
                 snap.forEach(d => {
                     const u = d.data();
+                    if(u.uid === me.uid) document.getElementById('st-rank').innerText = `#${i}`;
                     list.innerHTML += `
-                        <div class="rank-item">
-                            <span style="font-family:'Orbitron'; font-size:0.7rem; width:20px; color:#444;">${i}</span>
-                            <img src="${u.avatar}" class="rank-img">
-                            <span style="flex:1; font-weight:bold; font-size:0.85rem;">${u.nick}</span>
-                            <span style="color:var(--neon); font-family:'Orbitron'; font-size:0.75rem;">${u.puntos}</span>
+                        <div style="display:flex; align-items:center; gap:15px; padding:12px; background:rgba(255,255,255,0.02); margin-bottom:5px; border-right:2px solid ${i<=3?'var(--gold)':'transparent'}">
+                            <span style="font-family:'Orbitron'; color:#444;">${i}</span>
+                            <img src="${u.avatar}" style="width:30px; border:1px solid #222;">
+                            <span style="flex:1; font-family:'Fira Code'; font-size:0.8rem;">${u.nick}</span>
+                            <span style="color:var(--neon); font-family:'Orbitron'; font-size:0.7rem;">${u.puntos} XP</span>
                         </div>`;
                     i++;
                 });
@@ -341,7 +339,7 @@
 
         window.saveProfile = async () => {
             await updateDoc(doc(db, "usuarios", me.uid), { whatsapp: document.getElementById('p-wa').value });
-            notify("NÚCLEO DE DATOS ACTUALIZADO");
+            notify("CENTRAL_DATA_SYNC_COMPLETE");
         };
 
         window.logout = () => signOut(auth).then(() => location.reload());
