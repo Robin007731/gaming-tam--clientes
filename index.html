@@ -3,87 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TOURNAMENT MASTER | GAMER NET</title>
+    <title>ZONA GAMER | OFICIAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
     <style>
-        :root { --neon: #00f2ff; --bg: #030508; --card: #0d1117; --success: #39FF14; --gold: #ffd700; --msg-bg: #1a1f26; }
-        * { box-sizing: border-box; }
+        :root { --neon: #00f2ff; --bg: #030508; --card: #0d1117; --success: #39FF14; --error: #ff3131; }
+        * { box-sizing: border-box; outline: none; }
         body { margin: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow: hidden; }
-        
+
         .screen { display: none; height: 100vh; flex-direction: column; padding: 20px; padding-bottom: 80px; overflow-y: auto; }
         .active { display: flex; }
 
-        /* Torneos */
-        .tournament-card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid #1a1f26; border-left: 5px solid var(--neon); }
-        .status-badge { font-size: 0.6rem; padding: 3px 8px; border-radius: 4px; background: #000; color: var(--success); border: 1px solid var(--success); }
-        .bracket-link { color: var(--gold); text-decoration: none; font-family: 'Orbitron'; font-size: 0.7rem; display: block; margin-top: 10px; }
+        /* Estilos de Autenticación */
+        .auth-card { background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid #1a1f26; width: 100%; max-width: 380px; text-align: center; margin: auto; }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #222; color: #fff; margin-bottom: 10px; border-radius: 8px; font-family: 'Rajdhani'; }
+        .btn { width: 100%; padding: 15px; background: var(--neon); border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; border-radius: 8px; color: #000; }
 
-        /* Chat UI */
-        #chat-container { display: flex; flex-direction: column; height: 100%; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .message { padding: 8px 12px; border-radius: 10px; max-width: 80%; font-size: 0.9rem; position: relative; }
-        .msg-others { background: var(--msg-bg); align-self: flex-start; }
-        .msg-me { background: var(--neon); color: #000; align-self: flex-end; }
-        .msg-nick { font-size: 0.6rem; opacity: 0.7; display: block; margin-bottom: 2px; }
-        .chat-input-area { display: flex; gap: 10px; padding: 10px 0; }
+        /* Tarjetas de Torneo */
+        .card-item { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #1a1f26; position: relative; }
+        .bracket-link { color: #ffd700; text-decoration: none; font-size: 0.7rem; display: block; margin-top: 10px; font-family: 'Orbitron'; border: 1px dashed #ffd700; padding: 5px; text-align: center; border-radius: 5px; }
 
-        /* Inputs & Botones */
-        input { width: 100%; padding: 12px; background: #000; border: 1px solid #222; color: #fff; border-radius: 8px; }
-        .btn { width: 100%; padding: 15px; background: var(--neon); border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; border-radius: 8px; }
-        
-        /* Navbar */
-        .navbar { position: fixed; bottom: 0; width: 100%; background: rgba(13,17,23,0.95); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid var(--neon); z-index: 100; }
-        .nav-item { color: #555; cursor: pointer; font-size: 0.6rem; font-family: 'Orbitron'; text-align: center; }
-        .nav-item.active { color: var(--neon); }
+        /* Chat System */
+        .chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; }
+        .msg { padding: 8px 12px; border-radius: 10px; max-width: 85%; font-size: 0.9rem; }
+        .msg-me { background: var(--neon); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg-others { background: #1a1f26; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg-nick { font-size: 0.6rem; font-weight: bold; display: block; margin-bottom: 2px; opacity: 0.7; }
+
+        /* Navbar Inferior */
+        .navbar { position: fixed; bottom: 0; width: 100%; background: rgba(13,17,23,0.98); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid var(--neon); z-index: 1000; }
+        .nav-btn { color: #555; cursor: pointer; font-size: 0.6rem; font-family: 'Orbitron'; text-align: center; }
+        .nav-btn.active { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
     </style>
 </head>
 <body>
 
-    <div id="scr-auth" class="screen active" style="justify-content: center; align-items: center;">
-        <div style="width:100%; max-width:350px; text-align:center;">
-            <h1 style="font-family:'Orbitron'; color:var(--neon)">GAMER_LOGIN</h1>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="pass" placeholder="Password">
-            <button class="btn" onclick="login()">INGRESAR</button>
-            <p onclick="register()" style="font-size:0.7rem; margin-top:20px; cursor:pointer; color:#666;">¿Nuevo? Regístrate aquí</p>
+    <div id="scr-auth" class="screen active" style="justify-content: center;">
+        <div class="auth-card">
+            <h1 style="font-family:'Orbitron'; color:var(--neon); margin-bottom:20px; letter-spacing: 2px;">ZONA_GAMER</h1>
+            <div id="auth-inputs">
+                <input type="email" id="email" placeholder="Email">
+                <input type="password" id="pass" placeholder="Contraseña">
+                <button class="btn" onclick="handleAuth()">INGRESAR AL SISTEMA</button>
+            </div>
+            <p id="auth-toggle" onclick="toggleReg()" style="font-size:0.7rem; margin-top:20px; cursor:pointer; color:#666;">
+                ¿Eres nuevo? <span style="color:var(--neon)">Crea tu cuenta gamer</span>
+            </p>
         </div>
     </div>
 
-    <div id="scr-list" class="screen">
-        <h2 style="font-family:'Orbitron'; color:var(--neon)">TORNEOS ACTIVOS</h2>
-        <div id="tournaments-container"></div>
+    <div id="scr-tournaments" class="screen">
+        <h2 style="font-family:'Orbitron'; border-bottom: 1px solid #1a1f26; padding-bottom: 10px; color: var(--neon);">TORNEOS_ZONA</h2>
+        <div id="tournament-list"></div>
     </div>
 
     <div id="scr-chat" class="screen">
-        <h2 style="font-family:'Orbitron'; color:var(--neon)" id="chat-title">CHAT GLOBAL</h2>
-        <div id="chat-container">
-            <div class="chat-messages" id="chat-msgs"></div>
-            <div class="chat-input-area">
-                <input type="text" id="msg-input" placeholder="Escribe un mensaje...">
-                <button onclick="sendMsg()" style="background:var(--neon); border:none; padding:10px 15px; border-radius:8px; cursor:pointer;">></button>
-            </div>
-            <button onclick="resetToGlobal()" id="back-global" style="display:none; font-size:0.6rem; color:var(--neon); background:none; border:none; cursor:pointer;">Volver al Global</button>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 id="chat-title" style="font-family:'Orbitron'; margin:0;">CHAT_GLOBAL</h2>
+            <button id="btn-back-global" onclick="setChatTarget('global')" style="display:none; background:none; border:1px solid var(--neon); color:var(--neon); font-size:0.6rem; padding:4px 8px; border-radius:4px; font-family:'Orbitron'; cursor:pointer;">VOLVER AL GLOBAL</button>
+        </div>
+        <div class="chat-box" id="chat-msgs" style="margin-top:20px;"></div>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="chat-input" placeholder="Escribe mensaje..." style="margin:0;">
+            <button onclick="sendMsg()" style="background:var(--neon); border:none; padding:0 20px; border-radius:8px; font-weight:bold; cursor:pointer;">></button>
         </div>
     </div>
 
-    <div id="scr-profile" class="screen">
-        <h2 style="font-family:'Orbitron'; text-align:center">COMUNIDAD</h2>
-        <div id="user-info-box" style="background:var(--card); padding:15px; border-radius:15px; margin-bottom:20px; text-align:center;">
-            <h3 id="p-nick" style="color:var(--neon); margin:0">---</h3>
-            <p id="p-xp" style="font-size:0.8rem">0 XP</p>
+    <div id="scr-social" class="screen">
+        <div style="text-align:center; background:var(--card); padding:20px; border-radius:20px; margin-bottom:20px; border: 1px solid var(--neon);">
+            <h2 id="my-nick" style="font-family:'Orbitron'; color:var(--neon); margin:0;">...</h2>
+            <div id="my-xp" style="color:var(--success); font-weight:bold; letter-spacing: 1px;">0 XP</div>
+            <button onclick="auth.signOut()" style="background:none; border:none; color:var(--error); font-size:0.7rem; margin-top:10px; cursor:pointer; font-family:'Orbitron'; opacity: 0.6;">[ DESCONECTAR ]</button>
         </div>
-        <h4 style="font-family:'Orbitron'; font-size:0.7rem; color:#444">JUGADORES CONECTADOS (Toca para chat privado)</h4>
-        <div id="players-list"></div>
-        <button class="btn" style="background:#ff3131; color:#fff; margin-top:20px;" onclick="auth.signOut()">SALIR</button>
+        <h4 style="font-family:'Orbitron'; font-size:0.7rem; color:#444; margin-bottom: 10px;">COMUNIDAD ONLINE</h4>
+        <div id="users-list"></div>
     </div>
 
-    <nav class="navbar" id="main-nav" style="display:none">
-        <div class="nav-item active" onclick="nav('scr-list')">TORNEOS</div>
-        <div class="nav-item" onclick="nav('scr-chat')">CHAT</div>
-        <div class="nav-item" onclick="nav('scr-profile')">SOCIAL</div>
+    <nav class="navbar" id="app-nav" style="display:none;">
+        <div class="nav-btn active" onclick="nav('scr-tournaments')">TORNEOS</div>
+        <div class="nav-btn" onclick="nav('scr-chat')">CHAT</div>
+        <div class="nav-btn" onclick="nav('scr-social')">SOCIAL</div>
     </nav>
 
     <script>
@@ -99,98 +102,114 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        let currentNick = "";
-        let chatTarget = "global"; // Controla si es global o UID del destinatario
+        let isRegistering = false;
+        let userData = null;
+        let chatTarget = "global";
 
         function nav(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             event.currentTarget.classList.add('active');
+            if(id === 'scr-chat') setTimeout(loadMessages, 100);
         }
 
-        window.login = () => {
-            const e = document.getElementById('email').value.trim();
-            const p = document.getElementById('pass').value;
-            auth.signInWithEmailAndPassword(e, p);
-        };
+        function toggleReg() {
+            isRegistering = !isRegistering;
+            document.querySelector('#scr-auth h1').innerText = isRegistering ? "NUEVO_GAMER" : "ZONA_GAMER";
+            document.querySelector('#auth-toggle').innerHTML = isRegistering ? "¿Ya eres miembro? <span style='color:var(--neon)'>Inicia Sesión</span>" : "¿Eres nuevo? <span style='color:var(--neon)'>Crea tu cuenta gamer</span>";
+        }
 
-        window.register = () => {
-            const e = document.getElementById('email').value.trim();
-            const p = document.getElementById('pass').value;
-            const nick = prompt("Tu Gamer Tag:");
-            if(!nick) return;
-            auth.createUserWithEmailAndPassword(e, p).then(res => {
-                db.collection("usuarios").doc(res.user.uid).set({ nick: nick, puntos: 0, email: e });
-            });
+        window.handleAuth = () => {
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('pass').value;
+            if(!email || !pass) return alert("Completa los datos de acceso");
+
+            if(isRegistering) {
+                const nick = prompt("Ingresa tu GamerTag (Nick):");
+                if(!nick) return;
+                auth.createUserWithEmailAndPassword(email, pass).then(res => {
+                    db.collection("usuarios").doc(res.user.uid).set({ nick: nick, puntos: 0, email: email });
+                }).catch(e => alert("Error: " + e.message));
+            } else {
+                auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Datos incorrectos"));
+            }
         };
 
         auth.onAuthStateChanged(user => {
             if(user) {
                 document.getElementById('scr-auth').classList.remove('active');
-                document.getElementById('main-nav').style.display = 'flex';
-                nav('scr-list');
+                document.getElementById('app-nav').style.display = 'flex';
+                nav('scr-tournaments');
 
-                // Datos de usuario
                 db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
                     if(doc.exists) {
-                        currentNick = doc.data().nick;
-                        document.getElementById('p-nick').innerText = currentNick;
-                        document.getElementById('p-xp').innerText = (doc.data().puntos || 0) + " XP";
-                    }
+                        userData = doc.data();
+                        document.getElementById('my-nick').innerText = userData.nick.toUpperCase();
+                        document.getElementById('my-xp').innerText = (userData.puntos || 0) + " XP";
+                    } else { auth.signOut(); }
                 });
 
-                // Lista de Jugadores para Chat Privado
-                db.collection("usuarios").limit(20).onSnapshot(snap => {
-                    const list = document.getElementById('players-list');
-                    list.innerHTML = "";
+                db.collection("usuarios").limit(30).onSnapshot(snap => {
+                    const box = document.getElementById('users-list');
+                    box.innerHTML = "";
                     snap.forEach(doc => {
                         if(doc.id !== user.uid) {
-                            list.innerHTML += `<div onclick="startPrivateChat('${doc.id}', '${doc.data().nick}')" style="background:var(--card); padding:10px; border-radius:8px; margin-bottom:5px; cursor:pointer; font-size:0.8rem;">🟢 ${doc.data().nick}</div>`;
+                            box.innerHTML += `<div class="card-item" onclick="setChatTarget('${doc.id}', '${doc.data().nick}')" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                                <span>🟢 ${doc.data().nick}</span>
+                                <span style="font-size:0.6rem; color:var(--neon)">CHAT PRIVADO ></span>
+                            </div>`;
                         }
                     });
                 });
 
-                // Torneos
                 db.collection("torneos").onSnapshot(snap => {
-                    const cont = document.getElementById('tournaments-container');
-                    cont.innerHTML = "";
-                    snap.forEach(doc => {
+                    const box = document.getElementById('tournament-list');
+                    box.innerHTML = "";
+                     snap.forEach(doc => {
                         const t = doc.data();
                         const isJoined = t.jugadores && t.jugadores.includes(user.uid);
-                        cont.innerHTML += `<div class="tournament-card">
-                            <span class="status-badge">ACTIVO</span>
-                            <h3>${t.nombre}</h3>
-                            <button class="btn" style="background:${isJoined ? '#222' : 'var(--neon)'}" onclick="joinT('${doc.id}', ${isJoined})">${isJoined ? 'INSCRITO' : 'UNIRSE'}</button>
-                        </div>`;
+                        box.innerHTML += `
+                            <div class="card-item">
+                                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--success); font-family:'Orbitron';">
+                                    <span>TORNEO_ACTIVO</span> <span>${t.inscritos_count || 0}/${t.capacidad} JUGADORES</span>
+                                </div>
+                                <h3 style="font-family:'Orbitron'; margin:10px 0; color:var(--neon)">${t.nombre}</h3>
+                                <p style="font-size:0.8rem; color:#777; margin-bottom:10px;">${t.desc}</p>
+                                ${t.bracket_url ? `<a href="${t.bracket_url}" target="_blank" class="bracket-link">📊 VER ENFRENTAMIENTOS (BRACKETS)</a>` : ''}
+                                <button class="btn" style="margin-top:10px; background:${isJoined ? '#111' : 'var(--neon)'}; color:${isJoined ? '#444' : '#000'}" 
+                                        onclick="joinT('${doc.id}', ${isJoined})" ${isJoined ? 'disabled' : ''}>
+                                    ${isJoined ? 'ESTÁS INSCRITO' : 'UNIRSE AL TORNEO'}
+                                </button>
+                            </div>`;
                     });
                 });
 
-                // Escuchar Mensajes (Carga dinámica según chatTarget)
-                loadMessages();
-
             } else {
-                document.getElementById('main-nav').style.display = 'none';
-                nav('scr-auth');
+                document.getElementById('app-nav').style.display = 'none';
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('scr-auth').classList.add('active');
             }
         });
 
-        // --- LÓGICA DE CHAT ---
-        window.loadMessages = () => {
+        function setChatTarget(target, nick = "GLOBAL") {
+            chatTarget = target;
+            document.getElementById('chat-title').innerText = target === 'global' ? "CHAT_GLOBAL" : "MENSAJE: " + nick;
+            document.getElementById('btn-back-global').style.display = target === 'global' ? 'none' : 'block';
+            if(target !== 'global') nav('scr-chat');
+            loadMessages();
+        }
+
+        function loadMessages() {
             const user = auth.currentUser;
             if(!user) return;
-
             let query = db.collection("chats");
-            
+
             if(chatTarget === "global") {
                 query = query.where("tipo", "==", "global");
-                document.getElementById('chat-title').innerText = "CHAT GLOBAL";
-                document.getElementById('back-global').style.display = "none";
             } else {
-                // Chat privado: Mensajes donde yo envío o recibo del target
                 const chatId = [user.uid, chatTarget].sort().join("_");
                 query = query.where("chatId", "==", chatId);
-                document.getElementById('back-global').style.display = "block";
             }
 
             query.orderBy("timestamp", "asc").limitToLast(30).onSnapshot(snap => {
@@ -200,50 +219,33 @@
                     const m = doc.data();
                     const isMe = m.senderId === user.uid;
                     box.innerHTML += `
-                        <div class="message ${isMe ? 'msg-me' : 'msg-others'}">
+                        <div class="msg ${isMe ? 'msg-me' : 'msg-others'}">
                             <span class="msg-nick">${m.senderNick}</span>
                             ${m.texto}
                         </div>`;
                 });
                 box.scrollTop = box.scrollHeight;
             });
-        };
+        }
 
         window.sendMsg = () => {
-            const input = document.getElementById('msg-input');
-            const texto = input.value.trim();
-            if(!texto) return;
-
+            const txt = document.getElementById('chat-input').value.trim();
+            if(!txt || !userData) return;
             const user = auth.currentUser;
-            const msgData = {
-                texto: texto,
-                senderId: user.uid,
-                senderNick: currentNick,
+            const data = {
+                texto: txt, senderId: user.uid, senderNick: userData.nick,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             if(chatTarget === "global") {
-                msgData.tipo = "global";
+                data.tipo = "global";
             } else {
-                msgData.tipo = "privado";
-                msgData.chatId = [user.uid, chatTarget].sort().join("_");
-                msgData.recipienteId = chatTarget;
+                data.tipo = "privado";
+                data.chatId = [user.uid, chatTarget].sort().join("_");
             }
 
-            db.collection("chats").add(msgData);
-            input.value = "";
-        };
-
-        window.startPrivateChat = (uid, nick) => {
-            chatTarget = uid;
-            document.getElementById('chat-title').innerText = "CHAT: " + nick;
-            nav('scr-chat');
-            loadMessages();
-        };
-
-        window.resetToGlobal = () => {
-            chatTarget = "global";
-            loadMessages();
+            db.collection("chats").add(data);
+            document.getElementById('chat-input').value = "";
         };
 
         window.joinT = (id, joined) => {
@@ -251,8 +253,9 @@
             db.collection("torneos").doc(id).update({
                 jugadores: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.uid),
                 inscritos_count: firebase.firestore.FieldValue.increment(1)
-            });
+            }).then(() => alert("¡Inscripción confirmada en ZONA GAMER!"));
         };
+
     </script>
 </body>
 </html>
