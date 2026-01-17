@@ -21,15 +21,16 @@
         /* Estilos de Autenticación */
         .auth-card { background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid #1a1f26; width: 100%; max-width: 380px; text-align: center; margin: auto; }
         input { width: 100%; padding: 12px; background: #000; border: 1px solid #222; color: #fff; margin-bottom: 10px; border-radius: 8px; font-family: 'Rajdhani'; }
-        .btn { width: 100%; padding: 15px; background: var(--neon); border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; border-radius: 8px; color: #000; }
+        .btn { width: 100%; padding: 15px; background: var(--neon); border: none; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; border-radius: 8px; color: #000; transition: 0.3s; }
+        .btn:disabled { background: #222; color: #555; cursor: not-allowed; }
 
         /* Tarjetas de Torneo */
         .card-item { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #1a1f26; position: relative; }
         .bracket-link { color: #ffd700; text-decoration: none; font-size: 0.7rem; display: block; margin-top: 10px; font-family: 'Orbitron'; border: 1px dashed #ffd700; padding: 5px; text-align: center; border-radius: 5px; }
 
         /* Chat System */
-        .chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; }
-        .msg { padding: 8px 12px; border-radius: 10px; max-width: 85%; font-size: 0.9rem; }
+        .chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; margin-bottom: 10px; border-radius: 8px; }
+        .msg { padding: 8px 12px; border-radius: 10px; max-width: 85%; font-size: 0.9rem; word-wrap: break-word; }
         .msg-me { background: var(--neon); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
         .msg-others { background: #1a1f26; align-self: flex-start; border-bottom-left-radius: 2px; }
         .msg-nick { font-size: 0.6rem; font-weight: bold; display: block; margin-bottom: 2px; opacity: 0.7; }
@@ -44,7 +45,7 @@
 
     <div id="scr-auth" class="screen active" style="justify-content: center;">
         <div class="auth-card">
-            <h1 style="font-family:'Orbitron'; color:var(--neon); margin-bottom:20px; letter-spacing: 2px;">ZONA_GAMER</h1>
+            <h1 id="auth-title" style="font-family:'Orbitron'; color:var(--neon); margin-bottom:20px; letter-spacing: 2px;">ZONA_GAMER</h1>
             <div id="auth-inputs">
                 <input type="email" id="email" placeholder="Email">
                 <input type="password" id="pass" placeholder="Contraseña">
@@ -68,7 +69,7 @@
         </div>
         <div class="chat-box" id="chat-msgs" style="margin-top:20px;"></div>
         <div style="display:flex; gap:10px;">
-            <input type="text" id="chat-input" placeholder="Escribe mensaje..." style="margin:0;">
+            <input type="text" id="chat-input" placeholder="Escribe mensaje..." style="margin:0;" onkeypress="if(event.key === 'Enter') sendMsg()">
             <button onclick="sendMsg()" style="background:var(--neon); border:none; padding:0 20px; border-radius:8px; font-weight:bold; cursor:pointer;">></button>
         </div>
     </div>
@@ -84,12 +85,13 @@
     </div>
 
     <nav class="navbar" id="app-nav" style="display:none;">
-        <div class="nav-btn active" onclick="nav('scr-tournaments')">TORNEOS</div>
-        <div class="nav-btn" onclick="nav('scr-chat')">CHAT</div>
-        <div class="nav-btn" onclick="nav('scr-social')">SOCIAL</div>
+        <div class="nav-btn active" id="btn-nav-tournaments" onclick="nav('scr-tournaments')">TORNEOS</div>
+        <div class="nav-btn" id="btn-nav-chat" onclick="nav('scr-chat')">CHAT</div>
+        <div class="nav-btn" id="btn-nav-social" onclick="nav('scr-social')">SOCIAL</div>
     </nav>
 
     <script>
+        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAyGsnbyvxTEzvtgOXSmU_5Hj6gS6TOWKM",
             authDomain: "gaming-team-18b95.firebaseapp.com",
@@ -105,21 +107,31 @@
         let isRegistering = false;
         let userData = null;
         let chatTarget = "global";
+        let chatUnsubscribe = null;
 
+        // NAVEGACIÓN
         function nav(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            if(id === 'scr-chat') setTimeout(loadMessages, 100);
+            const btnId = 'btn-nav-' + id.replace('scr-', '');
+            if(document.getElementById(btnId)) document.getElementById(btnId).classList.add('active');
+            
+            if(id === 'scr-chat') {
+                setTimeout(loadMessages, 100);
+            }
         }
 
         function toggleReg() {
             isRegistering = !isRegistering;
-            document.querySelector('#scr-auth h1').innerText = isRegistering ? "NUEVO_GAMER" : "ZONA_GAMER";
-            document.querySelector('#auth-toggle').innerHTML = isRegistering ? "¿Ya eres miembro? <span style='color:var(--neon)'>Inicia Sesión</span>" : "¿Eres nuevo? <span style='color:var(--neon)'>Crea tu cuenta gamer</span>";
+            document.getElementById('auth-title').innerText = isRegistering ? "NUEVO_GAMER" : "ZONA_GAMER";
+            document.getElementById('auth-toggle').innerHTML = isRegistering ? 
+                "¿Ya eres miembro? <span style='color:var(--neon)'>Inicia Sesión</span>" : 
+                "¿Eres nuevo? <span style='color:var(--neon)'>Crea tu cuenta gamer</span>";
         }
 
+        // AUTENTICACIÓN
         window.handleAuth = () => {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('pass').value;
@@ -129,44 +141,56 @@
                 const nick = prompt("Ingresa tu GamerTag (Nick):");
                 if(!nick) return;
                 auth.createUserWithEmailAndPassword(email, pass).then(res => {
-                    db.collection("usuarios").doc(res.user.uid).set({ nick: nick, puntos: 0, email: email });
+                    return db.collection("usuarios").doc(res.user.uid).set({ 
+                        nick: nick, 
+                        puntos: 0, 
+                        email: email,
+                        id: res.user.uid 
+                    });
                 }).catch(e => alert("Error: " + e.message));
             } else {
-                auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Datos incorrectos"));
+                auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Datos incorrectos o usuario no existe"));
             }
         };
 
+        // OBSERVADOR DE ESTADO
         auth.onAuthStateChanged(user => {
             if(user) {
                 document.getElementById('scr-auth').classList.remove('active');
                 document.getElementById('app-nav').style.display = 'flex';
                 nav('scr-tournaments');
 
+                // Cargar datos usuario
                 db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
                     if(doc.exists) {
                         userData = doc.data();
                         document.getElementById('my-nick').innerText = userData.nick.toUpperCase();
                         document.getElementById('my-xp').innerText = (userData.puntos || 0) + " XP";
-                    } else { auth.signOut(); }
+                    } else if (!isRegistering) { 
+                        auth.signOut(); 
+                    }
                 });
 
+                // Cargar lista de usuarios (Social)
                 db.collection("usuarios").limit(30).onSnapshot(snap => {
                     const box = document.getElementById('users-list');
                     box.innerHTML = "";
                     snap.forEach(doc => {
                         if(doc.id !== user.uid) {
-                            box.innerHTML += `<div class="card-item" onclick="setChatTarget('${doc.id}', '${doc.data().nick}')" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-                                <span>🟢 ${doc.data().nick}</span>
-                                <span style="font-size:0.6rem; color:var(--neon)">CHAT PRIVADO ></span>
-                            </div>`;
+                            box.innerHTML += `
+                                <div class="card-item" onclick="setChatTarget('${doc.id}', '${doc.data().nick}')" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                                    <span>🟢 ${doc.data().nick}</span>
+                                    <span style="font-size:0.6rem; color:var(--neon)">CHAT PRIVADO ></span>
+                                </div>`;
                         }
                     });
                 });
 
+                // Cargar Torneos
                 db.collection("torneos").onSnapshot(snap => {
                     const box = document.getElementById('tournament-list');
                     box.innerHTML = "";
-                     snap.forEach(doc => {
+                    snap.forEach(doc => {
                         const t = doc.data();
                         const isJoined = t.jugadores && t.jugadores.includes(user.uid);
                         box.innerHTML += `
@@ -192,27 +216,29 @@
             }
         });
 
+        // CHAT LOGIC
         function setChatTarget(target, nick = "GLOBAL") {
             chatTarget = target;
             document.getElementById('chat-title').innerText = target === 'global' ? "CHAT_GLOBAL" : "MENSAJE: " + nick;
             document.getElementById('btn-back-global').style.display = target === 'global' ? 'none' : 'block';
-            if(target !== 'global') nav('scr-chat');
-            loadMessages();
+            nav('scr-chat');
         }
 
         function loadMessages() {
+            if(chatUnsubscribe) chatUnsubscribe(); // Cancelar suscripción anterior
+            
             const user = auth.currentUser;
             if(!user) return;
+            
             let query = db.collection("chats");
-
             if(chatTarget === "global") {
-                query = query.where("tipo", "==", "global");
+                query = query.where("tipo", "==", "global").orderBy("timestamp", "asc");
             } else {
                 const chatId = [user.uid, chatTarget].sort().join("_");
-                query = query.where("chatId", "==", chatId);
+                query = query.where("chatId", "==", chatId).orderBy("timestamp", "asc");
             }
 
-            query.orderBy("timestamp", "asc").limitToLast(30).onSnapshot(snap => {
+            chatUnsubscribe = query.limitToLast(30).onSnapshot(snap => {
                 const box = document.getElementById('chat-msgs');
                 box.innerHTML = "";
                 snap.forEach(doc => {
@@ -225,15 +251,24 @@
                         </div>`;
                 });
                 box.scrollTop = box.scrollHeight;
+            }, error => {
+                console.error("Error cargando mensajes: ", error);
+                if(error.code === 'failed-precondition') {
+                    console.warn("Necesitas crear un índice en Firestore para que el chat funcione.");
+                }
             });
         }
 
         window.sendMsg = () => {
-            const txt = document.getElementById('chat-input').value.trim();
+            const input = document.getElementById('chat-input');
+            const txt = input.value.trim();
             if(!txt || !userData) return;
+            
             const user = auth.currentUser;
             const data = {
-                texto: txt, senderId: user.uid, senderNick: userData.nick,
+                texto: txt, 
+                senderId: user.uid, 
+                senderNick: userData.nick,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -245,15 +280,18 @@
             }
 
             db.collection("chats").add(data);
-            document.getElementById('chat-input').value = "";
+            input.value = "";
         };
 
+        // UNIRSE A TORNEO
         window.joinT = (id, joined) => {
             if(joined) return;
+            const user = auth.currentUser;
             db.collection("torneos").doc(id).update({
-                jugadores: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.uid),
+                jugadores: firebase.firestore.FieldValue.arrayUnion(user.uid),
                 inscritos_count: firebase.firestore.FieldValue.increment(1)
-            }).then(() => alert("¡Inscripción confirmada en ZONA GAMER!"));
+            }).then(() => alert("¡Inscripción confirmada en ZONA GAMER!"))
+              .catch(e => alert("Error al inscribirse: " + e.message));
         };
 
     </script>
