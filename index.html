@@ -27,33 +27,12 @@
         .card-item { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #1a1f26; position: relative; }
         .bracket-link { color: #ffd700; text-decoration: none; font-size: 0.7rem; display: block; margin-top: 10px; font-family: 'Orbitron'; border: 1px dashed #ffd700; padding: 5px; text-align: center; border-radius: 5px; }
 
-        /* SISTEMA DE CHAT IZQUIERDA/DERECHA */
-        .chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 10px; }
-        
+        /* SISTEMA DE CHAT */
+        .chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 10px; margin-bottom: 10px; }
         .msg { padding: 10px 14px; border-radius: 15px; max-width: 75%; font-size: 0.9rem; position: relative; line-height: 1.3; }
-        
-        /* Mensajes míos (Derecha) */
-        .msg-me { 
-            background: var(--neon); 
-            color: #000; 
-            align-self: flex-end; 
-            border-bottom-right-radius: 2px;
-            text-align: right;
-        }
-        
-        /* Mensajes de otros (Izquierda) */
-        .msg-others { 
-            background: #1a1f26; 
-            color: #fff;
-            align-self: flex-start; 
-            border-bottom-left-radius: 2px;
-            text-align: left;
-            border: 1px solid #333;
-        }
-
+        .msg-me { background: var(--neon); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; text-align: right; }
+        .msg-others { background: #1a1f26; color: #fff; align-self: flex-start; border-bottom-left-radius: 2px; text-align: left; border: 1px solid #333; }
         .msg-nick { font-size: 0.65rem; font-weight: bold; display: block; margin-bottom: 4px; opacity: 0.8; text-transform: uppercase; }
-        .msg-me .msg-nick { color: #000; }
-        .msg-others .msg-nick { color: var(--neon); }
 
         /* Navbar Inferior */
         .navbar { position: fixed; bottom: 0; width: 100%; background: rgba(13,17,23,0.98); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid var(--neon); z-index: 1000; }
@@ -87,7 +66,7 @@
             <h2 id="chat-title" style="font-family:'Orbitron'; margin:0;">CHAT_GLOBAL</h2>
             <button id="btn-back-global" onclick="setChatTarget('global')" style="display:none; background:none; border:1px solid var(--neon); color:var(--neon); font-size:0.6rem; padding:4px 8px; border-radius:4px; font-family:'Orbitron'; cursor:pointer;">VOLVER AL GLOBAL</button>
         </div>
-        <div class="chat-box" id="chat-msgs" style="margin-top:20px;"></div>
+        <div class="chat-box" id="chat-msgs"></div>
         <div style="display:flex; gap:10px;">
             <input type="text" id="chat-input" placeholder="Escribe mensaje..." style="margin:0;" onkeypress="if(event.key === 'Enter') sendMsg()">
             <button onclick="sendMsg()" style="background:var(--neon); border:none; padding:0 20px; border-radius:8px; font-weight:bold; cursor:pointer;">></button>
@@ -164,8 +143,7 @@
             if(user) {
                 document.getElementById('scr-auth').classList.remove('active');
                 document.getElementById('app-nav').style.display = 'flex';
-                nav('scr-tournaments');
-
+                
                 db.collection("usuarios").doc(user.uid).onSnapshot(doc => {
                     if(doc.exists) {
                         userData = doc.data();
@@ -174,7 +152,6 @@
                     }
                 });
 
-                // Lista Social
                 db.collection("usuarios").onSnapshot(snap => {
                     const box = document.getElementById('users-list');
                     box.innerHTML = "";
@@ -186,7 +163,6 @@
                     });
                 });
 
-                // Torneos
                 db.collection("torneos").onSnapshot(snap => {
                     const box = document.getElementById('tournament-list');
                     box.innerHTML = "";
@@ -208,6 +184,7 @@
             }
         });
 
+        // --- SISTEMA DE CHAT REPARADO ---
         function setChatTarget(target, nick = "GLOBAL") {
             chatTarget = target;
             document.getElementById('chat-title').innerText = target === 'global' ? "CHAT_GLOBAL" : "CHAT: " + nick;
@@ -218,16 +195,21 @@
         function loadMessages() {
             if(currentChatSub) currentChatSub();
             const user = auth.currentUser;
+            if(!user) return;
+
             let query = db.collection("chats");
 
             if(chatTarget === "global") {
-                query = query.where("tipo", "==", "global").orderBy("timestamp", "asc");
+                query = query.where("tipo", "==", "global");
             } else {
                 const chatId = [user.uid, chatTarget].sort().join("_");
-                query = query.where("chatId", "==", chatId).orderBy("timestamp", "asc");
+                query = query.where("chatId", "==", chatId);
             }
 
-            currentChatSub = query.limitToLast(30).onSnapshot(snap => {
+            // Ordenar por tiempo
+            query = query.orderBy("timestamp", "asc");
+
+            currentChatSub = query.limitToLast(50).onSnapshot(snap => {
                 const box = document.getElementById('chat-msgs');
                 box.innerHTML = "";
                 snap.forEach(doc => {
@@ -240,25 +222,38 @@
                         </div>`;
                 });
                 box.scrollTop = box.scrollHeight;
+            }, err => {
+                console.error("Error en Chat: Si falta un índice, haz click en el link de abajo:");
+                console.log(err);
             });
         }
 
-        window.sendMsg = () => {
+        window.sendMsg = async () => {
             const input = document.getElementById('chat-input');
             const txt = input.value.trim();
             if(!txt || !userData) return;
+            
             const user = auth.currentUser;
             const data = {
-                texto: txt, senderId: user.uid, senderNick: userData.nick,
+                texto: txt, 
+                senderId: user.uid, 
+                senderNick: userData.nick,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
-            if(chatTarget === "global") data.tipo = "global";
-            else {
+
+            if(chatTarget === "global") {
+                data.tipo = "global";
+            } else {
                 data.tipo = "privado";
                 data.chatId = [user.uid, chatTarget].sort().join("_");
             }
-            db.collection("chats").add(data);
-            input.value = "";
+
+            input.value = ""; // Limpiar rápido para mejor UX
+            try {
+                await db.collection("chats").add(data);
+            } catch(e) {
+                alert("Error al enviar mensaje. Revisa la consola.");
+            }
         };
 
         window.joinT = (id, joined) => {
