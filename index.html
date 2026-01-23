@@ -7,377 +7,277 @@
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --brand: #00bac7;
-            --brand-light: #e0f7f8;
-            --bg-main: #f8fafc;
-            --card-bg: #ffffff;
-            --text-dark: #1e293b;
-            --border: #e2e8f0;
+            --neon-green: #39ff14;
+            --dark-bg: #050505;
+            --glass-bg: rgba(0, 0, 0, 0.85);
+            --border-glow: 0 0 15px rgba(57, 255, 20, 0.4);
         }
 
         body { 
-            background-color: var(--bg-main); 
-            color: var(--text-dark); 
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--dark-bg); 
+            color: #ffffff; 
+            font-family: 'Rajdhani', sans-serif;
             margin: 0; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #0a1a0a 0%, #050505 100%);
         }
 
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
 
-        /* HEADER ESTILO APP */
+        /* HEADER */
         header {
-            background: var(--card-bg);
-            border-bottom: 2px solid var(--border);
-            padding: 1rem 1.5rem;
+            background: var(--glass-bg);
+            border-bottom: 2px solid var(--neon-green);
+            padding: 1.2rem;
             position: fixed; top: 0; width: 100%; z-index: 100;
+            box-shadow: var(--border-glow);
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* TARJETAS DE TORNEO */
-        .tournament-card {
-            background: var(--card-bg);
-            border-radius: 20px;
+        /* TARJETAS NEON */
+        .neon-card {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
             padding: 1.5rem;
-            border: 2px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 2px solid var(--neon-green);
+            box-shadow: var(--border-glow);
             transition: all 0.3s ease;
         }
 
-        .tournament-card:hover {
-            border-color: var(--brand);
-            transform: translateY(-2px);
-        }
-
-        /* BOTONES */
-        .btn-nexus {
-            background: var(--brand);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 800;
+        /* BOTONES FLUOR */
+        .btn-neon {
+            background: var(--neon-green);
+            color: #000;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Orbitron';
+            font-weight: 900;
             font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
             transition: 0.3s;
             width: 100%;
-            text-align: center;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-neon:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px var(--neon-green);
+        }
+        .btn-neon:disabled {
+            background: #1a331a;
+            color: #444;
+            border: 1px solid #222;
         }
 
-        .btn-nexus:hover:not(:disabled) {
-            filter: brightness(1.1);
-            box-shadow: 0 4px 15px rgba(0, 186, 199, 0.3);
+        /* INPUTS OSCUROS */
+        input {
+            background: #111 !important;
+            border: 1px solid var(--neon-green) !important;
+            color: var(--neon-green) !important;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            margin-bottom: 1rem;
+            font-weight: bold;
         }
 
-        .btn-nexus:disabled {
-            background: #cbd5e1;
-            cursor: not-allowed;
-        }
-
-        /* NAVEGACIÓN INFERIOR (Mobile First) */
+        /* NAV INFERIOR */
         nav.bottom-nav {
-            background: var(--card-bg);
-            border-top: 2px solid var(--border);
+            background: var(--glass-bg);
+            border-top: 2px solid var(--neon-green);
             position: fixed; bottom: 0; width: 100%;
             display: flex; justify-content: space-around;
-            padding: 0.8rem 0; z-index: 100;
+            padding: 1rem 0; z-index: 100;
+            box-shadow: 0 -5px 15px rgba(57, 255, 20, 0.2);
         }
 
         .nav-item {
-            display: flex; flex-direction: column; align-items: center;
-            font-size: 0.65rem; font-weight: 800; color: #94a3b8;
-            cursor: pointer; transition: 0.3s;
+            color: #555; text-align: center; font-weight: 700; font-size: 0.7rem; cursor: pointer;
         }
+        .nav-item.active { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); }
 
-        .nav-item.active { color: var(--brand); }
-        .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; }
+        .view-section { display: none; padding: 7rem 1.5rem 8rem 1.5rem; max-width: 500px; margin: 0 auto; }
+        .view-section.active { display: block; animation: fadeIn 0.4s ease; }
 
-        /* VISTAS */
-        .view-section { display: none; padding: 6rem 1.5rem 8rem 1.5rem; max-width: 600px; margin: 0 auto; }
-        .view-section.active { display: block; animation: slideUp 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .xp-badge {
-            background: var(--brand-light);
-            color: var(--brand);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 800;
-        }
-
-        /* INPUTS LOGIN */
-        input {
-            background: #f1f5f9;
-            border: 2px solid transparent;
-            padding: 14px;
-            border-radius: 12px;
-            width: 100%;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-        input:focus {
-            border-color: var(--brand);
-            background: white;
-            outline: none;
-        }
-
-        #loader {
-            position: fixed; inset: 0; background: white; z-index: 9999;
-            display: flex; align-items: center; justify-content: center;
+        .stat-box {
+            border: 1px solid rgba(57, 255, 20, 0.3);
+            background: rgba(255,255,255,0.02);
+            padding: 1rem; border-radius: 12px;
         }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="w-10 h-10 border-4 border-[var(--brand)] border-t-transparent rounded-full animate-spin"></div>
-    </div>
-
-    <div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-6 bg-slate-50">
-        <div class="w-full max-w-sm">
-            <div class="text-center mb-10">
-                <div class="inline-block p-4 bg-[var(--brand)] text-white rounded-2xl font-black font-orbitron text-2xl mb-4">AR</div>
-                <h2 class="font-orbitron text-xl font-black">NEXUS_CLIENT</h2>
-                <p class="text-slate-400 text-sm font-semibold">Ingresa a la arena de combate</p>
-            </div>
-
-            <form id="auth-form" class="bg-white p-8 rounded-[2rem] shadow-xl border-2 border-slate-100">
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-6">
+        <div class="w-full max-w-sm neon-card">
+            <h2 class="font-orbitron text-2xl font-black text-center mb-6 text-[var(--neon-green)] italic">ARENA_NEON</h2>
+            <form id="auth-form">
                 <div id="reg-fields" class="hidden">
-                    <input type="text" id="user-nick" placeholder="NICKNAME (EJ: NINJA)">
+                    <input type="text" id="user-nick" placeholder="APODO DE COMBATE">
                 </div>
-                <input type="email" id="user-email" placeholder="CORREO ELECTRÓNICO" required>
-                <input type="password" id="user-pass" placeholder="CONTRASEÑA" required>
-                <button type="submit" id="btn-auth-main" class="btn-nexus mt-2">ENTRAR</button>
+                <input type="email" id="user-email" placeholder="EMAIL" required>
+                <input type="password" id="user-pass" placeholder="PASSWORD" required>
+                <button type="submit" id="btn-auth" class="btn-neon">ACCEDER</button>
             </form>
-            
-            <button onclick="toggleAuth()" id="auth-toggle-btn" class="w-full text-center mt-6 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                ¿Eres nuevo? Crea tu cuenta
-            </button>
+            <p onclick="toggleAuth()" id="toggle-text" class="text-center mt-6 text-[10px] text-zinc-500 uppercase font-bold cursor-pointer">¿Nuevo? Regístrate aquí</p>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
         <header>
-            <div class="font-orbitron font-black text-sm tracking-tighter italic">ARENA<span class="text-[var(--brand)]">NEON</span></div>
-            <div class="flex items-center gap-3">
-                <div id="display-xp" class="xp-badge">0 XP</div>
-                <button onclick="logout()" class="text-xs font-black text-slate-300">SALIR</button>
-            </div>
+            <div class="font-orbitron font-black text-[var(--neon-green)] italic tracking-tighter">ARENA<span class="text-white">NEON</span></div>
+            <div id="top-xp" class="text-[var(--neon-green)] font-bold font-orbitron text-xs">0 XP</div>
         </header>
 
-        <section id="view-home" class="view-section active text-center">
-            <div class="mb-8">
-                <div class="w-24 h-24 bg-slate-200 rounded-full mx-auto mb-4 border-4 border-white shadow-lg flex items-center justify-center text-3xl">👤</div>
-                <h2 id="player-name" class="font-orbitron text-2xl font-black uppercase tracking-tighter">---</h2>
-                <p class="text-slate-400 font-bold text-xs uppercase tracking-widest">Rango: Recluta</p>
+        <section id="view-home" class="view-section active">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 rounded-full border-2 border-[var(--neon-green)] mx-auto mb-4 flex items-center justify-center shadow-[0_0_15px_var(--neon-green)]">
+                    <span class="text-3xl">🛡️</span>
+                </div>
+                <h2 id="p-name" class="font-orbitron text-2xl font-black uppercase">---</h2>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm">
-                    <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Victorias</p>
-                    <p id="player-wins" class="text-2xl font-black text-pink-500">0</p>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="stat-box text-center">
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase">Victorias</p>
+                    <p id="p-wins" class="text-xl font-orbitron text-white">0</p>
                 </div>
-                <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm">
-                    <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Global XP</p>
-                    <p id="player-xp" class="text-2xl font-black text-[var(--brand)]">0</p>
+                <div class="stat-box text-center">
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase">Puntos XP</p>
+                    <p id="p-xp" class="text-xl font-orbitron text-[var(--neon-green)]">0</p>
                 </div>
             </div>
 
-            <div class="tournament-card bg-[var(--brand)] border-none text-left">
-                <h3 class="text-white font-orbitron text-sm mb-2 uppercase">Próximo Gran Evento</h3>
-                <p class="text-cyan-100 text-xs font-bold leading-relaxed">Inscríbete en los torneos abiertos para subir en el ranking global y ganar premios.</p>
+            <div class="neon-card bg-green-900/10">
+                <p class="text-[10px] font-bold text-[var(--neon-green)] mb-1">ESTADO DEL SISTEMA</p>
+                <p class="text-xs text-zinc-400 leading-relaxed">Bienvenido a la red. Inscríbete en los torneos disponibles para escalar en el ranking global.</p>
             </div>
         </section>
 
         <section id="view-torneos" class="view-section">
-            <h3 class="font-orbitron text-xs mb-6 uppercase tracking-widest text-slate-400">Arenas Disponibles</h3>
-            <div id="tournament-container" class="space-y-4">
+            <h3 class="font-orbitron text-xs text-zinc-500 mb-6 uppercase italic">Arenas de Combate</h3>
+            <div id="t-container" class="space-y-6">
                 </div>
         </section>
 
         <section id="view-ranking" class="view-section">
-            <h3 class="font-orbitron text-xs mb-6 uppercase tracking-widest text-slate-400">Top 10 Guerreros</h3>
-            <div id="ranking-container" class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm">
+            <h3 class="font-orbitron text-xs text-zinc-500 mb-6 uppercase italic">Top Operativos</h3>
+            <div id="r-container" class="neon-card p-0 overflow-hidden">
                 </div>
         </section>
 
         <nav class="bottom-nav">
-            <div class="nav-item active" onclick="navTo('home', this)">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                INICIO
-            </div>
-            <div class="nav-item" onclick="navTo('torneos', this)">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                ARENAS
-            </div>
-            <div class="nav-item" onclick="navTo('ranking', this)">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                RANKING
-            </div>
+            <div class="nav-item active" onclick="nav('home', this)">🏠<br>HOME</div>
+            <div class="nav-item" onclick="nav('torneos', this)">⚔️<br>ARENAS</div>
+            <div class="nav-item" onclick="nav('ranking', this)">🏆<br>RANKING</div>
+            <div class="nav-item" onclick="logout()">🚫<br>SALIR</div>
         </nav>
     </div>
 
     <script>
-        // CONFIGURACIÓN SUPABASE (MISMA QUE ADMIN)
         const SB_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
         const SB_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
         const _db = supabase.createClient(SB_URL, SB_KEY);
 
-        let userSession = null;
+        let session = null;
         let isLogin = true;
 
         window.onload = async () => {
             const { data } = await _db.auth.getSession();
             if (data.session) {
-                userSession = data.session;
-                await loadPlayerProfile();
-            } else {
-                document.getElementById('auth-screen').classList.remove('hidden');
+                session = data.session;
+                loadProfile();
             }
-            document.getElementById('loader').style.display = 'none';
         };
 
         function toggleAuth() {
             isLogin = !isLogin;
             document.getElementById('reg-fields').classList.toggle('hidden', isLogin);
-            document.getElementById('btn-auth-main').innerText = isLogin ? 'ENTRAR' : 'REGISTRARME';
-            document.getElementById('auth-toggle-btn').innerText = isLogin ? '¿Eres nuevo? Crea tu cuenta' : '¿Ya tienes cuenta? Entra';
+            document.getElementById('btn-auth').innerText = isLogin ? 'ACCEDER' : 'REGISTRARME';
         }
 
-        // AUTH LOGIC
         document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
-            document.getElementById('loader').style.display = 'flex';
-            
             const email = document.getElementById('user-email').value;
             const pass = document.getElementById('user-pass').value;
 
             if (isLogin) {
                 const { error } = await _db.auth.signInWithPassword({ email, password: pass });
-                if (error) alert(error.message); else location.reload();
+                if (error) alert("Error de acceso"); else location.reload();
             } else {
                 const nick = document.getElementById('user-nick').value;
-                if(!nick) return alert("Elige un nickname");
-                
                 const { data, error } = await _db.auth.signUp({ email, password: pass });
                 if (error) return alert(error.message);
-                
-                // Crear perfil en la tabla 'perfiles' que el admin lee
-                await _db.from('perfiles').insert({ 
-                    id: data.user.id, 
-                    nombre: nick.toUpperCase(), 
-                    xp: 0, 
-                    victorias: 0 
-                });
+                await _db.from('perfiles').insert({ id: data.user.id, nombre: nick.toUpperCase(), xp: 0, victorias: 0 });
                 location.reload();
             }
         };
 
-        async function loadPlayerProfile() {
-            const { data } = await _db.from('perfiles').select('*').eq('id', userSession.user.id).single();
+        async function loadProfile() {
+            const { data } = await _db.from('perfiles').select('*').eq('id', session.user.id).single();
             if (data) {
-                document.getElementById('player-name').innerText = data.nombre;
-                document.getElementById('player-xp').innerText = data.xp;
-                document.getElementById('player-wins').innerText = data.victorias;
-                document.getElementById('display-xp').innerText = `${data.xp} XP`;
-                document.getElementById('app-content').classList.remove('hidden');
+                document.getElementById('p-name').innerText = data.nombre;
+                document.getElementById('p-xp').innerText = data.xp;
+                document.getElementById('p-wins').innerText = data.victorias;
+                document.getElementById('top-xp').innerText = data.xp + " XP";
                 document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
             }
         }
 
-        function navTo(view, el) {
+        function nav(id, el) {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('view-' + view).classList.add('active');
+            document.getElementById('view-' + id).classList.add('active');
             el.classList.add('active');
-
-            if(view === 'torneos') loadTournaments();
-            if(view === 'ranking') loadRanking();
+            if(id === 'torneos') loadTourneys();
+            if(id === 'ranking') loadRanking();
         }
 
-        // DATA: TORNEOS
-        async function loadTournaments() {
-            const { data } = await _db.from('torneos').select('*').order('created_at', {ascending: false});
-            const container = document.getElementById('tournament-container');
-            
+        async function loadTourneys() {
+            const { data } = await _db.from('torneos').select('*');
+            const container = document.getElementById('t-container');
             container.innerHTML = (data || []).map(t => {
-                const isFull = t.inscritos >= t.capacidad;
-                const progress = (t.inscritos / t.capacidad) * 100;
-                
+                const full = t.inscritos >= t.capacidad;
                 return `
-                <div class="tournament-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${t.juego}</p>
-                            <h4 class="font-orbitron text-lg font-black">${t.nombre}</h4>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-bold text-slate-400">${t.inscritos}/${t.capacidad}</span>
-                        </div>
+                <div class="neon-card">
+                    <div class="flex justify-between mb-4">
+                        <span class="text-[9px] font-bold text-[var(--neon-green)] uppercase tracking-widest">${t.juego}</span>
+                        <span class="text-xs font-bold text-white">${t.inscritos}/${t.capacidad}</span>
                     </div>
-                    
-                    <div class="w-full h-2 bg-slate-100 rounded-full mb-6 overflow-hidden">
-                        <div class="h-full bg-[var(--brand)]" style="width: ${progress}%"></div>
-                    </div>
-
-                    <button 
-                        onclick="joinTournament('${t.id}', ${t.inscritos}, ${t.capacidad})"
-                        class="btn-nexus" 
-                        ${isFull ? 'disabled' : ''}>
-                        ${isFull ? 'ARENA LLENA' : 'INSCRIBIRME GRATIS'}
+                    <h4 class="font-orbitron text-lg font-black mb-6 italic uppercase">${t.nombre}</h4>
+                    <button onclick="join('${t.id}', ${t.inscritos}, ${t.capacidad})" class="btn-neon" ${full ? 'disabled' : ''}>
+                        ${full ? 'SIN CUPOS' : 'INSCRIBIRSE'}
                     </button>
                 </div>
                 `;
             }).join('');
         }
 
-        async function joinTournament(id, current, max) {
-            if(current >= max) return;
-            
-            // Confirmación visual
-            if(!confirm("¿Deseas inscribirte a este torneo?")) return;
-
-            const { error } = await _db.from('torneos').update({ 
-                inscritos: current + 1 
-            }).eq('id', id);
-
-            if(!error) {
-                alert("¡INSCRIPCIÓN EXITOSA! Te vemos en la arena.");
-                loadTournaments();
-            }
+        async function join(id, cur, max) {
+            if(cur >= max) return;
+            const { error } = await _db.from('torneos').update({ inscritos: cur + 1 }).eq('id', id);
+            if(!error) { alert("¡INSCRIPCIÓN EXITOSA!"); loadTourneys(); }
         }
 
-        // DATA: RANKING
         async function loadRanking() {
             const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false}).limit(10);
-            const container = document.getElementById('ranking-container');
-            
+            const container = document.getElementById('r-container');
             container.innerHTML = (data || []).map((u, i) => `
-                <div class="flex items-center justify-between p-4 ${i < 9 ? 'border-b border-slate-50' : ''} ${u.id === userSession.user.id ? 'bg-cyan-50' : ''}">
-                    <div class="flex items-center gap-4">
-                        <span class="font-orbitron text-xs ${i === 0 ? 'text-yellow-500' : 'text-slate-300'}">#${i+1}</span>
-                        <div>
-                            <p class="text-sm font-black uppercase">${u.nombre}</p>
-                            <p class="text-[9px] font-bold text-slate-400 uppercase">${u.victorias} VICTORIAS</p>
-                        </div>
-                    </div>
-                    <div class="font-orbitron text-sm font-black text-[var(--brand)]">${u.xp} XP</div>
+                <div class="flex justify-between items-center p-4 border-b border-white/5 ${u.id === session.user.id ? 'bg-green-900/20' : ''}">
+                    <span class="font-orbitron text-xs text-zinc-500">#${i+1}</span>
+                    <span class="text-sm font-bold uppercase">${u.nombre}</span>
+                    <span class="text-sm font-orbitron text-[var(--neon-green)]">${u.xp} XP</span>
                 </div>
             `).join('');
         }
 
-        async function logout() {
-            await _db.auth.signOut();
-            location.reload();
-        }
+        async function logout() { await _db.auth.signOut(); location.reload(); }
     </script>
 </body>
 </html>
