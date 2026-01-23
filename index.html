@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARENA NEON | ULTIMATE EXPERIENCE</title>
+    <title>ARENA NEON | ULTIMATE CONNECT</title>
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,348 +17,242 @@
             --glass: rgba(7, 10, 15, 0.92);
         }
 
-        /* RESET & BASE */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none !important; }
-        html, body { height: 100%; width: 100%; margin: 0; padding: 0; }
-        body { 
-            background: var(--dark); 
-            color: #fff; 
-            font-family: 'Rajdhani', sans-serif; 
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-        /* --- SISTEMA DE FONDOS 4K (RESPONSIVE) --- */
-        .bg-system {
-            position: fixed; inset: 0; z-index: -2; overflow: hidden; background: #000;
-        }
+        /* FONDO DINÁMICO */
+        .bg-system { position: fixed; inset: 0; z-index: -2; background: #000; }
         .slide {
-            position: absolute; inset: 0;
-            background-size: cover; background-position: center;
-            opacity: 0; transform: scale(1.05);
-            transition: opacity 2s ease-in-out;
-            animation: kenBurns 48s linear infinite;
+            position: absolute; inset: 0; background-size: cover; background-position: center;
+            opacity: 0; animation: softFade 30s linear infinite;
         }
+        .slide:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2000'); }
+        @keyframes softFade { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.4; } }
+        .bg-overlay { position: fixed; inset: 0; z-index: -1; background: linear-gradient(to bottom, transparent, var(--dark)); }
 
-        /* Imágenes de alta resolución seleccionadas por su estética gaming */
-        .slide:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2000'); animation-delay: 0s; }
-        .slide:nth-child(2) { background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2000'); animation-delay: 8s; }
-        .slide:nth-child(3) { background-image: url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=2000'); animation-delay: 16s; }
-        .slide:nth-child(4) { background-image: url('https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=2000'); animation-delay: 24s; }
-        .slide:nth-child(5) { background-image: url('https://images.unsplash.com/photo-1614027164847-1b2809eb1895?q=80&w=2000'); animation-delay: 32s; }
-        .slide:nth-child(6) { background-image: url('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=2000'); animation-delay: 40s; }
-
-        @keyframes kenBurns {
-            0% { opacity: 0; transform: scale(1.05); }
-            10% { opacity: 0.4; }
-            20% { opacity: 0.4; }
-            30% { opacity: 0; transform: scale(1.0); }
-            100% { opacity: 0; }
-        }
-
-        .bg-overlay {
-            position: fixed; inset: 0; z-index: -1;
-            background: linear-gradient(to bottom, rgba(2,4,8,0.3) 0%, var(--dark) 95%);
-        }
-
-        /* --- COMPONENTES --- */
-        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        /* UI */
         .glass { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
         
-        .btn-action {
-            background: transparent; border: 1px solid var(--neon);
-            color: white; font-family: 'Orbitron'; font-weight: 700; font-size: 11px;
-            text-transform: uppercase; letter-spacing: 3px;
-            clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
-            transition: 0.4s; cursor: pointer; padding: 18px 45px;
-            display: inline-block;
+        .btn-cyber {
+            background: transparent; border: 1px solid var(--neon); color: white;
+            font-family: 'Orbitron'; font-weight: 700; font-size: 10px;
+            text-transform: uppercase; letter-spacing: 2px;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            transition: 0.3s; cursor: pointer; padding: 15px 30px;
         }
-        .btn-action:hover { background: var(--neon); color: black; box-shadow: 0 0 30px rgba(0, 242, 255, 0.5); transform: translateY(-3px); }
+        .btn-cyber:hover:not(:disabled) { background: var(--neon); color: black; box-shadow: 0 0 20px var(--neon); }
+        .btn-cyber:disabled { border-color: #333; color: #555; cursor: not-allowed; }
+        
+        .app-view { display: none; width: 100%; animation: fadeInUp 0.5s ease forwards; }
+        .app-view.active { display: block; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* NAVEGACIÓN */
-        .nav-link { 
-            font-size: 1.5rem; opacity: 0.4; transition: 0.3s; padding: 10px;
-        }
-        .nav-link.active { opacity: 1; color: var(--neon); filter: drop-shadow(0 0 8px var(--neon)); }
-
-        /* VISTAS */
-        .view { display: none; width: 100%; }
-        .view.active { display: block; animation: viewSlide 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-        @keyframes viewSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* LOADER */
-        #loader {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: flex; align-items: center; justify-content: center; transition: opacity 0.8s ease;
-        }
-
-        /* AVATARES */
-        .avatar-box { 
-            width: 100%; aspect-ratio: 1; border-radius: 12px; border: 2px solid transparent; 
-            opacity: 0.5; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.02);
-        }
-        .avatar-box.selected { border-color: var(--neon); opacity: 1; box-shadow: 0 0 15px var(--neon); }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 10px; }
+        #loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-    <div class="bg-system">
-        <div class="slide"></div><div class="slide"></div><div class="slide"></div>
-        <div class="slide"></div><div class="slide"></div><div class="slide"></div>
-    </div>
+    <div class="bg-system"><div class="slide"></div></div>
     <div class="bg-overlay"></div>
 
     <div id="loader">
-        <div class="flex flex-col items-center">
-            <div class="w-12 h-12 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p class="font-orbitron text-[10px] tracking-[0.5em] text-cyan-500 uppercase">Sincronizando...</p>
-        </div>
+        <div class="w-10 h-10 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div id="auth-view" class="hidden min-h-screen flex items-center justify-center p-6">
-        <div class="glass p-10 rounded-[2.5rem] w-full max-w-md border-t border-cyan-500/30">
-            <h2 class="font-orbitron text-3xl font-black text-center mb-10 tracking-tighter uppercase italic">
-                ARENA<span class="text-cyan-400">NEON</span>
-            </h2>
-            
-            <form id="form-auth" class="space-y-4">
-                <div id="register-fields" class="hidden">
-                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest text-center mb-4">Define tu Identidad</p>
-                    <div id="grid-avatars" class="grid grid-cols-5 gap-3 mb-6 p-3 bg-black/40 rounded-2xl max-h-40 overflow-y-auto"></div>
-                    <input id="input-name" type="text" placeholder="APODO" class="w-full bg-black/40 border border-white/5 p-4 rounded-xl text-white font-bold uppercase mb-4 text-center">
+    <div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-6">
+        <div class="glass p-8 rounded-[2rem] w-full max-w-md text-center">
+            <h2 class="font-orbitron text-3xl font-black mb-8 italic uppercase text-cyan-400">ARENA NEON</h2>
+            <form id="auth-form" class="space-y-4 text-left">
+                <div id="reg-extra" class="hidden space-y-4">
+                    <input id="reg-name" type="text" placeholder="APODO DE GUERRERO" class="w-full bg-black/50 p-4 rounded-xl border border-white/10">
                 </div>
-                
-                <input id="input-email" type="email" placeholder="CORREO ELECTRÓNICO" class="w-full bg-black/40 border border-white/5 p-4 rounded-xl text-white font-bold" required>
-                <input id="input-pass" type="password" placeholder="CONTRASEÑA" class="w-full bg-black/40 border border-white/5 p-4 rounded-xl text-white font-bold" required>
-                
-                <button type="submit" id="btn-submit-auth" class="w-full btn-action mt-4">Ingresar</button>
+                <input id="auth-email" type="email" placeholder="CORREO" class="w-full bg-black/50 p-4 rounded-xl border border-white/10" required>
+                <input id="auth-pass" type="password" placeholder="CONTRASEÑA" class="w-full bg-black/50 p-4 rounded-xl border border-white/10" required>
+                <button type="submit" id="auth-btn" class="w-full btn-cyber">Entrar</button>
             </form>
-            
-            <button onclick="toggleAuthMode()" id="btn-toggle-auth" class="w-full text-center mt-8 text-[10px] font-bold text-zinc-500 uppercase tracking-widest hover:text-white transition">Crear cuenta nueva</button>
+            <button onclick="toggleAuth()" class="mt-6 text-[10px] text-zinc-500 uppercase tracking-widest">¿No tienes cuenta? Regístrate</button>
         </div>
     </div>
 
-    <div id="main-app" class="hidden flex-col min-h-screen">
-        
+    <div id="app-container" class="hidden">
         <header class="fixed top-0 w-full z-50 glass p-5 flex justify-between items-center border-b border-white/5">
-            <h1 class="font-orbitron text-[9px] font-black tracking-[0.4em] text-cyan-400">ARENA_v18_FINAL</h1>
-            <button onclick="logout()" class="text-[9px] font-bold text-red-500 uppercase tracking-widest px-3 py-1 border border-red-500/20 rounded">Salir</button>
+            <h1 class="font-orbitron text-[10px] font-black text-cyan-400 tracking-widest">ARENA_v20</h1>
+            <div class="flex gap-3">
+                <button id="admin-tag" class="hidden text-[8px] bg-red-600 px-2 py-1 rounded font-bold">ADMIN</button>
+                <button onclick="logout()" class="text-[9px] font-bold text-zinc-400 uppercase">Salir</button>
+            </div>
         </header>
 
-        <main class="flex-grow pt-32 pb-32 px-6 max-w-4xl mx-auto w-full">
+        <main class="pt-24 pb-32 px-6 max-w-4xl mx-auto">
             
-            <section id="view-home" class="view active text-center">
-                <div class="flex flex-col items-center justify-center min-h-[50vh]">
-                    <div class="w-10 h-[1px] bg-cyan-500 mb-8"></div>
-                    <p class="text-cyan-400 font-bold tracking-[0.5em] text-[10px] uppercase mb-6">Operativo en línea</p>
-                    
-                    <h2 class="font-orbitron text-4xl md:text-6xl font-black italic mb-6 tracking-tighter leading-none">
-                        TU LEYENDA <br> <span class="text-cyan-400">EMPIEZA AQUÍ.</span>
-                    </h2>
-                    
-                    <p class="text-zinc-400 text-sm max-w-xs mb-12 font-medium leading-relaxed italic">
-                        Domina los ranking, vence a tus rivales y reclama tu lugar en la red.
-                    </p>
-
-                    <div class="glass py-6 px-12 rounded-[1.5rem] mb-12 border-white/5 shadow-2xl">
-                        <p id="profile-name" class="font-orbitron text-2xl text-white uppercase tracking-widest">---</p>
-                        <div id="profile-stats-home" class="flex gap-4 mt-2 justify-center">
-                            <span class="text-[9px] font-bold text-cyan-500 uppercase">Puntos: <span id="val-xp-home">0</span></span>
-                            <span class="text-[9px] font-bold text-pink-500 uppercase">Wins: <span id="val-wins-home">0</span></span>
-                        </div>
-                    </div>
-
-                    <button onclick="changeView('torneos')" class="btn-action">Explorar Arenas</button>
+            <section id="view-home" class="app-view active text-center py-10">
+                <h2 class="font-orbitron text-4xl md:text-5xl font-black italic mb-4 uppercase">
+                    TU LEYENDA <br> <span class="text-cyan-400">EMPIEZA AQUÍ.</span>
+                </h2>
+                <div class="glass p-6 rounded-2xl inline-block mb-10 border-cyan-500/20">
+                    <p id="u-name" class="font-orbitron text-xl uppercase tracking-widest text-white">---</p>
+                    <p id="u-stats" class="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-[0.2em]">XP: 0 | VICTORIAS: 0</p>
+                </div>
+                <div class="flex flex-col gap-4 max-w-xs mx-auto">
+                    <button onclick="nav('torneos')" class="btn-cyber">Ver Torneos</button>
+                    <button id="admin-btn" onclick="nav('admin')" class="hidden btn-cyber border-red-500 text-red-500">Panel Admin</button>
                 </div>
             </section>
 
-            <section id="view-torneos" class="view">
-                <h3 class="font-orbitron text-xl mb-10 uppercase italic border-l-2 border-cyan-500 pl-4 tracking-widest">Arenas de Combate</h3>
-                <div id="list-torneos" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-            </section>
-
-            <section id="view-ranking" class="view max-w-2xl mx-auto">
-                <h3 class="font-orbitron text-2xl text-center mb-12 italic tracking-[0.2em]">ELITE RANKING</h3>
-                <div id="list-ranking" class="space-y-3"></div>
-            </section>
-
-            <section id="view-perfil" class="view max-w-sm mx-auto">
-                <div class="glass p-10 rounded-[2.5rem] text-center border-t border-cyan-500/30 shadow-2xl">
-                    <img id="profile-avatar" src="" class="w-24 h-24 rounded-3xl mx-auto border-2 border-cyan-500/20 mb-6 bg-black">
-                    <h4 id="profile-name-full" class="font-orbitron text-2xl font-black uppercase tracking-widest text-white">---</h4>
-                    <p class="text-[9px] text-zinc-600 font-bold tracking-widest mt-1">OPERATIVO NIVEL 1</p>
-                    
-                    <div class="grid grid-cols-2 gap-4 mt-10">
-                        <div class="bg-black/30 p-5 rounded-2xl border border-white/5">
-                            <p class="text-[8px] text-zinc-500 uppercase font-black mb-1">Victorias</p>
-                            <p id="val-wins-full" class="text-2xl font-orbitron text-pink-500">0</p>
-                        </div>
-                        <div class="bg-black/30 p-5 rounded-2xl border border-white/5">
-                            <p class="text-[8px] text-zinc-500 uppercase font-black mb-1">Experiencia</p>
-                            <p id="val-xp-full" class="text-2xl font-orbitron text-cyan-400">0</p>
-                        </div>
+            <section id="view-torneos" class="app-view">
+                <h3 class="font-orbitron text-xl mb-8 uppercase italic border-l-2 border-cyan-500 pl-4 tracking-widest">Arenas Disponibles</h3>
+                <div id="torneos-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     </div>
+            </section>
+
+            <section id="view-admin" class="app-view">
+                <h3 class="font-orbitron text-xl mb-8 uppercase text-red-500">Gestión de Torneos</h3>
+                <div class="glass p-6 rounded-2xl mb-8">
+                    <form id="create-torneo-form" class="space-y-4">
+                        <input id="new-t-name" type="text" placeholder="NOMBRE DEL TORNEO" class="w-full bg-black/50 p-4 rounded-xl">
+                        <input id="new-t-game" type="text" placeholder="JUEGO (EJ: WARZONE)" class="w-full bg-black/50 p-4 rounded-xl">
+                        <input id="new-t-cap" type="number" placeholder="CAPACIDAD MÁX" class="w-full bg-black/50 p-4 rounded-xl">
+                        <button type="submit" class="w-full btn-cyber border-red-500 text-red-500">Publicar Arena</button>
+                    </form>
                 </div>
             </section>
         </main>
 
-        <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 glass rounded-[2rem] flex justify-around items-center p-4 w-[90%] max-w-xs border border-white/10 shadow-2xl">
-            <button onclick="changeView('home')" class="nav-link active" data-view="home">🏠</button>
-            <button onclick="changeView('torneos')" class="nav-link" data-view="torneos">⚔️</button>
-            <button onclick="changeView('ranking')" class="nav-link" data-view="ranking">🏆</button>
-            <button onclick="changeView('perfil')" class="nav-link" data-view="perfil">👤</button>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass rounded-full flex justify-around p-3 w-[85%] max-w-xs">
+            <button onclick="nav('home')" class="p-2 text-xl">🏠</button>
+            <button onclick="nav('torneos')" class="p-2 text-xl">⚔️</button>
+            <button onclick="nav('ranking')" class="p-2 text-xl">🏆</button>
         </nav>
     </div>
 
     <script>
-        // CONFIGURACIÓN SUPABASE
-        const SUPA_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
-        const SUPA_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
-        const _client = supabase.createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: true, storage: window.localStorage } });
+        const SB_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
+        const SB_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
+        const _supa = supabase.createClient(SB_URL, SB_KEY);
 
         let userSession = null;
-        let userData = null;
-        let isLoginMode = true;
-        let currentAvatar = "https://api.dicebear.com/7.x/bottts/svg?seed=neon1&backgroundColor=020408";
+        let isLogin = true;
+        const ADMIN_EMAIL = "admin@arena.com";
 
-        // INICIALIZACIÓN
         window.onload = async () => {
-            setupAvatars();
-            const { data } = await _client.auth.getSession();
+            const { data } = await _supa.auth.getSession();
             if (data.session) {
                 userSession = data.session;
-                await fetchUserData();
+                await checkAdmin();
+                await loadProfile();
             } else {
-                document.getElementById('auth-view').classList.remove('hidden');
+                document.getElementById('auth-screen').classList.remove('hidden');
             }
-            hideLoader();
+            document.getElementById('loader').style.display = 'none';
         };
 
-        function setupAvatars() {
-            const grid = document.getElementById('grid-avatars');
-            for(let i=1; i<=15; i++) {
-                const url = `https://api.dicebear.com/7.x/bottts/svg?seed=arena${i}&backgroundColor=020408`;
-                const img = document.createElement('img');
-                img.src = url; img.className = 'avatar-box';
-                if(i===1) img.classList.add('selected');
-                img.onclick = () => {
-                    document.querySelectorAll('.avatar-box').forEach(el => el.classList.remove('selected'));
-                    img.classList.add('selected');
-                    currentAvatar = url;
-                };
-                grid.appendChild(img);
+        function toggleAuth() {
+            isLogin = !isLogin;
+            document.getElementById('reg-extra').classList.toggle('hidden', isLogin);
+            document.getElementById('auth-btn').innerText = isLogin ? 'Entrar' : 'Registrar';
+        }
+
+        async function checkAdmin() {
+            if(userSession.user.email === ADMIN_EMAIL) {
+                document.getElementById('admin-tag').classList.remove('hidden');
+                document.getElementById('admin-btn').classList.remove('hidden');
             }
         }
 
-        async function fetchUserData() {
-            const { data, error } = await _client.from('perfiles').select('*').eq('id', userSession.user.id).single();
-            if (data) {
-                userData = data;
-                updateAppUI();
-                document.getElementById('auth-view').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                document.getElementById('main-app').style.display = 'flex';
-            } else {
-                logout();
-            }
-        }
-
-        function updateAppUI() {
-            document.getElementById('profile-name').innerText = userData.nombre;
-            document.getElementById('profile-name-full').innerText = userData.nombre;
-            document.getElementById('val-xp-home').innerText = userData.xp;
-            document.getElementById('val-xp-full').innerText = userData.xp;
-            document.getElementById('val-wins-home').innerText = userData.victorias;
-            document.getElementById('val-wins-full').innerText = userData.victorias;
-            document.getElementById('profile-avatar').src = userData.avatar_url;
-        }
-
-        // MANEJO DE VISTAS
-        function changeView(target) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            
-            document.getElementById('view-' + target).classList.add('active');
-            document.querySelector(`[data-view="${target}"]`).classList.add('active');
-            
-            if(target === 'torneos') loadTournamentList();
-            if(target === 'ranking') loadRankingList();
-        }
-
-        // AUTENTICACIÓN
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('register-fields').classList.toggle('hidden', isLoginMode);
-            document.getElementById('btn-submit-auth').innerText = isLoginMode ? 'Ingresar' : 'Registrar';
-            document.getElementById('btn-toggle-auth').innerText = isLoginMode ? 'Crear cuenta nueva' : '¿Ya tienes cuenta? Ingresar';
-        }
-
-        document.getElementById('form-auth').onsubmit = async (e) => {
+        // LOGIN / REGISTRO
+        document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
-            showLoader();
-            const email = document.getElementById('input-email').value;
-            const pass = document.getElementById('input-pass').value;
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
 
-            if (isLoginMode) {
-                const { error } = await _client.auth.signInWithPassword({ email, password: pass });
-                if (error) { alert("ERROR: " + error.message); hideLoader(); } 
-                else { location.reload(); }
+            if (isLogin) {
+                const { error } = await _supa.auth.signInWithPassword({ email, password: pass });
+                if (error) alert(error.message); else location.reload();
             } else {
-                const name = document.getElementById('input-name').value;
-                if(!name) { alert("Ingresa un apodo."); hideLoader(); return; }
-                
-                const { data, error } = await _client.auth.signUp({ email, password: pass });
-                if (error) { alert(error.message); hideLoader(); return; }
-                
-                await _client.from('perfiles').insert({ 
-                    id: data.user.id, 
-                    nombre: name.toUpperCase(), 
-                    avatar_url: currentAvatar,
-                    xp: 0, victorias: 0 
-                });
+                const name = document.getElementById('reg-name').value;
+                const { data, error } = await _supa.auth.signUp({ email, password: pass });
+                if (error) return alert(error.message);
+                await _supa.from('perfiles').insert({ id: data.user.id, nombre: name.toUpperCase(), xp: 0, victorias: 0 });
                 location.reload();
             }
         };
 
-        // DATOS DINÁMICOS
-        async function loadTournamentList() {
-            const { data } = await _client.from('torneos').select('*').order('created_at', {ascending: false});
-            const list = document.getElementById('list-torneos');
-            list.innerHTML = (data || []).map(t => `
-                <div class="glass p-7 rounded-3xl border-l-2 border-cyan-500 hover:border-white transition-all">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-[8px] font-black text-zinc-500 tracking-[0.2em] uppercase">${t.juego}</span>
-                        <span class="text-[9px] font-bold text-cyan-400">${t.inscritos}/${t.capacidad}</span>
-                    </div>
-                    <h4 class="font-orbitron text-lg font-black uppercase text-white mb-6">${t.nombre}</h4>
-                    <button class="btn-action !py-3 !px-2 w-full text-[9px]">Participar</button>
-                </div>
-            `).join('');
+        async function loadProfile() {
+            const { data } = await _supa.from('perfiles').select('*').eq('id', userSession.user.id).single();
+            if (data) {
+                document.getElementById('u-name').innerText = data.nombre;
+                document.getElementById('u-stats').innerText = `XP: ${data.xp} | VICTORIAS: ${data.victorias}`;
+                document.getElementById('app-container').classList.remove('hidden');
+            }
         }
 
-        async function loadRankingList() {
-            const { data } = await _client.from('perfiles').select('*').order('xp', {ascending: false}).limit(10);
-            const list = document.getElementById('list-ranking');
-            list.innerHTML = (data || []).map((u, i) => `
-                <div class="glass p-5 rounded-2xl flex items-center justify-between border border-white/5">
-                    <div class="flex items-center gap-5">
-                        <span class="text-[10px] font-black ${i < 3 ? 'text-cyan-400' : 'text-zinc-700'}">#${(i+1).toString().padStart(2, '0')}</span>
-                        <img src="${u.avatar_url}" class="w-10 h-10 rounded-xl bg-black border border-white/5">
-                        <span class="font-bold text-[11px] uppercase tracking-widest">${u.nombre}</span>
-                    </div>
-                    <span class="font-orbitron text-xs font-black text-cyan-400">${u.xp} XP</span>
-                </div>
-            `).join('');
+        function nav(id) {
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + id).classList.add('active');
+            if(id === 'torneos') loadTorneos();
         }
 
-        function showLoader() { document.getElementById('loader').style.display = 'flex'; document.getElementById('loader').style.opacity = '1'; }
-        function hideLoader() { document.getElementById('loader').style.opacity = '0'; setTimeout(() => document.getElementById('loader').style.display = 'none', 800); }
-        async function logout() { await _client.auth.signOut(); location.reload(); }
+        // --- SISTEMA DE INSCRIPCIÓN ---
+        async function loadTorneos() {
+            const { data: torneos } = await _supa.from('torneos').select('*').order('created_at', {ascending: false});
+            const list = document.getElementById('torneos-list');
+            
+            list.innerHTML = (torneos || []).map(t => {
+                const full = t.inscritos >= t.capacidad;
+                return `
+                <div class="glass p-6 rounded-2xl border-l-2 border-cyan-500">
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase mb-1">${t.juego}</p>
+                    <h4 class="font-orbitron text-lg font-black uppercase text-white mb-2">${t.nombre}</h4>
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="text-xs text-zinc-400">Cupos: ${t.inscritos}/${t.capacidad}</span>
+                        <div class="h-1 w-24 bg-zinc-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-cyan-500" style="width: ${(t.inscritos/t.capacidad)*100}%"></div>
+                        </div>
+                    </div>
+                    <button 
+                        onclick="unirseTorneo('${t.id}', ${t.inscritos}, ${t.capacidad})" 
+                        class="w-full btn-cyber" 
+                        ${full ? 'disabled' : ''}>
+                        ${full ? 'ARENA LLENA' : 'UNIRSE AHORA'}
+                    </button>
+                </div>
+            `}).join('');
+        }
+
+        async function unirseTorneo(tId, actual, max) {
+            if(actual >= max) return alert("Esta arena ya está llena.");
+            
+            // 1. Aumentar el contador en la tabla 'torneos'
+            const { error: updateError } = await _supa
+                .from('torneos')
+                .update({ inscritos: actual + 1 })
+                .eq('id', tId);
+
+            if(updateError) {
+                alert("Error al inscribirse: " + updateError.message);
+                return;
+            }
+
+            // 2. Registrar en una tabla de 'inscripciones' (Opcional, pero recomendado)
+            // Aquí simplemente mostramos éxito para esta versión
+            alert("¡INSCRIPCIÓN EXITOSA! Prepárate para el combate.");
+            loadTorneos(); // Recargar lista
+        }
+
+        // --- LÓGICA ADMIN ---
+        document.getElementById('create-torneo-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const { error } = await _supa.from('torneos').insert({
+                nombre: document.getElementById('new-t-name').value.toUpperCase(),
+                juego: document.getElementById('new-t-game').value.toUpperCase(),
+                capacidad: parseInt(document.getElementById('new-t-cap').value),
+                inscritos: 0
+            });
+            if(!error) { alert("Arena publicada."); e.target.reset(); loadTorneos(); }
+        };
+
+        async function logout() { await _supa.auth.signOut(); location.reload(); }
     </script>
 </body>
 </html>
