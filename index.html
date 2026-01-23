@@ -3,324 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARENA NEON | PHANTOM PORTAL</title>
+    <title>ARENA NEON | CLIENTE MULTIVERSE</title>
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --neon: #39ff14;
-            --neon-soft: rgba(57, 255, 20, 0.15);
+            --neon-soft: rgba(57, 255, 20, 0.2);
+            --overlay: rgba(0, 0, 0, 0.82);
         }
 
-        /* FONDO ANIMADO GAMER */
+        /* --- MOTOR DE FONDOS --- */
         body { 
-            background: #000;
-            color: #fff; 
+            background: #000; color: #fff; 
             font-family: 'Rajdhani', sans-serif;
-            margin: 0; min-height: 100vh;
-            overflow-x: hidden;
-            background: linear-gradient(45deg, #000000, #041404, #000000, #081a08);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            margin: 0; min-height: 100vh; overflow-x: hidden;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        #bg-slider {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; background-size: cover; background-position: center;
+            transition: background-image 2s ease-in-out;
+            filter: brightness(0.4) saturate(1.2);
+        }
+
+        .bg-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background: radial-gradient(circle, transparent 10%, var(--overlay) 90%);
         }
 
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
 
-        /* HEADER FLOTANTE SIN RECUADROS */
+        /* --- ELEMENTOS SIN RECUADROS --- */
         header {
-            padding: 1.5rem;
-            position: fixed; top: 0; width: 100%; z-index: 100;
+            padding: 1.5rem; position: fixed; top: 0; width: 100%; z-index: 100;
             display: flex; justify-content: space-between; align-items: center;
             background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
         }
 
-        /* SECCIONES SIN CAJAS */
         .view { 
-            display: none; 
-            padding: 7rem 1.5rem 8rem 1.5rem; 
-            max-width: 500px; 
-            margin: 0 auto; 
+            display: none; padding: 7rem 1.5rem 8rem 1.5rem; 
+            max-width: 480px; margin: 0 auto; 
         }
-        .view.active { display: block; animation: fadeIn 0.6s ease; }
+        .view.active { display: block; animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* BOTONES CYBER */
-        .btn-action {
-            background: var(--neon);
-            color: #000;
-            font-family: 'Orbitron';
-            font-weight: 900;
-            padding: 12px;
-            border-radius: 2px;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            box-shadow: 0 0 15px var(--neon-soft);
-            transition: 0.3s;
-            cursor: pointer;
-            width: 100%;
-        }
-        .btn-action:hover { box-shadow: 0 0 25px var(--neon); transform: scale(1.02); }
-
-        /* ESTILO DE LISTAS SIN BORDES */
-        .list-item {
-            background: rgba(255,255,255,0.03);
-            margin-bottom: 1rem;
-            padding: 1.2rem;
+        /* --- GLASS STYLE (FLOTANTE) --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            margin-bottom: 1.2rem; padding: 1.5rem;
             border-left: 2px solid var(--neon);
-            border-radius: 0 10px 10px 0;
-            backdrop-filter: blur(5px);
+            border-radius: 4px 16px 16px 4px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        /* INPUTS LIMPIOS */
+        .btn-gamer {
+            background: var(--neon); color: #000;
+            font-family: 'Orbitron'; font-weight: 900;
+            padding: 14px; border-radius: 4px;
+            text-transform: uppercase; font-size: 0.7rem;
+            box-shadow: 0 0 15px var(--neon-soft);
+            transition: 0.3s; width: 100%; border: none;
+        }
+        .btn-gamer:hover:not(:disabled) { box-shadow: 0 0 25px var(--neon); transform: translateY(-2px); }
+        .btn-gamer:disabled { background: #1a301a; color: #444; }
+
+        /* --- INPUTS --- */
         input, select, textarea {
-            background: rgba(255,255,255,0.05);
-            border: none;
-            border-bottom: 1px solid var(--neon-soft);
-            color: #fff;
-            padding: 10px;
-            width: 100%;
-            margin-bottom: 1rem;
-            outline: none;
+            background: rgba(0, 0, 0, 0.5);
+            border: none; border-bottom: 1px solid var(--neon-soft);
+            color: #fff; padding: 12px; width: 100%;
+            margin-bottom: 1.2rem; outline: none; transition: 0.3s;
         }
-        input:focus { border-bottom-color: var(--neon); }
+        input:focus { border-bottom-color: var(--neon); background: rgba(0, 0, 0, 0.7); }
 
-        /* AVATAR SELECTOR */
-        .avatar-circle {
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            border: 2px solid var(--neon);
-            padding: 3px;
-            box-shadow: 0 0 20px var(--neon-soft);
-        }
-
-        /* NAV INFERIOR */
-        nav {
+        /* --- NAV INFERIOR --- */
+        .nav-bottom {
             position: fixed; bottom: 0; width: 100%;
             display: flex; justify-content: space-around;
-            padding: 1.5rem 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 1.2rem 0; background: linear-gradient(to top, #000 70%, transparent);
             z-index: 100;
         }
-        .nav-btn { color: #444; font-size: 0.6rem; font-weight: 800; cursor: pointer; text-align: center; }
-        .nav-btn.active { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
+        .nav-link { color: #555; font-size: 0.6rem; font-weight: 800; cursor: pointer; text-align: center; }
+        .nav-link.active { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
+
+        .avatar-img {
+            width: 100px; height: 100px; border-radius: 50%;
+            border: 2px solid var(--neon); padding: 4px;
+            background: rgba(0,0,0,0.5); box-shadow: 0 0 20px var(--neon-soft);
+        }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-8">
+    <div id="bg-slider"></div>
+    <div class="bg-overlay"></div>
+
+    <div id="auth-view" class="min-h-screen flex items-center justify-center p-8">
         <div class="w-full max-w-sm text-center">
-            <h1 class="font-orbitron text-3xl font-black text-[var(--neon)] mb-10 tracking-widest italic">NEON_PHANTOM</h1>
-            <form id="auth-form" class="space-y-4">
-                <div id="reg-box" class="hidden">
-                    <input type="text" id="reg-nick" placeholder="CODENAME">
+            <h1 class="font-orbitron text-4xl font-black text-[var(--neon)] mb-10 tracking-tighter italic">ARENA_NEON</h1>
+            <form id="form-auth">
+                <div id="box-reg" class="hidden">
+                    <input type="text" id="in-nick" placeholder="NICKNAME_PLAYER">
                 </div>
-                <input type="email" id="auth-email" placeholder="OPERATIVE_EMAIL">
-                <input type="password" id="auth-pass" placeholder="ACCESS_CODE">
-                <button type="submit" class="btn-action">Establecer Conexión</button>
+                <input type="email" id="in-email" placeholder="EMAIL_OPERATIVO" required>
+                <input type="password" id="in-pass" placeholder="PASSWORD_KEY" required>
+                <button type="submit" id="btn-auth-txt" class="btn-gamer mt-4">INGRESAR AL SISTEMA</button>
             </form>
-            <p onclick="toggleAuth()" class="mt-8 text-[10px] text-zinc-600 font-bold uppercase cursor-pointer">Nueva Unidad? <span class="text-white">Registrar Perfil</span></p>
+            <p onclick="toggleAuth()" class="mt-8 text-[10px] text-zinc-500 font-bold uppercase cursor-pointer hover:text-white">
+                ¿Nueva Unidad? <span class="text-[var(--neon)] underline">Registrar Perfil</span>
+            </p>
         </div>
     </div>
 
-    <div id="app-content" class="hidden">
+    <div id="app-wrap" class="hidden">
         <header>
-            <div class="font-orbitron text-xs font-black tracking-widest text-[var(--neon)]">ARENA_NEON_v60</div>
-            <div id="top-xp" class="font-orbitron text-[10px] bg-white/5 px-3 py-1 rounded-full">0 XP</div>
+            <div class="font-orbitron text-xs font-black text-[var(--neon)] tracking-widest">PHANTOM_PORTAL_v70</div>
+            <div id="xp-badge" class="font-orbitron text-[10px] bg-white/5 px-3 py-1 rounded-full border border-white/10">0 XP</div>
         </header>
 
-        <section id="view-home" class="view active">
+        <section id="v-home" class="view active">
             <div class="flex flex-col items-center mb-10">
-                <div class="relative">
-                    <img id="current-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="avatar-circle mb-4" alt="Avatar">
-                    <button onclick="changeView('settings')" class="absolute bottom-4 right-0 bg-[var(--neon)] p-1 rounded-full text-black">⚙️</button>
-                </div>
-                <h2 id="p-name" class="font-orbitron text-2xl font-black uppercase">OPERATIVO</h2>
-                <div class="flex gap-4 mt-6">
+                <img id="display-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Valorant" class="avatar-img mb-4">
+                <h2 id="display-nick" class="font-orbitron text-2xl font-black uppercase tracking-tighter text-white">---</h2>
+                <div class="flex gap-10 mt-6">
                     <div class="text-center">
-                        <p class="text-[9px] text-zinc-500 font-bold">WINS</p>
-                        <p id="p-wins" class="text-xl font-orbitron">0</p>
+                        <p id="display-wins" class="text-xl font-bold">0</p>
+                        <p class="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Victorias</p>
                     </div>
-                    <div class="h-8 w-[1px] bg-zinc-800"></div>
                     <div class="text-center">
-                        <p class="text-[9px] text-zinc-500 font-bold">GLOBAL XP</p>
-                        <p id="p-xp" class="text-xl font-orbitron text-[var(--neon)]">0</p>
+                        <p id="display-xp" class="text-xl font-bold text-[var(--neon)]">0</p>
+                        <p class="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Total XP</p>
                     </div>
                 </div>
             </div>
-
-            <button onclick="changeView('arenas')" class="btn-action mb-12">Explorar Arenas Activas</button>
+            <button onclick="changeV('arenas', this)" class="btn-gamer">Buscar Partida</button>
         </section>
 
-        <section id="view-arenas" class="view">
-            <h3 class="font-orbitron text-xs text-zinc-500 mb-8 tracking-widest uppercase">Protocolos de Combate</h3>
+        <section id="v-arenas" class="view">
+            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Arenas_Activas</h3>
             <div id="arena-list"></div>
         </section>
 
-        <section id="view-ranking" class="view">
-            <h3 class="font-orbitron text-xs text-zinc-500 mb-8 tracking-widest uppercase">Unidades de Élite</h3>
-            <div id="rank-list" class="space-y-1"></div>
+        <section id="v-ranking" class="view">
+            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Top_Operativos</h3>
+            <div id="ranking-list" class="space-y-1"></div>
         </section>
 
-        <section id="view-support" class="view">
-            <h3 class="font-orbitron text-xs text-zinc-500 mb-8 tracking-widest uppercase">Enlace con Comando</h3>
-            <div class="list-item">
-                <textarea id="support-msg" rows="4" placeholder="Describe el problema o reporte..."></textarea>
-                <button onclick="sendSupport()" class="btn-action">Enviar Reporte</button>
+        <section id="v-support" class="view">
+            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Enlace_Comando</h3>
+            <div class="glass-card">
+                <p class="text-[11px] text-zinc-400 mb-4 font-medium uppercase">Envía un mensaje directo al administrador del evento:</p>
+                <textarea id="support-text" rows="4" placeholder="Escribe tu consulta o reporte aquí..."></textarea>
+                <button onclick="sendSupportMsg()" class="btn-gamer">Enviar Señal</button>
             </div>
-            <div class="mt-4 text-[10px] text-zinc-500 text-center">Tiempo estimado de respuesta: 15 min.</div>
         </section>
 
-        <section id="view-settings" class="view">
-            <h3 class="font-orbitron text-xs text-zinc-500 mb-8 tracking-widest uppercase">Modificar Perfil</h3>
-            <div class="list-item">
-                <label class="text-[10px] font-bold text-zinc-500 uppercase">Cambiar Nickname</label>
-                <input type="text" id="new-nick" placeholder="Nuevo apodo">
+        <section id="v-settings" class="view">
+            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Ajustes_Perfil</h3>
+            <div class="glass-card">
+                <label class="text-[9px] font-black text-zinc-500 uppercase block mb-2">Editar Nickname</label>
+                <input type="text" id="new-nick-in" placeholder="Nuevo apodo...">
                 
-                <label class="text-[10px] font-bold text-zinc-500 uppercase">Estilo de Avatar</label>
-                <select id="avatar-style" onchange="updateAvatarPreview()">
-                    <option value="Felix">Estilo Felix</option>
-                    <option value="Aneka">Estilo Aneka</option>
-                    <option value="Midnight">Estilo Midnight</option>
+                <label class="text-[9px] font-black text-zinc-500 uppercase block mb-2">Tema de Avatar</label>
+                <select id="new-avatar-sel" onchange="previewAvatar()">
+                    <option value="Valorant">Valorant Style</option>
+                    <option value="Minecraft">Minecraft Style</option>
+                    <option value="FreeFire">Free Fire Style</option>
+                    <option value="FIFA">FIFA Style</option>
                 </select>
                 
-                <button onclick="saveSettings()" class="btn-action mt-4">Guardar Cambios</button>
+                <button onclick="saveSettings()" class="btn-gamer mt-4">Confirmar Cambios</button>
             </div>
         </section>
 
-        <nav>
-            <div class="nav-btn active" onclick="nav('home', this)">PERFIL</div>
-            <div class="nav-btn" onclick="nav('arenas', this)">ARENAS</div>
-            <div class="nav-btn" onclick="nav('ranking', this)">TOP</div>
-            <div class="nav-btn" onclick="nav('support', this)">SOPORTE</div>
-            <div class="nav-btn" onclick="logout()">LOGOUT</div>
+        <nav class="nav-bottom">
+            <div class="nav-link active" onclick="changeV('home', this)">HOME</div>
+            <div class="nav-link" onclick="changeV('arenas', this)">ARENAS</div>
+            <div class="nav-link" onclick="changeV('ranking', this)">TOP</div>
+            <div class="nav-link" onclick="changeV('support', this)">HELP</div>
+            <div class="nav-link" onclick="changeV('settings', this)">EDIT</div>
+            <div class="nav-link" onclick="logout()">LOGOUT</div>
         </nav>
     </div>
 
     <script>
         const SB_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
         const SB_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
-        const _api = supabase.createClient(SB_URL, SB_KEY);
+        const _db = supabase.createClient(SB_URL, SB_KEY);
 
-        let user = null;
-        let isLogin = true;
+        let userSession = null;
+        let isLoginMode = true;
+
+        // SLIDER IMÁGENES
+        const gameBgs = [
+            'https://images8.alphacoders.com/107/1073860.png', // Valorant
+            'https://images7.alphacoders.com/112/1125211.jpg', // Free Fire
+            'https://images.alphacoders.com/114/1149723.jpg', // Minecraft
+            'https://images2.alphacoders.com/132/1328006.jpeg' // FIFA
+        ];
+        let bgIndex = 0;
+        function slideBg() {
+            document.getElementById('bg-slider').style.backgroundImage = `url('${gameBgs[bgIndex]}')`;
+            bgIndex = (bgIndex + 1) % gameBgs.length;
+        }
+        setInterval(slideBg, 6000);
+        slideBg();
 
         window.onload = async () => {
-            const { data: { session } } = await _api.auth.getSession();
-            if (session) {
-                user = session.user;
-                await loadUserData();
+            const { data } = await _db.auth.getSession();
+            if (data.session) {
+                userSession = data.session;
+                await fetchProfile();
             }
         };
 
         function toggleAuth() {
-            isLogin = !isLogin;
-            document.getElementById('reg-box').classList.toggle('hidden', isLogin);
+            isLoginMode = !isLoginMode;
+            document.getElementById('box-reg').classList.toggle('hidden', isLoginMode);
+            document.getElementById('btn-auth-txt').innerText = isLoginMode ? 'INGRESAR AL SISTEMA' : 'ESTABLECER CONEXIÓN';
         }
 
-        document.getElementById('auth-form').onsubmit = async (e) => {
+        document.getElementById('form-auth').onsubmit = async (e) => {
             e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            if (isLogin) {
-                const { error } = await _api.auth.signInWithPassword({ email, password: pass });
-                if (error) alert("Error de acceso"); else location.reload();
+            const email = document.getElementById('in-email').value;
+            const pass = document.getElementById('in-pass').value;
+
+            if (isLoginMode) {
+                const { error } = await _db.auth.signInWithPassword({ email, password: pass });
+                if (error) alert("Credenciales incorrectas"); else location.reload();
             } else {
-                const nick = document.getElementById('reg-nick').value;
-                const { data, error } = await _api.auth.signUp({ email, password: pass });
+                const nick = document.getElementById('in-nick').value;
+                if(!nick) return alert("Nickname requerido");
+                const { data, error } = await _db.auth.signUp({ email, password: pass });
                 if (error) return alert(error.message);
-                await _api.from('perfiles').insert({ id: data.user.id, nombre: nick.toUpperCase(), xp: 0, victorias: 0 });
+                await _db.from('perfiles').insert({ id: data.user.id, nombre: nick.toUpperCase(), xp: 0, victorias: 0 });
                 location.reload();
             }
         };
 
-        async function loadUserData() {
-            const { data } = await _api.from('perfiles').select('*').eq('id', user.id).single();
+        async function fetchProfile() {
+            const { data } = await _db.from('perfiles').select('*').eq('id', userSession.user.id).single();
             if (data) {
-                document.getElementById('p-name').innerText = data.nombre;
-                document.getElementById('p-xp').innerText = data.xp;
-                document.getElementById('p-wins').innerText = data.victorias;
-                document.getElementById('top-xp').innerText = data.xp + " XP";
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app-content').classList.remove('hidden');
+                document.getElementById('display-nick').innerText = data.nombre;
+                document.getElementById('display-xp').innerText = data.xp;
+                document.getElementById('display-wins').innerText = data.victorias;
+                document.getElementById('xp-badge').innerText = data.xp + " XP";
+                document.getElementById('auth-view').classList.add('hidden');
+                document.getElementById('app-wrap').classList.remove('hidden');
             }
         }
 
-        function nav(id, el) {
+        function changeV(viewId, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
-            document.getElementById('view-' + id).classList.add('active');
-            el.classList.add('active');
-            if(id === 'arenas') loadArenas();
-            if(id === 'ranking') loadRanking();
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById('v-' + viewId).classList.add('active');
+            if(el) el.classList.add('active');
+            if(viewId === 'arenas') fetchArenas();
+            if(viewId === 'ranking') fetchRanking();
         }
 
-        function changeView(id) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + id).classList.add('active');
-        }
-
-        async function loadArenas() {
-            const { data } = await _api.from('torneos').select('*');
+        async function fetchArenas() {
+            const { data } = await _db.from('torneos').select('*').order('created_at', {ascending: false});
             const container = document.getElementById('arena-list');
             container.innerHTML = (data || []).map(t => `
-                <div class="list-item">
-                    <p class="text-[9px] font-bold text-[var(--neon)] tracking-tighter uppercase">${t.juego}</p>
-                    <h4 class="font-orbitron text-lg font-black italic uppercase">${t.nombre}</h4>
+                <div class="glass-card">
+                    <p class="text-[9px] font-black text-[var(--neon)] uppercase tracking-widest">${t.juego}</p>
+                    <h4 class="font-orbitron text-lg font-black uppercase italic">${t.nombre}</h4>
                     <p class="text-[10px] text-zinc-500 mb-4">${t.inscritos}/${t.capacidad} OPERATIVOS</p>
-                    <button onclick="join('${t.id}', ${t.inscritos})" class="btn-action">Iniciar Inserción</button>
+                    <button onclick="joinArena('${t.id}', ${t.inscritos}, ${t.capacidad})" class="btn-gamer" ${t.inscritos >= t.capacidad ? 'disabled' : ''}>
+                        ${t.inscritos >= t.capacidad ? 'ARENA LLENA' : 'INICIAR INSERCIÓN'}
+                    </button>
                 </div>
             `).join('');
         }
 
-        async function join(id, cur) {
-            const { error } = await _api.from('torneos').update({ inscritos: cur + 1 }).eq('id', id);
-            if(!error) { alert("¡Inscrito!"); loadArenas(); }
+        async function joinArena(id, cur, max) {
+            if(cur >= max) return;
+            const { error } = await _db.from('torneos').update({ inscritos: cur + 1 }).eq('id', id);
+            if(!error) { alert("¡Inscrito correctamente!"); fetchArenas(); }
         }
 
-        async function loadRanking() {
-            const { data } = await _api.from('perfiles').select('*').order('xp', {ascending: false});
-            const container = document.getElementById('rank-list');
+        async function fetchRanking() {
+            const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false});
+            const container = document.getElementById('ranking-list');
             container.innerHTML = (data || []).map((u, i) => `
-                <div class="flex justify-between items-center p-4 bg-white/5 mb-1 ${u.id === user.id ? 'border-l-2 border-[var(--neon)] bg-white/10' : ''}">
-                    <span class="text-xs font-bold text-zinc-600">#${i+1}</span>
+                <div class="flex justify-between items-center p-4 bg-black/40 mb-1 ${u.id === userSession.user.id ? 'border-l-2 border-[var(--neon)]' : ''}">
+                    <span class="text-[10px] font-bold text-zinc-600">#${i+1}</span>
                     <span class="text-sm font-bold uppercase">${u.nombre}</span>
-                    <span class="text-sm font-orbitron text-[var(--neon)]">${u.xp}</span>
+                    <span class="text-sm font-orbitron text-[var(--neon)]">${u.xp} XP</span>
                 </div>
             `).join('');
         }
 
-        function updateAvatarPreview() {
-            const seed = document.getElementById('avatar-style').value;
-            document.getElementById('current-avatar').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
+        function previewAvatar() {
+            const s = document.getElementById('new-avatar-sel').value;
+            document.getElementById('display-avatar').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${s}`;
         }
 
         async function saveSettings() {
-            const newNick = document.getElementById('new-nick').value;
-            if(newNick) {
-                const { error } = await _api.from('perfiles').update({ nombre: newNick.toUpperCase() }).eq('id', user.id);
-                if(!error) { alert("Perfil Actualizado"); loadUserData(); nav('home', document.querySelector('.nav-btn')); }
+            const n = document.getElementById('new-nick-in').value;
+            if(n) {
+                await _db.from('perfiles').update({ nombre: n.toUpperCase() }).eq('id', userSession.user.id);
+                fetchProfile();
+                alert("Perfil Actualizado");
             }
         }
 
-        async function sendSupport() {
-            const msg = document.getElementById('support-msg').value;
-            if(msg) {
-                alert("Mensaje enviado al Comando Administrativo.");
-                document.getElementById('support-msg').value = '';
-            }
+        function sendSupportMsg() {
+            alert("Mensaje enviado al Comando Administrativo.");
+            document.getElementById('support-text').value = '';
         }
 
-        async function logout() { await _api.auth.signOut(); location.reload(); }
+        async function logout() { await _db.auth.signOut(); location.reload(); }
     </script>
 </body>
 </html>
