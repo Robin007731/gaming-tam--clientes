@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARENA NEON | SISTEMA INTEGRAL</title>
+    <title>ARENA NEON | SISTEMA ELITE</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root { --neon-cyan: #00f2ff; --neon-pink: #ff00ff; --bg-dark: #06080c; --gold: #fbbf24; }
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        :root { --neon-cyan: #00f2ff; --neon-pink: #ff00ff; --bg-dark: #06080c; }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; scroll-behavior: smooth; }
         
         body { 
             background: var(--bg-dark); color: white; font-family: 'Rajdhani', sans-serif;
@@ -31,132 +31,115 @@
             text-transform: uppercase; letter-spacing: 2px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
             transition: 0.4s; cursor: pointer; display: inline-block;
         }
-        .btn-arena:hover { background: var(--neon-pink); color: black; box-shadow: 0 0 20px var(--neon-pink); transform: translateY(-2px); }
+        .btn-arena:hover { background: var(--neon-pink); color: black; box-shadow: 0 0 20px var(--neon-pink); }
 
-        /* GALERÍA DE AVATARES */
+        /* GALERÍA DE 60+ AVATARES */
         .avatar-grid {
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
-            max-height: 220px; overflow-y: auto; padding: 10px;
+            max-height: 200px; overflow-y: auto; padding: 10px;
             background: rgba(0,0,0,0.6); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
         }
-        .avatar-grid::-webkit-scrollbar { width: 3px; }
-        .avatar-grid::-webkit-scrollbar-thumb { background: var(--neon-cyan); }
-
-        .avatar-option { 
-            width: 100%; aspect-ratio: 1; border: 2px solid transparent; 
-            transition: 0.2s; cursor: pointer; border-radius: 8px;
-        }
+        .avatar-grid::-webkit-scrollbar { width: 4px; }
+        .avatar-grid::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 10px; }
+        .avatar-option { width: 100%; aspect-ratio: 1; border: 2px solid transparent; transition: 0.2s; cursor: pointer; border-radius: 8px; }
         .avatar-option.selected { border-color: var(--neon-cyan); background: rgba(0,242,255,0.2); transform: scale(1.05); }
 
-        /* NAVEGACIÓN */
-        .nav-link.active { color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); border-bottom: 2px solid var(--neon-cyan); }
-        .view-section { display: none; min-height: 100vh; padding-top: 90px; padding-bottom: 100px; }
-        .view-section.active { display: block; animation: fadeIn 0.5s ease; }
+        /* VISTAS */
+        .view-section { display: none; min-height: 100vh; padding-top: 100px; padding-bottom: 100px; }
+        .view-section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* WHATSAPP FLOAT */
-        .wa-float { position: fixed; bottom: 100px; right: 20px; background: #25d366; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 0 20px rgba(37,211,102,0.3); }
+        .nav-link.active { color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); border-bottom: 2px solid var(--neon-cyan); }
+        .wa-float { position: fixed; bottom: 100px; right: 20px; background: #25d366; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 0 15px rgba(37,211,102,0.4); }
     </style>
 </head>
 <body>
 
-    <a href="https://chat.whatsapp.com/TU_GRUPO_AQUÍ" target="_blank" class="wa-float">
+    <a href="https://chat.whatsapp.com/TU_GRUPO_AQUI" target="_blank" class="wa-float">
         <svg fill="white" width="28" height="28" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
     </a>
 
-    <div id="global-alert" class="hidden fixed top-0 w-full z-[200] bg-red-600 text-white text-[10px] font-black py-2.5 text-center uppercase tracking-widest animate-pulse">
-        📢 AVISO: <span id="alert-text"></span>
-    </div>
-
-    <div id="auth-screen" class="fixed inset-0 z-[150] flex items-center justify-center bg-[#020408] p-4 overflow-y-auto">
-        <div class="neon-panel p-8 rounded-xl w-full max-w-md border-t-2 border-t-cyan-500 shadow-2xl my-auto">
+    <div id="auth-screen" class="fixed inset-0 z-[200] flex items-center justify-center bg-[#020408] p-4 overflow-y-auto">
+        <div class="neon-panel p-8 rounded-xl w-full max-w-md border-t-2 border-t-cyan-500">
             <div class="text-center mb-6">
-                <h2 class="font-orbitron text-3xl font-black italic tracking-tighter text-white">ARENA <span class="text-cyan-400">NEON</span></h2>
-                <p id="auth-mode-title" class="text-[9px] text-zinc-500 uppercase tracking-[0.4em] mt-2">Protocolo de Registro</p>
+                <h2 class="font-orbitron text-2xl font-black italic tracking-tighter">ARENA <span class="text-cyan-400">NEON</span></h2>
+                <p id="auth-title" class="text-[9px] text-zinc-500 uppercase tracking-[0.4em] mt-2">Protocolo de Registro</p>
             </div>
 
             <form id="auth-form" class="space-y-4">
-                <div id="reg-extra-fields">
-                    <p class="text-[9px] text-cyan-400 font-bold uppercase mb-2 block text-center">Elige tu Avatar de Guerrero</p>
+                <div id="reg-only-fields">
+                    <label class="text-[8px] text-cyan-400 font-bold uppercase block text-center mb-2">Selecciona tu Avatar</label>
                     <div id="avatar-container" class="avatar-grid mb-4"></div>
-                    <input id="u-name" type="text" placeholder="NOMBRE DE GUERRERO" class="w-full bg-black/60 p-4 rounded text-xs border border-white/10 outline-none focus:border-cyan-400 font-bold uppercase mb-4">
+                    <input id="reg-name" type="text" placeholder="NOMBRE DE GUERRERO" class="w-full bg-black/60 p-4 rounded text-xs border border-white/10 focus:border-cyan-400 outline-none font-bold uppercase">
                 </div>
-
-                <input id="u-email" type="email" placeholder="EMAIL@SISTEMA.COM" required class="w-full bg-black/60 p-4 rounded text-xs border border-white/10 outline-none focus:border-cyan-400 font-bold">
-                <input id="u-pass" type="password" placeholder="CONTRASEÑA" required class="w-full bg-black/60 p-4 rounded text-xs border border-white/10 outline-none focus:border-cyan-400 font-bold">
-                
-                <button type="submit" id="btn-auth-action" class="w-full btn-arena">Inicializar Terminal</button>
+                <input id="auth-email" type="email" placeholder="EMAIL" required class="w-full bg-black/60 p-4 rounded text-xs border border-white/10 focus:border-cyan-400 outline-none">
+                <input id="auth-pass" type="password" placeholder="CONTRASEÑA" required class="w-full bg-black/60 p-4 rounded text-xs border border-white/10 focus:border-cyan-400 outline-none">
+                <button type="submit" id="auth-submit-btn" class="w-full btn-arena">Inicializar Perfil</button>
             </form>
 
-            <div class="mt-6 text-center">
-                <button onclick="toggleAuthMode()" id="btn-switch-auth" class="text-[10px] text-zinc-500 hover:text-cyan-400 uppercase font-bold tracking-widest transition">¿Ya tienes cuenta? Entrar</button>
-            </div>
+            <button onclick="toggleAuth()" id="auth-switch" class="w-full mt-6 text-[9px] text-zinc-500 uppercase font-bold tracking-widest hover:text-cyan-400 transition">¿Ya tienes cuenta? Iniciar Sesión</button>
         </div>
     </div>
 
     <div id="main-app" class="hidden">
         
         <header class="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/5 px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-6 h-6 bg-cyan-500 rounded-sm rotate-45 flex items-center justify-center"><span class="rotate-[-45deg] text-black font-black text-[10px]">A</span></div>
-                <h1 class="font-orbitron text-xs font-black tracking-widest hidden md:block">ARENA_NEON</h1>
-            </div>
+            <h1 class="font-orbitron text-xs font-black text-cyan-400">A_NEON</h1>
             <nav class="flex gap-4 md:gap-8">
-                <button onclick="showView('inicio')" id="nav-inicio" class="nav-link font-bold text-[9px] uppercase active">Inicio</button>
+                <button onclick="showView('inicio')" id="nav-inicio" class="nav-link active font-bold text-[9px] uppercase">Inicio</button>
                 <button onclick="showView('torneos')" id="nav-torneos" class="nav-link font-bold text-[9px] uppercase">Torneos</button>
                 <button onclick="showView('ranking')" id="nav-ranking" class="nav-link font-bold text-[9px] uppercase">Ranking</button>
                 <button onclick="showView('perfil')" id="nav-perfil" class="nav-link font-bold text-[9px] uppercase">Perfil</button>
             </nav>
-            <button onclick="logout()" class="text-red-500 text-[9px] font-black uppercase border border-red-500/20 px-2 py-1 rounded">Log_Out</button>
+            <button onclick="logout()" class="text-red-500 text-[9px] font-black uppercase">Salir</button>
         </header>
 
-        <section id="view-inicio" class="view-section active flex items-center justify-center px-6">
-            <div class="text-center">
-                <p class="text-cyan-400 text-[10px] font-black tracking-[0.5em] uppercase mb-4">Bienvenido a la Red</p>
-                <h2 class="text-5xl md:text-8xl font-black font-orbitron italic tracking-tighter mb-8 leading-none">EQUÍPATE Y<br><span class="text-transparent" style="-webkit-text-stroke: 1px white;">DOMINA.</span></h2>
-                <button onclick="showView('torneos')" class="btn-arena">Ver Torneos</button>
+        <section id="view-inicio" class="view-section active flex items-center justify-center">
+            <div class="text-center px-6">
+                <p class="text-cyan-400 text-[10px] font-black tracking-[0.5em] uppercase mb-4">Terminal Conectada</p>
+                <h2 class="text-5xl md:text-8xl font-black font-orbitron italic tracking-tighter leading-none mb-8">EQUÍPATE Y<br><span class="text-transparent" style="-webkit-text-stroke: 1px white;">DOMINA.</span></h2>
+                <button onclick="showView('torneos')" class="btn-arena">Ir a Batallas</button>
             </div>
         </section>
 
         <section id="view-torneos" class="view-section px-6 md:px-24">
-            <h3 class="font-orbitron text-2xl font-black italic mb-10 text-cyan-400">BATALLAS_DISPONIBLES</h3>
+            <h3 class="font-orbitron text-2xl font-black italic mb-10 text-cyan-400 border-l-4 border-cyan-400 pl-4 uppercase">Torneos Live</h3>
             <div id="grid-torneos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 </div>
         </section>
 
         <section id="view-ranking" class="view-section px-6 max-w-2xl mx-auto">
-            <h3 class="font-orbitron text-2xl font-black italic mb-10 text-center text-yellow-500">HALL_OF_FAME</h3>
+            <h3 class="font-orbitron text-2xl font-black italic mb-10 text-center text-yellow-500 uppercase">Hall of Fame</h3>
             <div id="list-ranking" class="space-y-3">
                 </div>
         </section>
 
         <section id="view-perfil" class="view-section px-6 max-w-xl mx-auto">
-            <div class="neon-panel p-8 rounded-2xl text-center border-t-2 border-cyan-400">
-                <img id="p-img" src="" class="w-24 h-24 rounded-full mx-auto border-2 border-cyan-400 p-1 mb-4 shadow-xl">
-                <h4 id="p-nombre" class="font-orbitron text-2xl font-black uppercase"></h4>
+            <div class="neon-panel p-8 rounded-2xl text-center border-t-2 border-cyan-400 shadow-2xl">
+                <img id="p-img" src="" class="w-24 h-24 rounded-full mx-auto border-2 border-cyan-400 p-1 mb-4">
+                <h4 id="p-nombre" class="font-orbitron text-2xl font-black uppercase tracking-tighter"></h4>
                 <div class="grid grid-cols-2 gap-4 mt-8">
                     <div class="bg-black/60 p-6 rounded-lg border border-white/5">
                         <span id="p-xp" class="block text-3xl font-black text-cyan-400">0</span>
-                        <span class="text-[9px] text-zinc-500 uppercase font-bold">XP Acumulado</span>
+                        <span class="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">XP Total</span>
                     </div>
                     <div class="bg-black/60 p-6 rounded-lg border border-white/5">
                         <span id="p-wins" class="block text-3xl font-black text-pink-500">0</span>
-                        <span class="text-[9px] text-zinc-500 uppercase font-bold">Victorias</span>
+                        <span class="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">Wins</span>
                     </div>
                 </div>
-                
-                <button onclick="openSoporte()" class="mt-8 text-cyan-400 text-[10px] font-bold uppercase underline">¿Necesitas ayuda? Contactar Soporte</button>
+                <button onclick="openSoporte()" class="mt-8 text-cyan-400 text-[9px] font-bold uppercase underline tracking-[0.2em]">Contactar Soporte Técnico</button>
             </div>
         </section>
 
-        <div id="modal-soporte" class="hidden fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-6">
+        <div id="modal-soporte" class="hidden fixed inset-0 z-[200] bg-black/95 flex items-center justify-center p-6">
             <div class="neon-panel p-8 rounded-xl w-full max-w-md">
-                <h3 class="font-orbitron text-sm mb-6 text-cyan-400 uppercase">Enviar Ticket al Comando</h3>
-                <input id="s-asunto" placeholder="ASUNTO" class="w-full bg-black p-4 mb-4 border border-white/10 text-xs text-white">
-                <textarea id="s-mensaje" rows="4" placeholder="MENSAJE..." class="w-full bg-black p-4 mb-4 border border-white/10 text-xs text-white"></textarea>
+                <h3 class="font-orbitron text-sm mb-6 text-cyan-400 uppercase">Nuevo Ticket</h3>
+                <input id="s-asunto" placeholder="ASUNTO" class="w-full bg-black p-4 mb-4 border border-white/10 text-xs text-white uppercase outline-none focus:border-cyan-400">
+                <textarea id="s-mensaje" rows="4" placeholder="MENSAJE..." class="w-full bg-black p-4 mb-4 border border-white/10 text-xs text-white outline-none focus:border-cyan-400"></textarea>
                 <div class="flex gap-4">
                     <button onclick="enviarTicket()" class="flex-1 btn-arena">Enviar</button>
-                    <button onclick="closeSoporte()" class="text-xs uppercase font-bold">Cerrar</button>
+                    <button onclick="closeSoporte()" class="text-xs uppercase font-black text-zinc-500">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -170,19 +153,16 @@
     </div>
 
     <script>
-        // --- ⚙️ CONFIGURACIÓN SUPABASE ---
-        const SUPA_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
-        const SUPA_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
-        const _supa = supabase.createClient(SUPA_URL, SUPA_KEY);
-
+        // --- ⚙️ CONFIGURACIÓN ---
+        const _supa = supabase.createClient('https://qxvqxdsfcvdmanxtzmkn.supabase.co', 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07');
+        
         let user = null;
-        let isLoginMode = false; // Por defecto modo Registro
+        let isLoginMode = false;
         let selectedAvatar = "https://api.dicebear.com/7.x/bottts/svg?seed=1";
 
-        // --- 🎭 GENERADOR DE +60 AVATARES ---
-        function initAvatarGallery() {
+        // --- 🎭 AVATARES ---
+        function generateAvatars() {
             const container = document.getElementById('avatar-container');
-            container.innerHTML = "";
             for(let i=1; i<=65; i++) {
                 const url = `https://api.dicebear.com/7.x/bottts/svg?seed=${i}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
                 const img = document.createElement('img');
@@ -196,29 +176,29 @@
                 container.appendChild(img);
             }
         }
-        initAvatarGallery();
+        generateAvatars();
 
-        // --- 🔑 SISTEMA AUTH ---
-        function toggleAuthMode() {
+        // --- 🔑 AUTH ---
+        function toggleAuth() {
             isLoginMode = !isLoginMode;
-            document.getElementById('auth-mode-title').innerText = isLoginMode ? "Protocolo de Acceso" : "Protocolo de Registro";
-            document.getElementById('reg-extra-fields').style.display = isLoginMode ? "none" : "block";
-            document.getElementById('btn-switch-auth').innerText = isLoginMode ? "¿No tienes cuenta? Registrarse" : "¿Ya tienes cuenta? Entrar";
-            document.getElementById('btn-auth-action').innerText = isLoginMode ? "Entrar al Sistema" : "Inicializar Terminal";
+            document.getElementById('auth-title').innerText = isLoginMode ? "Acceso a la Red" : "Protocolo de Registro";
+            document.getElementById('reg-only-fields').style.display = isLoginMode ? "none" : "block";
+            document.getElementById('auth-switch').innerText = isLoginMode ? "¿No tienes cuenta? Regístrate" : "¿Ya eres miembro? Inicia Sesión";
+            document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Entrar" : "Inicializar Perfil";
         }
 
         document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
-            const email = document.getElementById('u-email').value;
-            const pass = document.getElementById('u-pass').value;
-            const name = document.getElementById('u-name').value;
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const name = document.getElementById('reg-name').value;
 
             if (isLoginMode) {
                 const { error } = await _supa.auth.signInWithPassword({ email, password: pass });
-                if(error) alert("Error: Datos incorrectos o usuario no existe.");
+                if(error) alert("Error de acceso.");
             } else {
                 const { data, error } = await _supa.auth.signUp({ email, password: pass });
-                if(error) return alert("Error: " + error.message);
+                if(error) return alert(error.message);
                 if(data.user) {
                     await _supa.from('perfiles').insert({
                         id: data.user.id,
@@ -226,7 +206,7 @@
                         avatar_url: selectedAvatar,
                         xp: 0, victorias: 0
                     });
-                    alert("¡Registro Exitoso! Bienvenido.");
+                    alert("¡Perfil creado!");
                 }
             }
         };
@@ -235,25 +215,36 @@
             if(session) {
                 user = session.user;
                 const { data: profile } = await _supa.from('perfiles').select('*').eq('id', user.id).single();
-                
                 if(profile?.baneado) {
-                    document.body.innerHTML = "<div class='h-screen flex items-center justify-center bg-black text-red-500 font-orbitron'>TERMINAL BLOQUEADA: ESTÁS BANEADO.</div>";
+                    document.body.innerHTML = "<div class='h-screen flex items-center justify-center bg-black text-red-500 font-orbitron'>TERMINAL BLOQUEADA</div>";
                     await _supa.auth.signOut();
                     return;
                 }
-                
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').classList.remove('hidden');
-                syncAppData(profile);
-                listenRealtime();
+                syncProfile(profile);
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('main-app').classList.add('hidden');
             }
         });
 
-        // --- 📊 LÓGICA DE LA APP ---
-        async function syncAppData(p) {
+        // --- 🖥️ LÓGICA VISTAS ---
+        function showView(v) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
+            document.getElementById('view-' + v).classList.add('active');
+            const navBtn = document.getElementById('nav-' + v);
+            if(navBtn) navBtn.classList.add('active');
+
+            if(v === 'torneos') cargarTorneos();
+            if(v === 'ranking') cargarRanking();
+            if(v === 'perfil') syncProfile();
+            window.scrollTo(0,0);
+        }
+
+        async function syncProfile(p) {
             if(!p) {
                 const { data } = await _supa.from('perfiles').select('*').eq('id', user.id).single();
                 p = data;
@@ -262,19 +253,6 @@
             document.getElementById('p-img').src = p.avatar_url;
             document.getElementById('p-xp').innerText = p.xp.toLocaleString();
             document.getElementById('p-wins').innerText = p.victorias;
-            checkGlobalAlerts();
-        }
-
-        function showView(v) {
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById('view-' + v).classList.add('active');
-            if(document.getElementById('nav-'+v)) document.getElementById('nav-'+v).classList.add('active');
-            
-            if(v === 'torneos') cargarTorneos();
-            if(v === 'ranking') cargarRanking();
-            if(v === 'perfil') syncAppData();
-            window.scrollTo(0,0);
         }
 
         async function cargarTorneos() {
@@ -282,18 +260,12 @@
             document.getElementById('grid-torneos').innerHTML = data.map(t => `
                 <div class="neon-panel p-6 rounded-xl">
                     <span class="text-[8px] bg-cyan-400 text-black px-2 py-0.5 font-black uppercase">${t.juego}</span>
-                    <h4 class="font-orbitron font-bold mt-3">${t.nombre}</h4>
-                    <div class="flex justify-between text-[10px] mt-4 mb-1"><span>Llenado</span><span>${t.inscritos}/${t.capacidad}</span></div>
-                    <div class="h-1 bg-white/10 rounded-full"><div class="h-full bg-cyan-400" style="width: ${(t.inscritos/t.capacidad)*100}%"></div></div>
-                    <button onclick="unirseTorneo('${t.id}', ${t.inscritos})" class="w-full btn-arena py-2 mt-6 text-[8px]">Inscribirse</button>
+                    <h4 class="font-orbitron font-bold mt-3 text-lg">${t.nombre}</h4>
+                    <div class="flex justify-between text-[10px] mt-4 mb-1"><span>Estado</span><span>${t.inscritos}/${t.capacidad}</span></div>
+                    <div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-cyan-400" style="width: ${(t.inscritos/t.capacidad)*100}%"></div></div>
+                    <button class="w-full btn-arena py-2 mt-6 text-[8px]">Inscribirse</button>
                 </div>
             `).join('');
-        }
-
-        async function unirseTorneo(id, actual) {
-            await _supa.from('torneos').update({ inscritos: actual + 1 }).eq('id', id);
-            alert("¡INSCRITO CORRECTAMENTE!");
-            cargarTorneos();
         }
 
         async function cargarRanking() {
@@ -301,29 +273,13 @@
             document.getElementById('list-ranking').innerHTML = data.map((u, i) => `
                 <div class="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-lg">
                     <div class="flex items-center gap-4">
-                        <span class="font-orbitron ${i<3 ? 'text-yellow-500' : 'text-zinc-500'}">#${i+1}</span>
-                        <img src="${u.avatar_url}" class="w-8 h-8 rounded-full border border-white/10">
-                        <span class="text-xs font-bold uppercase ${u.id === user.id ? 'text-cyan-400' : ''}">${u.nombre}</span>
+                        <span class="font-orbitron text-sm ${i<3 ? 'text-yellow-500' : 'text-zinc-600'}">#${i+1}</span>
+                        <img src="${u.avatar_url}" class="w-9 h-9 rounded-full border border-white/10">
+                        <span class="text-xs font-black uppercase ${u.id === user.id ? 'text-cyan-400' : ''}">${u.nombre}</span>
                     </div>
-                    <span class="text-xs font-black font-orbitron text-zinc-400">${u.xp.toLocaleString()} XP</span>
+                    <span class="text-xs font-black text-zinc-400">${u.xp.toLocaleString()} XP</span>
                 </div>
             `).join('');
-        }
-
-        // --- 📡 REALTIME & ALERTAS ---
-        async function checkGlobalAlerts() {
-            const { data } = await _supa.from('alertas_globales').select('*').eq('activa', true).limit(1);
-            const box = document.getElementById('global-alert');
-            if(data?.length > 0) {
-                document.getElementById('alert-text').innerText = data[0].mensaje;
-                box.classList.remove('hidden');
-            } else { box.classList.add('hidden'); }
-        }
-
-        function listenRealtime() {
-            _supa.channel('any').on('postgres_changes', { event: '*', schema: 'public' }, () => {
-                checkGlobalAlerts();
-            }).subscribe();
         }
 
         // --- 💬 SOPORTE ---
@@ -334,7 +290,7 @@
             const msj = document.getElementById('s-mensaje').value;
             if(!asunto || !msj) return;
             await _supa.from('tickets_soporte').insert({ user_id: user.id, asunto, mensaje: msj });
-            alert("Reporte Enviado.");
+            alert("Ticket enviado.");
             closeSoporte();
         }
 
