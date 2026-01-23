@@ -3,235 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARENA NEON | Ultimate Gaming Hub</title>
-
+    <title>NEON ARENA | Player Client</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-
     <style>
-        :root {
-            --cyan: #36f0ff;
-            --pink: #ff4fd8;
-            --green: #2dff83;
-            --bg: #020409;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Rajdhani', sans-serif;
-            background: radial-gradient(circle at top, #081424, #020409 60%);
-            color: #fff;
-            overflow-x: hidden;
-        }
-
-        /* Scrollbar Cyberpunk */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #1a2332; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
-
-        /* NAVBAR */
-        .navbar {
-            position: fixed;
-            top: 0; width: 100%; z-index: 100;
-            backdrop-filter: blur(14px);
-            background: linear-gradient(180deg, rgba(5,10,20,.85), rgba(5,10,20,.45));
-            border-bottom: 1px solid rgba(54,240,255,.25);
-        }
-
-        /* HERO */
-        .hero {
-            position: relative;
-            max-width: 1400px;
-            margin: 100px auto 40px;
-            height: 500px;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid rgba(54,240,255,0.1);
-        }
-        .hero img {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%; object-fit: cover;
-            filter: brightness(0.6);
-        }
-        .hero::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(90deg, var(--bg) 20%, transparent 80%);
-        }
-
-        .hero-content {
-            position: relative; z-index: 2;
-            height: 100%; display: flex; flex-direction: column;
-            justify-content: center; padding: 0 5%;
-        }
-
-        /* HUD & ANIMATIONS */
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(45,255,131,0.3); transform: scale(1); }
-            50% { box-shadow: 0 0 40px rgba(45,255,131,0.6); transform: scale(1.02); }
-        }
-        .hud {
-            position: absolute; right: 40px; bottom: 40px;
-            width: 140px; height: 140px;
-            border-radius: 50%; border: 2px solid var(--green);
-            background: rgba(0,0,0,0.6);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            animation: pulse-glow 3s infinite ease-in-out;
-            z-index: 5;
-        }
-
-        /* PANELS */
-        .panel {
-            background: rgba(10,15,25,0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            transition: all 0.3s ease;
-        }
-        .panel:hover {
-            border-color: var(--cyan);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(54,240,255,0.1);
-        }
-
-        .xp-bar {
-            width: 100%; height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px; overflow: hidden;
-            margin-top: 8px;
-        }
-        .xp-progress {
-            width: 75%; height: 100%;
-            background: linear-gradient(90deg, var(--cyan), var(--pink));
-            box-shadow: 0 0 10px var(--cyan);
-        }
-
-        .btn-neon {
-            background: linear-gradient(90deg, var(--pink), #9a4bff);
-            font-family: 'Orbitron';
-            transition: 0.3s;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
-        }
-        .btn-neon:hover {
-            box-shadow: 0 0 30px var(--pink);
-            transform: scale(1.05);
-        }
+        :root { --cyan: #36f0ff; --pink: #ff4fd8; --bg: #010206; }
+        body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: #fff; overflow-x: hidden; }
+        .glass { background: rgba(10, 15, 25, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; }
+        .neon-border { border: 1px solid var(--cyan); box-shadow: 0 0 15px rgba(54, 240, 255, 0.2); }
+        .neon-text { text-shadow: 0 0 10px var(--cyan); }
+        .neon-btn { background: linear-gradient(90deg, var(--pink), #9a4bff); transition: 0.3s; }
+        .neon-btn:hover { box-shadow: 0 0 25px var(--pink); transform: scale(1.02); }
+        input, select, textarea { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; outline: none; }
+        input:focus { border-color: var(--cyan) !important; }
+        .hidden { display: none; }
+        .tab-btn.active { color: var(--cyan); border-bottom: 2px solid var(--cyan); }
     </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-<header class="navbar">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <div class="font-orbitron font-black text-2xl tracking-tighter text-[var(--cyan)]">
-            ARENA<span class="text-white">NEON</span>
-        </div>
-        <nav class="hidden md:flex gap-8 font-medium">
-            <a href="#" class="text-[var(--cyan)]">Torneos</a>
-            <a href="#" class="hover:text-[var(--cyan)] transition">Ranking</a>
-            <a href="#" class="hover:text-[var(--cyan)] transition">Comunidad</a>
-            <a href="#" class="hover:text-[var(--cyan)] transition">Soporte</a>
-        </nav>
-        <div class="flex items-center gap-4">
-            <span class="text-sm font-bold hidden sm:block">PLAYER_NEO</span>
-            <img class="w-10 h-10 rounded-full border border-[var(--cyan)]" src="https://api.dicebear.com/7.x/bottts/svg?seed=NEON">
+    <div id="auth-screen" class="fixed inset-0 z-[100] bg-[#020409] flex items-center justify-center p-4">
+        <div class="glass max-w-md w-full p-8 text-center">
+            <h1 class="font-orbitron text-3xl font-black mb-2 text-[var(--cyan)]">NEON<span class="text-white">ARENA</span></h1>
+            <p class="text-xs text-gray-500 font-bold uppercase tracking-[4px] mb-8">Acceso al Sistema</p>
+            
+            <div class="space-y-4">
+                <input type="email" id="auth-email" placeholder="Email" class="w-full p-3 rounded-lg">
+                <input type="password" id="auth-pass" placeholder="Contraseña" class="w-full p-3 rounded-lg">
+                <button onclick="handleLogin()" class="w-full neon-btn py-3 rounded-xl font-orbitron font-bold text-sm uppercase">Iniciar Sesión</button>
+                <button onclick="handleSignup()" class="w-full bg-white/5 border border-white/10 py-3 rounded-xl font-orbitron font-bold text-xs uppercase hover:bg-white/10">Crear Nueva Cuenta</button>
+            </div>
+            <p id="auth-msg" class="text-pink-500 text-[10px] mt-4 uppercase font-bold"></p>
         </div>
     </div>
-</header>
 
-<section class="px-4">
-    <div class="hero">
-        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80">
-        <div class="hero-content">
-            <h1 class="font-orbitron text-5xl md:text-7xl font-black leading-none mb-4">
-                DOMINA LA<br><span class="text-[var(--cyan)]">NUEVA ERA.</span>
-            </h1>
-            <p class="max-w-md text-gray-300 mb-8 font-semibold uppercase tracking-widest text-sm">
-                Únete a la liga de élite y compite por premios en cripto y equipo gaming.
-            </p>
-            <button class="btn-neon px-8 py-4 rounded-xl font-bold w-max">INSCRIBIRSE AHORA</button>
-        </div>
-        <div class="hud hidden md:flex">
-            <div class="text-2xl font-black font-orbitron">147k</div>
-            <span class="text-[9px] text-center opacity-70 tracking-tighter uppercase font-bold">Soldados en<br>línea</span>
-        </div>
-    </div>
-</section>
+    <nav class="fixed bottom-0 left-0 w-full bg-[#050810]/90 backdrop-blur-md border-t border-white/5 p-4 flex justify-around z-50 lg:top-0 lg:bottom-auto lg:border-t-0 lg:border-b">
+        <button onclick="showSection('sec-torneos')" class="tab-btn active px-4 py-2 font-orbitron text-[10px] font-bold uppercase tracking-widest">Torneos</button>
+        <button onclick="showSection('sec-perfil')" class="tab-btn px-4 py-2 font-orbitron text-[10px] font-bold uppercase tracking-widest">Perfil</button>
+        <button onclick="showSection('sec-soporte')" class="tab-btn px-4 py-2 font-orbitron text-[10px] font-bold uppercase tracking-widest">Soporte</button>
+        <button onclick="logout()" class="text-red-500 font-orbitron text-[10px] font-bold uppercase">Salir</button>
+    </nav>
 
-<section class="max-w-7xl mx-auto px-6 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <main class="p-6 lg:pt-24 pb-24 max-w-7xl mx-auto">
 
-        <div class="panel p-6 flex flex-col items-center">
-            <div class="relative mb-4">
-                <img class="w-24 h-24 rounded-full border-2 border-[var(--cyan)] p-1" src="https://api.dicebear.com/7.x/bottts/svg?seed=NEON">
-                <div class="absolute bottom-0 right-0 w-6 h-6 bg-[var(--green)] border-4 border-[#020409] rounded-full"></div>
-            </div>
-            <h3 class="font-orbitron font-bold text-xl mb-1">PLAYER_NEO</h3>
-            <p class="text-[var(--cyan)] text-xs font-bold mb-4 tracking-widest uppercase">Nivel 24 Elite</p>
-            <div class="w-full">
-                <div class="flex justify-between text-[10px] font-bold mb-1 uppercase text-gray-400">
-                    <span>Progreso XP</span>
-                    <span>75%</span>
-                </div>
-                <div class="xp-bar"><div class="xp-progress"></div></div>
-            </div>
-        </div>
-
-        <div class="panel flex flex-col">
-            <div class="p-4 border-b border-white/5 font-orbitron text-xs font-bold tracking-widest">TORNEOS ACTIVOS</div>
-            <div class="p-4 space-y-3 flex-grow">
-                <div class="bg-white/5 p-3 rounded-xl border-l-4 border-[var(--cyan)]">
-                    <p class="text-[10px] text-[var(--cyan)] font-bold">VALORANT</p>
-                    <p class="text-sm font-bold">Neon Clash 2024</p>
-                </div>
-                <div class="bg-white/5 p-3 rounded-xl border-l-4 border-[var(--pink)]">
-                    <p class="text-[10px] text-[var(--pink)] font-bold">LEAGUE OF LEGENDS</p>
-                    <p class="text-sm font-bold">Cyber Trophy</p>
+        <section id="sec-torneos" class="section-content">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="font-orbitron text-4xl font-black italic">ARENA <span class="text-[var(--cyan)]">LIVE</span></h2>
+                    <p class="text-gray-500 text-xs font-bold uppercase">Sincronizado con Supabase Realtime</p>
                 </div>
             </div>
-        </div>
+            <div id="torneos-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+        </section>
 
-        <div class="panel">
-            <div class="p-4 border-b border-white/5 font-orbitron text-xs font-bold tracking-widest">TOP PLAYERS</div>
-            <div class="p-4 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <span class="text-[var(--cyan)] font-black italic">#1</span>
-                        <span class="text-sm font-bold">NEOX_01</span>
+        <section id="sec-perfil" class="section-content hidden">
+            <div class="max-w-2xl mx-auto glass p-8">
+                <div class="flex items-center gap-6 mb-8">
+                    <img id="user-avatar" src="" class="w-24 h-24 rounded-full border-2 border-[var(--cyan)]">
+                    <div>
+                        <h2 id="user-name" class="font-orbitron text-3xl font-black">PLAYER_NAME</h2>
+                        <p id="user-id-text" class="text-[10px] font-mono text-gray-500"></p>
                     </div>
-                    <span class="text-xs font-bold">9.2k XP</span>
                 </div>
-                <div class="flex items-center justify-between opacity-70">
-                    <div class="flex items-center gap-3">
-                        <span class="font-black italic">#2</span>
-                        <span class="text-sm font-bold">CYBER_K</span>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white/5 p-4 rounded-xl">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">Victorias</p>
+                        <p id="user-wins" class="text-2xl font-orbitron font-black text-[var(--cyan)]">0</p>
                     </div>
-                    <span class="text-xs font-bold">8.4k XP</span>
+                    <div class="bg-white/5 p-4 rounded-xl">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">Puntos XP</p>
+                        <p id="user-xp" class="text-2xl font-orbitron font-black text-[var(--pink)]">0</p>
+                    </div>
                 </div>
-                <div class="flex items-center justify-between opacity-50">
-                    <div class="flex items-center gap-3">
-                        <span class="font-black italic">#3</span>
-                        <span class="text-sm font-bold">PULSE_9</span>
-                    </div>
-                    <span class="text-xs font-bold">7.7k XP</span>
+                <div class="mt-8 border-t border-white/10 pt-6">
+                    <h3 class="font-orbitron text-sm font-bold mb-4 uppercase">Mis Inscripciones</h3>
+                    <div id="my-tournaments" class="space-y-3"></div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="panel p-4">
-            <div class="font-orbitron text-xs font-bold tracking-widest mb-4">COMANDO CENTRAL</div>
-            <textarea class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-[var(--cyan)] transition" 
-                rows="3" placeholder="Solicitar asistencia..."></textarea>
-            <button class="w-full mt-3 bg-white/5 hover:bg-white/10 text-[var(--cyan)] font-bold py-2 rounded-lg text-xs transition uppercase tracking-widest border border-[var(--cyan)]/20">
-                Enviar Reporte
-            </button>
-        </div>
+        <section id="sec-soporte" class="section-content hidden">
+            <div class="max-w-md mx-auto glass p-8">
+                <h2 class="font-orbitron text-2xl font-black mb-6 italic">CENTRO DE <span class="text-yellow-500">SOPORTE</span></h2>
+                <div class="space-y-4">
+                    <input type="text" id="sop-asunto" placeholder="Asunto del problema" class="w-full p-3 rounded-lg">
+                    <textarea id="sop-msg" placeholder="Describe tu problema..." class="w-full p-3 rounded-lg h-32"></textarea>
+                    <button onclick="sendTicket()" class="w-full neon-btn py-3 rounded-xl font-orbitron font-bold text-xs uppercase">Enviar Ticket</button>
+                    <p id="sop-status" class="text-center text-[10px] font-bold uppercase"></p>
+                </div>
+            </div>
+        </section>
 
-    </div>
-</section>
+    </main>
 
-<footer class="text-center py-10 border-t border-white/5">
-    <p class="text-[10px] tracking-[5px] uppercase opacity-40 font-bold">Arena Neon © 2026 Protocolo de Juego Iniciado</p>
-</footer>
+    <script>
+        // CONFIGURACIÓN DE SUPABASE
+        const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        let currentUser = null;
+
+        // --- SISTEMA DE AUTENTICACIÓN ---
+        async function checkSession() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                document.getElementById('auth-screen').classList.add('hidden');
+                loadUserData();
+                loadTournaments();
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-pass').value;
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) document.getElementById('auth-msg').innerText = error.message;
+            else checkSession();
+        }
+
+        async function handleSignup() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-pass').value;
+            const { error } = await _supabase.auth.signUp({ email, password });
+            if (error) document.getElementById('auth-msg').innerText = error.message;
+            else alert("¡Registro exitoso! Ya puedes iniciar sesión.");
+        }
+
+        async function logout() {
+            await _supabase.auth.signOut();
+            location.reload();
+        }
+
+        // --- CARGA DE DATOS ---
+        async function loadUserData() {
+            const { data, error } = await _supabase.from('perfiles').select('*').eq('id', currentUser.id).single();
+            if (data) {
+                if(data.baneado) {
+                    alert("TU CUENTA HA SIDO BANEADA POR EL ADMINISTRADOR.");
+                    logout();
+                }
+                document.getElementById('user-name').innerText = data.nombre;
+                document.getElementById('user-avatar').src = data.avatar_url;
+                document.getElementById('user-wins').innerText = data.victorias;
+                document.getElementById('user-xp').innerText = data.xp;
+                document.getElementById('user-id-text').innerText = `UUID: ${data.id}`;
+            }
+            loadMyInscriptions();
+        }
+
+        async function loadTournaments() {
+            const { data } = await _supabase.from('torneos').select('*').order('created_at', { ascending: false });
+            const grid = document.getElementById('torneos-grid');
+            grid.innerHTML = data.map(t => `
+                <div class="glass p-6 border-b-2 border-[var(--cyan)] hover:bg-white/[0.02] transition">
+                    <p class="text-[var(--cyan)] text-[10px] font-black tracking-widest uppercase mb-1">${t.juego}</p>
+                    <h3 class="font-orbitron font-bold text-xl mb-4">${t.nombre}</h3>
+                    <div class="flex justify-between text-[11px] font-bold mb-2 uppercase text-gray-400">
+                        <span>Slots: ${t.inscritos}/${t.capacidad}</span>
+                        <span class="${t.estado === 'abierto' ? 'text-green-500' : 'text-red-500'}">${t.estado}</span>
+                    </div>
+                    <div class="w-full h-1 bg-white/10 rounded-full mb-6">
+                        <div class="bg-[var(--cyan)] h-full transition-all" style="width: ${(t.inscritos/t.capacidad)*100}%"></div>
+                    </div>
+                    <button onclick="inscribirse('${t.id}', ${t.inscritos}, ${t.capacidad})" 
+                        class="w-full py-3 ${t.inscritos >= t.capacidad || t.estado !== 'abierto' ? 'bg-gray-800' : 'neon-btn'} rounded-xl font-orbitron font-bold text-[10px] uppercase">
+                        ${t.inscritos >= t.capacidad ? 'TORNEO LLENO' : 'INSCRIBIRSE AHORA'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        async function inscribirse(torneoId, current, max) {
+            if (current >= max) return;
+            const { error } = await _supabase.from('inscripciones').insert([{
+                torneo_id: torneoId,
+                user_id: currentUser.id
+            }]);
+            
+            if (error) {
+                alert("Ya estás inscrito en este torneo.");
+            } else {
+                await _supabase.from('torneos').update({ inscritos: current + 1 }).eq('id', torneoId);
+                alert("¡Inscripción exitosa!");
+                loadTournaments();
+                loadMyInscriptions();
+            }
+        }
+
+        async function loadMyInscriptions() {
+            const { data } = await _supabase.from('inscripciones').select('torneos(*)').eq('user_id', currentUser.id);
+            const container = document.getElementById('my-tournaments');
+            if (data.length === 0) container.innerHTML = '<p class="text-xs text-gray-600">No participas en ningún torneo aún.</p>';
+            else container.innerHTML = data.map(ins => `
+                <div class="bg-white/5 p-3 rounded-lg flex justify-between items-center">
+                    <p class="text-xs font-bold uppercase">${ins.torneos.nombre}</p>
+                    <span class="text-[10px] bg-[var(--cyan)]/20 text-[var(--cyan)] px-2 py-1 rounded">Listo</span>
+                </div>
+            `).join('');
+        }
+
+        async function sendTicket() {
+            const asunto = document.getElementById('sop-asunto').value;
+            const mensaje = document.getElementById('sop-msg').value;
+            const { error } = await _supabase.from('tickets_soporte').insert([{
+                user_id: currentUser.id, asunto, mensaje
+            }]);
+            
+            const status = document.getElementById('sop-status');
+            if (error) { status.innerText = "Error al enviar"; status.className = "text-red-500"; }
+            else { 
+                status.innerText = "Ticket enviado con éxito"; 
+                status.className = "text-green-500";
+                document.getElementById('sop-asunto').value = '';
+                document.getElementById('sop-msg').value = '';
+            }
+        }
+
+        // --- NAVEGACIÓN ---
+        function showSection(id) {
+            document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+        }
+
+        // --- REALTIME ---
+        _supabase.channel('arena-global')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'torneos' }, () => loadTournaments())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'perfiles' }, () => loadUserData())
+        .subscribe();
+
+        checkSession();
+    </script>
 </body>
 </html>
