@@ -1,68 +1,285 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZONA GAMER</title>
+    <title>ARENA NEON | ZONA GAMER</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body {
-            background-color: #030508;
-            color: #ffffff;
+        :root { --neon-cyan: #00f2ff; --neon-pink: #ff00ff; --bg-dark: #06080c; }
+        
+        body { 
+            background: var(--bg-dark); 
+            color: white; 
             font-family: 'Rajdhani', sans-serif;
+            background-image: radial-gradient(circle at top right, rgba(0, 242, 255, 0.05), transparent),
+                              linear-gradient(to bottom, rgba(6,8,12,0.8), rgba(6,8,12,0.95)), 
+                              url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070');
+            background-size: cover; background-attachment: fixed;
             overflow-x: hidden;
         }
-        h1, h2, h3, button, .font-orbitron {
-            font-family: 'Orbitron', sans-serif;
+
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+
+        /* HEADER DE LA IMAGEN */
+        .nav-link {
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            color: rgba(255,255,255,0.6); transition: 0.3s; position: relative;
         }
-        .neon-border {
-            box-shadow: 0 0 5px #00f2ff, inset 0 0 5px #00f2ff;
-            border: 1px solid #00f2ff;
+        .nav-link:hover, .nav-link.active { color: var(--neon-cyan); }
+        .nav-link.active::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background: var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-cyan);
         }
-        .neon-text-cyan {
-            text-shadow: 0 0 8px #00f2ff;
+
+        /* BOTONES ESTILO ARENA */
+        .btn-arena {
+            border: 2px solid var(--neon-pink);
+            background: transparent; color: white;
+            padding: 14px 32px; font-weight: 800; font-family: 'Orbitron'; font-size: 10px;
+            text-transform: uppercase; letter-spacing: 3px;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            transition: 0.4s; cursor: pointer;
         }
-        .neon-text-green {
-            text-shadow: 0 0 8px #39FF14;
+        .btn-arena:hover {
+            background: var(--neon-pink); color: black;
+            box-shadow: 0 0 25px var(--neon-pink); transform: scale(1.05);
         }
-        .neon-text-red {
-            text-shadow: 0 0 8px #ff3131;
+
+        /* CONTENEDORES NEON */
+        .neon-panel {
+            background: rgba(13, 17, 23, 0.6); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 3px solid var(--neon-cyan);
+            transition: 0.3s;
         }
-        .cyber-card {
-            background: rgba(10, 15, 20, 0.8);
-            border-left: 4px solid #00f2ff;
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 95% 100%, 0 100%);
+        .neon-panel:hover { border-left-color: var(--neon-pink); background: rgba(13, 17, 23, 0.8); }
+
+        /* WHATSAPP FLOAT */
+        .wa-float {
+            position: fixed; bottom: 40px; right: 40px;
+            background: #25d366; width: 65px; height: 65px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 30px rgba(37, 211, 102, 0.4); z-index: 1000; transition: 0.3s;
         }
-        ::-webkit-scrollbar {
-            width: 4px;
+        .wa-float:hover { transform: scale(1.1) rotate(15deg); }
+
+        /* HUD CIRCULAR */
+        .hud-status {
+            width: 140px; height: 140px; border-radius: 50%;
+            border: 3px solid #22c55e; position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.7); box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
         }
-        ::-webkit-scrollbar-track {
-            background: #030508;
+        .hud-status::before {
+            content: ''; position: absolute; inset: -8px; border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 50%;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #00f2ff;
-            border-radius: 10px;
-        }
+
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: slideUp 0.6s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "@google/genai": "https://esm.sh/@google/genai@^1.38.0",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body>
-    <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+
+    <a href="https://wa.me/TU_LINK" target="_blank" class="wa-float">
+        <svg fill="white" width="30" height="30" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </a>
+
+    <div id="auth-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#06080c]">
+        <div class="neon-panel p-10 rounded-xl w-full max-w-sm text-center border-t-2 border-t-cyan-500">
+            <h2 class="font-orbitron text-2xl mb-8 tracking-tighter">PROTOCOLO_<span class="text-cyan-400">ARENA</span></h2>
+            <form id="auth-form" class="space-y-4">
+                <input id="u-email" type="email" placeholder="USUARIO@EMAIL.COM" class="w-full bg-white/5 p-4 rounded text-xs border border-white/10 outline-none focus:border-cyan-400 font-bold">
+                <input id="u-pass" type="password" placeholder="PASSWORD" class="w-full bg-white/5 p-4 rounded text-xs border border-white/10 outline-none focus:border-cyan-400 font-bold">
+                <button type="submit" class="w-full btn-arena">Inicializar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-app" class="hidden min-h-screen">
+        
+        <header class="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-xl border-b border-white/5 px-12 py-5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-cyan-500 rounded-sm rotate-45 flex items-center justify-center border border-white">
+                    <span class="rotate-[-45deg] text-black font-black text-sm">A</span>
+                </div>
+                <h1 class="font-orbitron text-lg font-black tracking-widest">ARENA <span class="text-cyan-400">NEON</span></h1>
+            </div>
+            
+            <nav class="flex gap-10">
+                <button onclick="showView('inicio')" class="nav-link active" id="link-inicio">Torneos Activos</button>
+                <button onclick="showView('perfil')" class="nav-link" id="link-perfil">Mi Perfil</button>
+                <button onclick="showView('ranking')" class="nav-link" id="link-ranking">Clasificaciones</button>
+                <button onclick="showView('misiones')" class="nav-link" id="link-misiones">Misiones</button>
+                <button onclick="showView('soporte')" class="nav-link" id="link-soporte">Soporte</button>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <img id="nav-avatar" src="" class="w-8 h-8 rounded-full border border-cyan-500">
+                <button onclick="logout()" class="text-[9px] font-black text-zinc-500 hover:text-red-500 uppercase tracking-widest">Exit</button>
+            </div>
+        </header>
+
+        <section id="view-inicio" class="view-section active pt-32 min-h-screen flex items-center px-24">
+            <div class="grid grid-cols-1 lg:grid-cols-2 w-full items-center">
+                <div class="space-y-8">
+                    <p class="text-cyan-400 font-bold tracking-[0.5em] text-xs uppercase">Welcome to the future of gaming</p>
+                    <h2 class="text-8xl font-black font-orbitron leading-[0.85] italic tracking-tighter">
+                        TU ARENA <br> <span class="text-transparent" style="-webkit-text-stroke: 1px white;">TE ESPERA.</span>
+                    </h2>
+                    <div class="flex gap-6 items-center">
+                        <button onclick="showView('torneos')" class="btn-arena">Explora Torneos</button>
+                        <div class="h-[1px] w-20 bg-white/20"></div>
+                        <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Now Playing: Valorant</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-center lg:justify-end">
+                    <div class="hud-status">
+                        <p class="text-3xl font-black font-orbitron">147,352</p>
+                        <p class="text-[8px] font-bold text-green-500 tracking-[0.2em] uppercase">Guerreros Online</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-torneos" class="view-section pt-32 px-12 pb-20">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h3 class="font-orbitron text-4xl font-black italic">ARENA_LIVE</h3>
+                    <div class="h-1 w-20 bg-cyan-500 mt-2"></div>
+                </div>
+                <p class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Selecciona tu desafío</p>
+            </div>
+            <div id="grid-torneos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+        </section>
+
+        <section id="view-perfil" class="view-section pt-32 px-12 max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div class="neon-panel p-10 rounded-xl text-center">
+                    <img id="p-img" class="w-32 h-32 rounded-full mx-auto border-2 border-cyan-400 p-1 mb-6">
+                    <h4 id="p-nombre" class="font-orbitron text-xl font-bold uppercase"></h4>
+                    <p id="p-frase" class="text-zinc-500 text-xs italic mt-2 mb-8"></p>
+                    <button onclick="logout()" class="text-[10px] font-bold text-red-500 border border-red-500/30 px-6 py-2 rounded hover:bg-red-500 hover:text-white transition">Cerrar Sesión</button>
+                </div>
+                <div class="md:col-span-2 grid grid-cols-2 gap-6">
+                    <div class="neon-panel p-8 rounded-xl flex flex-col justify-center items-center">
+                        <span class="text-5xl font-black font-orbitron text-cyan-400" id="p-xp">0</span>
+                        <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-2">Puntos de Experiencia</span>
+                    </div>
+                    <div class="neon-panel p-8 rounded-xl flex flex-col justify-center items-center">
+                        <span class="text-5xl font-black font-orbitron text-pink-500" id="p-wins">0</span>
+                        <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-2">Victorias Totales</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-soporte" class="view-section pt-32 px-12 max-w-2xl mx-auto">
+            <div class="neon-panel p-10 rounded-xl">
+                <h3 class="font-orbitron text-xl mb-6 italic text-cyan-400">ENVIAR_TICKET</h3>
+                <div class="space-y-4">
+                    <input id="s-asunto" placeholder="TEMA DEL PROBLEMA" class="w-full bg-black/40 p-4 border border-white/10 outline-none focus:border-cyan-400 text-xs font-bold">
+                    <textarea id="s-mensaje" rows="5" placeholder="DETALLES DE LA INCIDENCIA..." class="w-full bg-black/40 p-4 border border-white/10 outline-none focus:border-cyan-400 text-xs font-bold"></textarea>
+                    <button onclick="enviarTicket()" class="w-full btn-arena">Transmitir Reporte</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const _supa = supabase.createClient('https://qxvqxdsfcvdmanxtzmkn.supabase.co', 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07');
+        let user = null;
+
+        function showView(v) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
+            document.getElementById('view-' + v).classList.add('active');
+            const link = document.getElementById('link-' + v);
+            if(link) link.classList.add('active');
+
+            if(v === 'torneos') cargarTorneos();
+            if(v === 'perfil') syncProfile();
+        }
+
+        document.getElementById('auth-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('u-email').value;
+            const pass = document.getElementById('u-pass').value;
+            const { data, error } = await _supa.auth.signInWithPassword({ email, password: pass });
+            if(error) {
+                const { error: regErr } = await _supa.auth.signUp({ email, password: pass });
+                if(regErr) alert("ACCESO DENEGADO"); else alert("NUEVO GUERRERO REGISTRADO");
+            }
+        };
+
+        _supa.auth.onAuthStateChange((ev, session) => {
+            if(session) {
+                user = session.user;
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').classList.remove('hidden');
+                syncProfile();
+                initRealtime();
+            }
+        });
+
+        async function syncProfile() {
+            const { data } = await _supa.from('perfiles').select('*').eq('id', user.id).single();
+            if(data) {
+                document.getElementById('p-nombre').innerText = data.nombre;
+                document.getElementById('p-frase').innerText = data.frase_batalla;
+                document.getElementById('p-xp').innerText = data.xp.toLocaleString();
+                document.getElementById('p-wins').innerText = data.victorias;
+                document.getElementById('p-img').src = data.avatar_url;
+                document.getElementById('nav-avatar').src = data.avatar_url;
+            }
+        }
+
+        async function cargarTorneos() {
+            const { data } = await _supa.from('torneos').select('*').order('created_at', { ascending: false });
+            document.getElementById('grid-torneos').innerHTML = data.map(t => `
+                <div class="neon-panel p-8 rounded-xl relative group">
+                    <div class="absolute top-4 right-4 text-[8px] font-black text-cyan-400 tracking-tighter">ID: ${t.id.slice(0,8)}</div>
+                    <p class="text-[10px] font-bold text-pink-500 uppercase tracking-widest mb-1">${t.juego}</p>
+                    <h4 class="font-orbitron text-xl font-black italic mb-6">${t.nombre}</h4>
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-[9px] font-bold text-zinc-500 uppercase">Capacidad Arena</span>
+                        <span class="text-sm font-black font-orbitron text-cyan-400">${t.inscritos}/${t.capacidad}</span>
+                    </div>
+                    <div class="h-1 w-full bg-white/5 mb-8 rounded-full overflow-hidden">
+                        <div class="h-full bg-cyan-400 shadow-[0_0_10px_#00f2ff]" style="width: ${(t.inscritos/t.capacidad)*100}%"></div>
+                    </div>
+                    <button onclick="unirseTorneo('${t.id}', ${t.inscritos})" class="w-full py-3 bg-white text-black font-black font-orbitron text-[9px] uppercase tracking-widest hover:bg-cyan-400 transition">Entrar a Batalla</button>
+                </div>
+            `).join('');
+        }
+
+        async function unirseTorneo(id, count) {
+            await _supa.from('torneos').update({ inscritos: count + 1 }).eq('id', id);
+            alert("CONEXIÓN ESTABLECIDA - ESTÁS DENTRO");
+        }
+
+        async function enviarTicket() {
+            const asunto = document.getElementById('s-asunto').value;
+            const mensaje = document.getElementById('s-mensaje').value;
+            await _supa.from('tickets_soporte').insert({ user_id: user.id, asunto, mensaje });
+            alert("TRANSMISIÓN COMPLETADA");
+            showView('inicio');
+        }
+
+        function initRealtime() {
+            _supa.channel('arena_pro').on('postgres_changes', { event: '*', schema: 'public', table: 'torneos' }, () => cargarTorneos()).subscribe();
+            _supa.channel('profile_pro').on('postgres_changes', { event: '*', schema: 'public', table: 'perfiles' }, () => syncProfile()).subscribe();
+        }
+
+        async function logout() { await _supa.auth.signOut(); location.reload(); }
+    </script>
 </body>
 </html>
