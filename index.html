@@ -3,144 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARENA NEON | ULTIMATE CONNECT</title>
+    <title>ARENA NEON | PLAYER PORTAL</title>
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --neon: #00f2ff;
-            --pink: #ff00ff;
-            --dark: #020408;
-            --glass: rgba(7, 10, 15, 0.92);
+            --brand: #00bac7;
+            --brand-light: #e0f7f8;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --border: #e2e8f0;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; min-height: 100vh; overflow-x: hidden; }
-
-        /* FONDO DINÁMICO */
-        .bg-system { position: fixed; inset: 0; z-index: -2; background: #000; }
-        .slide {
-            position: absolute; inset: 0; background-size: cover; background-position: center;
-            opacity: 0; animation: softFade 30s linear infinite;
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-dark); 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; min-height: 100vh; overflow-x: hidden;
         }
-        .slide:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2000'); }
-        @keyframes softFade { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.4; } }
-        .bg-overlay { position: fixed; inset: 0; z-index: -1; background: linear-gradient(to bottom, transparent, var(--dark)); }
 
-        /* UI */
-        .glass { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
-        
-        .btn-cyber {
-            background: transparent; border: 1px solid var(--neon); color: white;
-            font-family: 'Orbitron'; font-weight: 700; font-size: 10px;
-            text-transform: uppercase; letter-spacing: 2px;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            transition: 0.3s; cursor: pointer; padding: 15px 30px;
-        }
-        .btn-cyber:hover:not(:disabled) { background: var(--neon); color: black; box-shadow: 0 0 20px var(--neon); }
-        .btn-cyber:disabled { border-color: #333; color: #555; cursor: not-allowed; }
-        
-        .app-view { display: none; width: 100%; animation: fadeInUp 0.5s ease forwards; }
-        .app-view.active { display: block; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        #loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        /* HEADER ESTILO APP */
+        header {
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--border);
+            padding: 1rem 1.5rem;
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* TARJETAS DE TORNEO */
+        .tournament-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .tournament-card:hover {
+            border-color: var(--brand);
+            transform: translateY(-2px);
+        }
+
+        /* BOTONES */
+        .btn-nexus {
+            background: var(--brand);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-nexus:hover:not(:disabled) {
+            filter: brightness(1.1);
+            box-shadow: 0 4px 15px rgba(0, 186, 199, 0.3);
+        }
+
+        .btn-nexus:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        /* NAVEGACIÓN INFERIOR (Mobile First) */
+        nav.bottom-nav {
+            background: var(--card-bg);
+            border-top: 2px solid var(--border);
+            position: fixed; bottom: 0; width: 100%;
+            display: flex; justify-content: space-around;
+            padding: 0.8rem 0; z-index: 100;
+        }
+
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 0.65rem; font-weight: 800; color: #94a3b8;
+            cursor: pointer; transition: 0.3s;
+        }
+
+        .nav-item.active { color: var(--brand); }
+        .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; }
+
+        /* VISTAS */
+        .view-section { display: none; padding: 6rem 1.5rem 8rem 1.5rem; max-width: 600px; margin: 0 auto; }
+        .view-section.active { display: block; animation: slideUp 0.4s ease; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .xp-badge {
+            background: var(--brand-light);
+            color: var(--brand);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+        }
+
+        /* INPUTS LOGIN */
+        input {
+            background: #f1f5f9;
+            border: 2px solid transparent;
+            padding: 14px;
+            border-radius: 12px;
+            width: 100%;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        input:focus {
+            border-color: var(--brand);
+            background: white;
+            outline: none;
+        }
+
+        #loader {
+            position: fixed; inset: 0; background: white; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+        }
     </style>
 </head>
 <body>
 
-    <div class="bg-system"><div class="slide"></div></div>
-    <div class="bg-overlay"></div>
-
     <div id="loader">
-        <div class="w-10 h-10 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+        <div class="w-10 h-10 border-4 border-[var(--brand)] border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-6">
-        <div class="glass p-8 rounded-[2rem] w-full max-w-md text-center">
-            <h2 class="font-orbitron text-3xl font-black mb-8 italic uppercase text-cyan-400">ARENA NEON</h2>
-            <form id="auth-form" class="space-y-4 text-left">
-                <div id="reg-extra" class="hidden space-y-4">
-                    <input id="reg-name" type="text" placeholder="APODO DE GUERRERO" class="w-full bg-black/50 p-4 rounded-xl border border-white/10">
+    <div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-6 bg-slate-50">
+        <div class="w-full max-w-sm">
+            <div class="text-center mb-10">
+                <div class="inline-block p-4 bg-[var(--brand)] text-white rounded-2xl font-black font-orbitron text-2xl mb-4">AR</div>
+                <h2 class="font-orbitron text-xl font-black">NEXUS_CLIENT</h2>
+                <p class="text-slate-400 text-sm font-semibold">Ingresa a la arena de combate</p>
+            </div>
+
+            <form id="auth-form" class="bg-white p-8 rounded-[2rem] shadow-xl border-2 border-slate-100">
+                <div id="reg-fields" class="hidden">
+                    <input type="text" id="user-nick" placeholder="NICKNAME (EJ: NINJA)">
                 </div>
-                <input id="auth-email" type="email" placeholder="CORREO" class="w-full bg-black/50 p-4 rounded-xl border border-white/10" required>
-                <input id="auth-pass" type="password" placeholder="CONTRASEÑA" class="w-full bg-black/50 p-4 rounded-xl border border-white/10" required>
-                <button type="submit" id="auth-btn" class="w-full btn-cyber">Entrar</button>
+                <input type="email" id="user-email" placeholder="CORREO ELECTRÓNICO" required>
+                <input type="password" id="user-pass" placeholder="CONTRASEÑA" required>
+                <button type="submit" id="btn-auth-main" class="btn-nexus mt-2">ENTRAR</button>
             </form>
-            <button onclick="toggleAuth()" class="mt-6 text-[10px] text-zinc-500 uppercase tracking-widest">¿No tienes cuenta? Regístrate</button>
+            
+            <button onclick="toggleAuth()" id="auth-toggle-btn" class="w-full text-center mt-6 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                ¿Eres nuevo? Crea tu cuenta
+            </button>
         </div>
     </div>
 
-    <div id="app-container" class="hidden">
-        <header class="fixed top-0 w-full z-50 glass p-5 flex justify-between items-center border-b border-white/5">
-            <h1 class="font-orbitron text-[10px] font-black text-cyan-400 tracking-widest">ARENA_v20</h1>
-            <div class="flex gap-3">
-                <button id="admin-tag" class="hidden text-[8px] bg-red-600 px-2 py-1 rounded font-bold">ADMIN</button>
-                <button onclick="logout()" class="text-[9px] font-bold text-zinc-400 uppercase">Salir</button>
+    <div id="app-content" class="hidden">
+        <header>
+            <div class="font-orbitron font-black text-sm tracking-tighter italic">ARENA<span class="text-[var(--brand)]">NEON</span></div>
+            <div class="flex items-center gap-3">
+                <div id="display-xp" class="xp-badge">0 XP</div>
+                <button onclick="logout()" class="text-xs font-black text-slate-300">SALIR</button>
             </div>
         </header>
 
-        <main class="pt-24 pb-32 px-6 max-w-4xl mx-auto">
-            
-            <section id="view-home" class="app-view active text-center py-10">
-                <h2 class="font-orbitron text-4xl md:text-5xl font-black italic mb-4 uppercase">
-                    TU LEYENDA <br> <span class="text-cyan-400">EMPIEZA AQUÍ.</span>
-                </h2>
-                <div class="glass p-6 rounded-2xl inline-block mb-10 border-cyan-500/20">
-                    <p id="u-name" class="font-orbitron text-xl uppercase tracking-widest text-white">---</p>
-                    <p id="u-stats" class="text-[10px] text-zinc-500 font-bold mt-1 uppercase tracking-[0.2em]">XP: 0 | VICTORIAS: 0</p>
-                </div>
-                <div class="flex flex-col gap-4 max-w-xs mx-auto">
-                    <button onclick="nav('torneos')" class="btn-cyber">Ver Torneos</button>
-                    <button id="admin-btn" onclick="nav('admin')" class="hidden btn-cyber border-red-500 text-red-500">Panel Admin</button>
-                </div>
-            </section>
+        <section id="view-home" class="view-section active text-center">
+            <div class="mb-8">
+                <div class="w-24 h-24 bg-slate-200 rounded-full mx-auto mb-4 border-4 border-white shadow-lg flex items-center justify-center text-3xl">👤</div>
+                <h2 id="player-name" class="font-orbitron text-2xl font-black uppercase tracking-tighter">---</h2>
+                <p class="text-slate-400 font-bold text-xs uppercase tracking-widest">Rango: Recluta</p>
+            </div>
 
-            <section id="view-torneos" class="app-view">
-                <h3 class="font-orbitron text-xl mb-8 uppercase italic border-l-2 border-cyan-500 pl-4 tracking-widest">Arenas Disponibles</h3>
-                <div id="torneos-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    </div>
-            </section>
-
-            <section id="view-admin" class="app-view">
-                <h3 class="font-orbitron text-xl mb-8 uppercase text-red-500">Gestión de Torneos</h3>
-                <div class="glass p-6 rounded-2xl mb-8">
-                    <form id="create-torneo-form" class="space-y-4">
-                        <input id="new-t-name" type="text" placeholder="NOMBRE DEL TORNEO" class="w-full bg-black/50 p-4 rounded-xl">
-                        <input id="new-t-game" type="text" placeholder="JUEGO (EJ: WARZONE)" class="w-full bg-black/50 p-4 rounded-xl">
-                        <input id="new-t-cap" type="number" placeholder="CAPACIDAD MÁX" class="w-full bg-black/50 p-4 rounded-xl">
-                        <button type="submit" class="w-full btn-cyber border-red-500 text-red-500">Publicar Arena</button>
-                    </form>
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Victorias</p>
+                    <p id="player-wins" class="text-2xl font-black text-pink-500">0</p>
                 </div>
-            </section>
-        </main>
+                <div class="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Global XP</p>
+                    <p id="player-xp" class="text-2xl font-black text-[var(--brand)]">0</p>
+                </div>
+            </div>
 
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass rounded-full flex justify-around p-3 w-[85%] max-w-xs">
-            <button onclick="nav('home')" class="p-2 text-xl">🏠</button>
-            <button onclick="nav('torneos')" class="p-2 text-xl">⚔️</button>
-            <button onclick="nav('ranking')" class="p-2 text-xl">🏆</button>
+            <div class="tournament-card bg-[var(--brand)] border-none text-left">
+                <h3 class="text-white font-orbitron text-sm mb-2 uppercase">Próximo Gran Evento</h3>
+                <p class="text-cyan-100 text-xs font-bold leading-relaxed">Inscríbete en los torneos abiertos para subir en el ranking global y ganar premios.</p>
+            </div>
+        </section>
+
+        <section id="view-torneos" class="view-section">
+            <h3 class="font-orbitron text-xs mb-6 uppercase tracking-widest text-slate-400">Arenas Disponibles</h3>
+            <div id="tournament-container" class="space-y-4">
+                </div>
+        </section>
+
+        <section id="view-ranking" class="view-section">
+            <h3 class="font-orbitron text-xs mb-6 uppercase tracking-widest text-slate-400">Top 10 Guerreros</h3>
+            <div id="ranking-container" class="bg-white rounded-[2rem] border-2 border-slate-100 overflow-hidden shadow-sm">
+                </div>
+        </section>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="navTo('home', this)">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                INICIO
+            </div>
+            <div class="nav-item" onclick="navTo('torneos', this)">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                ARENAS
+            </div>
+            <div class="nav-item" onclick="navTo('ranking', this)">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                RANKING
+            </div>
         </nav>
     </div>
 
     <script>
+        // CONFIGURACIÓN SUPABASE (MISMA QUE ADMIN)
         const SB_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
         const SB_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
-        const _supa = supabase.createClient(SB_URL, SB_KEY);
+        const _db = supabase.createClient(SB_URL, SB_KEY);
 
         let userSession = null;
         let isLogin = true;
-        const ADMIN_EMAIL = "admin@arena.com";
 
         window.onload = async () => {
-            const { data } = await _supa.auth.getSession();
+            const { data } = await _db.auth.getSession();
             if (data.session) {
                 userSession = data.session;
-                await checkAdmin();
-                await loadProfile();
+                await loadPlayerProfile();
             } else {
                 document.getElementById('auth-screen').classList.remove('hidden');
             }
@@ -149,110 +247,137 @@
 
         function toggleAuth() {
             isLogin = !isLogin;
-            document.getElementById('reg-extra').classList.toggle('hidden', isLogin);
-            document.getElementById('auth-btn').innerText = isLogin ? 'Entrar' : 'Registrar';
+            document.getElementById('reg-fields').classList.toggle('hidden', isLogin);
+            document.getElementById('btn-auth-main').innerText = isLogin ? 'ENTRAR' : 'REGISTRARME';
+            document.getElementById('auth-toggle-btn').innerText = isLogin ? '¿Eres nuevo? Crea tu cuenta' : '¿Ya tienes cuenta? Entra';
         }
 
-        async function checkAdmin() {
-            if(userSession.user.email === ADMIN_EMAIL) {
-                document.getElementById('admin-tag').classList.remove('hidden');
-                document.getElementById('admin-btn').classList.remove('hidden');
-            }
-        }
-
-        // LOGIN / REGISTRO
+        // AUTH LOGIC
         document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
+            document.getElementById('loader').style.display = 'flex';
+            
+            const email = document.getElementById('user-email').value;
+            const pass = document.getElementById('user-pass').value;
 
             if (isLogin) {
-                const { error } = await _supa.auth.signInWithPassword({ email, password: pass });
+                const { error } = await _db.auth.signInWithPassword({ email, password: pass });
                 if (error) alert(error.message); else location.reload();
             } else {
-                const name = document.getElementById('reg-name').value;
-                const { data, error } = await _supa.auth.signUp({ email, password: pass });
+                const nick = document.getElementById('user-nick').value;
+                if(!nick) return alert("Elige un nickname");
+                
+                const { data, error } = await _db.auth.signUp({ email, password: pass });
                 if (error) return alert(error.message);
-                await _supa.from('perfiles').insert({ id: data.user.id, nombre: name.toUpperCase(), xp: 0, victorias: 0 });
+                
+                // Crear perfil en la tabla 'perfiles' que el admin lee
+                await _db.from('perfiles').insert({ 
+                    id: data.user.id, 
+                    nombre: nick.toUpperCase(), 
+                    xp: 0, 
+                    victorias: 0 
+                });
                 location.reload();
             }
         };
 
-        async function loadProfile() {
-            const { data } = await _supa.from('perfiles').select('*').eq('id', userSession.user.id).single();
+        async function loadPlayerProfile() {
+            const { data } = await _db.from('perfiles').select('*').eq('id', userSession.user.id).single();
             if (data) {
-                document.getElementById('u-name').innerText = data.nombre;
-                document.getElementById('u-stats').innerText = `XP: ${data.xp} | VICTORIAS: ${data.victorias}`;
-                document.getElementById('app-container').classList.remove('hidden');
+                document.getElementById('player-name').innerText = data.nombre;
+                document.getElementById('player-xp').innerText = data.xp;
+                document.getElementById('player-wins').innerText = data.victorias;
+                document.getElementById('display-xp').innerText = `${data.xp} XP`;
+                document.getElementById('app-content').classList.remove('hidden');
+                document.getElementById('auth-screen').classList.add('hidden');
             }
         }
 
-        function nav(id) {
-            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + id).classList.add('active');
-            if(id === 'torneos') loadTorneos();
+        function navTo(view, el) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('view-' + view).classList.add('active');
+            el.classList.add('active');
+
+            if(view === 'torneos') loadTournaments();
+            if(view === 'ranking') loadRanking();
         }
 
-        // --- SISTEMA DE INSCRIPCIÓN ---
-        async function loadTorneos() {
-            const { data: torneos } = await _supa.from('torneos').select('*').order('created_at', {ascending: false});
-            const list = document.getElementById('torneos-list');
+        // DATA: TORNEOS
+        async function loadTournaments() {
+            const { data } = await _db.from('torneos').select('*').order('created_at', {ascending: false});
+            const container = document.getElementById('tournament-container');
             
-            list.innerHTML = (torneos || []).map(t => {
-                const full = t.inscritos >= t.capacidad;
+            container.innerHTML = (data || []).map(t => {
+                const isFull = t.inscritos >= t.capacidad;
+                const progress = (t.inscritos / t.capacidad) * 100;
+                
                 return `
-                <div class="glass p-6 rounded-2xl border-l-2 border-cyan-500">
-                    <p class="text-[9px] text-zinc-500 font-bold uppercase mb-1">${t.juego}</p>
-                    <h4 class="font-orbitron text-lg font-black uppercase text-white mb-2">${t.nombre}</h4>
-                    <div class="flex justify-between items-center mb-6">
-                        <span class="text-xs text-zinc-400">Cupos: ${t.inscritos}/${t.capacidad}</span>
-                        <div class="h-1 w-24 bg-zinc-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-cyan-500" style="width: ${(t.inscritos/t.capacidad)*100}%"></div>
+                <div class="tournament-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${t.juego}</p>
+                            <h4 class="font-orbitron text-lg font-black">${t.nombre}</h4>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-slate-400">${t.inscritos}/${t.capacidad}</span>
                         </div>
                     </div>
+                    
+                    <div class="w-full h-2 bg-slate-100 rounded-full mb-6 overflow-hidden">
+                        <div class="h-full bg-[var(--brand)]" style="width: ${progress}%"></div>
+                    </div>
+
                     <button 
-                        onclick="unirseTorneo('${t.id}', ${t.inscritos}, ${t.capacidad})" 
-                        class="w-full btn-cyber" 
-                        ${full ? 'disabled' : ''}>
-                        ${full ? 'ARENA LLENA' : 'UNIRSE AHORA'}
+                        onclick="joinTournament('${t.id}', ${t.inscritos}, ${t.capacidad})"
+                        class="btn-nexus" 
+                        ${isFull ? 'disabled' : ''}>
+                        ${isFull ? 'ARENA LLENA' : 'INSCRIBIRME GRATIS'}
                     </button>
                 </div>
-            `}).join('');
+                `;
+            }).join('');
         }
 
-        async function unirseTorneo(tId, actual, max) {
-            if(actual >= max) return alert("Esta arena ya está llena.");
+        async function joinTournament(id, current, max) {
+            if(current >= max) return;
             
-            // 1. Aumentar el contador en la tabla 'torneos'
-            const { error: updateError } = await _supa
-                .from('torneos')
-                .update({ inscritos: actual + 1 })
-                .eq('id', tId);
+            // Confirmación visual
+            if(!confirm("¿Deseas inscribirte a este torneo?")) return;
 
-            if(updateError) {
-                alert("Error al inscribirse: " + updateError.message);
-                return;
+            const { error } = await _db.from('torneos').update({ 
+                inscritos: current + 1 
+            }).eq('id', id);
+
+            if(!error) {
+                alert("¡INSCRIPCIÓN EXITOSA! Te vemos en la arena.");
+                loadTournaments();
             }
-
-            // 2. Registrar en una tabla de 'inscripciones' (Opcional, pero recomendado)
-            // Aquí simplemente mostramos éxito para esta versión
-            alert("¡INSCRIPCIÓN EXITOSA! Prepárate para el combate.");
-            loadTorneos(); // Recargar lista
         }
 
-        // --- LÓGICA ADMIN ---
-        document.getElementById('create-torneo-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const { error } = await _supa.from('torneos').insert({
-                nombre: document.getElementById('new-t-name').value.toUpperCase(),
-                juego: document.getElementById('new-t-game').value.toUpperCase(),
-                capacidad: parseInt(document.getElementById('new-t-cap').value),
-                inscritos: 0
-            });
-            if(!error) { alert("Arena publicada."); e.target.reset(); loadTorneos(); }
-        };
+        // DATA: RANKING
+        async function loadRanking() {
+            const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false}).limit(10);
+            const container = document.getElementById('ranking-container');
+            
+            container.innerHTML = (data || []).map((u, i) => `
+                <div class="flex items-center justify-between p-4 ${i < 9 ? 'border-b border-slate-50' : ''} ${u.id === userSession.user.id ? 'bg-cyan-50' : ''}">
+                    <div class="flex items-center gap-4">
+                        <span class="font-orbitron text-xs ${i === 0 ? 'text-yellow-500' : 'text-slate-300'}">#${i+1}</span>
+                        <div>
+                            <p class="text-sm font-black uppercase">${u.nombre}</p>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">${u.victorias} VICTORIAS</p>
+                        </div>
+                    </div>
+                    <div class="font-orbitron text-sm font-black text-[var(--brand)]">${u.xp} XP</div>
+                </div>
+            `).join('');
+        }
 
-        async function logout() { await _supa.auth.signOut(); location.reload(); }
+        async function logout() {
+            await _db.auth.signOut();
+            location.reload();
+        }
     </script>
 </body>
 </html>
