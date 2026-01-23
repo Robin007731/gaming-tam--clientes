@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARENA NEON | CLIENTE MULTIVERSE</title>
+    <title>ARENA NEON | ULTIMATE CLIENT</title>
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,10 +13,10 @@
         :root {
             --neon: #39ff14;
             --neon-soft: rgba(57, 255, 20, 0.2);
-            --overlay: rgba(0, 0, 0, 0.82);
+            --overlay: rgba(0, 0, 0, 0.85); /* Oscurece la imagen para que resalte el texto */
         }
 
-        /* --- MOTOR DE FONDOS --- */
+        /* --- MOTOR DE FONDOS CARGADOS --- */
         body { 
             background: #000; color: #fff; 
             font-family: 'Rajdhani', sans-serif;
@@ -26,77 +26,72 @@
         #bg-slider {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2; background-size: cover; background-position: center;
-            transition: background-image 2s ease-in-out;
-            filter: brightness(0.4) saturate(1.2);
+            transition: background-image 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: brightness(0.5) saturate(1.2); /* Mejora el look gamer */
         }
 
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; background: radial-gradient(circle, transparent 10%, var(--overlay) 90%);
+            z-index: -1; 
+            background: radial-gradient(circle, transparent 0%, var(--overlay) 100%),
+                        linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.8));
         }
 
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
 
-        /* --- ELEMENTOS SIN RECUADROS --- */
+        /* --- INTERFAZ SIN RECUADROS --- */
         header {
             padding: 1.5rem; position: fixed; top: 0; width: 100%; z-index: 100;
             display: flex; justify-content: space-between; align-items: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            backdrop-filter: blur(8px);
         }
 
         .view { 
             display: none; padding: 7rem 1.5rem 8rem 1.5rem; 
             max-width: 480px; margin: 0 auto; 
         }
-        .view.active { display: block; animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .view.active { display: block; animation: fadeIn 0.8s ease; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- GLASS STYLE (FLOTANTE) --- */
+        /* --- COMPONENTES GLASS --- */
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(15px);
             margin-bottom: 1.2rem; padding: 1.5rem;
-            border-left: 2px solid var(--neon);
-            border-radius: 4px 16px 16px 4px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-left: 3px solid var(--neon);
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .btn-gamer {
+        .btn-neon {
             background: var(--neon); color: #000;
             font-family: 'Orbitron'; font-weight: 900;
-            padding: 14px; border-radius: 4px;
-            text-transform: uppercase; font-size: 0.7rem;
-            box-shadow: 0 0 15px var(--neon-soft);
-            transition: 0.3s; width: 100%; border: none;
+            padding: 15px; border-radius: 2px;
+            text-transform: uppercase; font-size: 0.75rem;
+            box-shadow: 0 0 20px var(--neon-soft);
+            transition: 0.3s; width: 100%; border: none; cursor: pointer;
         }
-        .btn-gamer:hover:not(:disabled) { box-shadow: 0 0 25px var(--neon); transform: translateY(-2px); }
-        .btn-gamer:disabled { background: #1a301a; color: #444; }
+        .btn-neon:hover:not(:disabled) { box-shadow: 0 0 30px var(--neon); transform: scale(1.02); }
+        .btn-neon:disabled { background: #1a301a; color: #444; }
 
         /* --- INPUTS --- */
         input, select, textarea {
-            background: rgba(0, 0, 0, 0.5);
-            border: none; border-bottom: 1px solid var(--neon-soft);
+            background: rgba(0, 0, 0, 0.6);
+            border: none; border-bottom: 1px solid var(--neon);
             color: #fff; padding: 12px; width: 100%;
-            margin-bottom: 1.2rem; outline: none; transition: 0.3s;
+            margin-bottom: 1.2rem; outline: none;
         }
-        input:focus { border-bottom-color: var(--neon); background: rgba(0, 0, 0, 0.7); }
 
         /* --- NAV INFERIOR --- */
         .nav-bottom {
             position: fixed; bottom: 0; width: 100%;
             display: flex; justify-content: space-around;
-            padding: 1.2rem 0; background: linear-gradient(to top, #000 70%, transparent);
+            padding: 1.5rem 0; background: linear-gradient(to top, #000 80%, transparent);
             z-index: 100;
         }
-        .nav-link { color: #555; font-size: 0.6rem; font-weight: 800; cursor: pointer; text-align: center; }
-        .nav-link.active { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
-
-        .avatar-img {
-            width: 100px; height: 100px; border-radius: 50%;
-            border: 2px solid var(--neon); padding: 4px;
-            background: rgba(0,0,0,0.5); box-shadow: 0 0 20px var(--neon-soft);
-        }
+        .nav-link { color: #555; font-size: 0.65rem; font-weight: 800; cursor: pointer; text-align: center; }
+        .nav-link.active { color: var(--neon); text-shadow: 0 0 15px var(--neon); }
     </style>
 </head>
 <body>
@@ -106,84 +101,79 @@
 
     <div id="auth-view" class="min-h-screen flex items-center justify-center p-8">
         <div class="w-full max-w-sm text-center">
-            <h1 class="font-orbitron text-4xl font-black text-[var(--neon)] mb-10 tracking-tighter italic">ARENA_NEON</h1>
+            <h1 class="font-orbitron text-4xl font-black text-[var(--neon)] mb-10 tracking-widest italic drop-shadow-2xl">ARENA_NEON</h1>
             <form id="form-auth">
                 <div id="box-reg" class="hidden">
-                    <input type="text" id="in-nick" placeholder="NICKNAME_PLAYER">
+                    <input type="text" id="in-nick" placeholder="CODENAME (NICKNAME)">
                 </div>
                 <input type="email" id="in-email" placeholder="EMAIL_OPERATIVO" required>
-                <input type="password" id="in-pass" placeholder="PASSWORD_KEY" required>
-                <button type="submit" id="btn-auth-txt" class="btn-gamer mt-4">INGRESAR AL SISTEMA</button>
+                <input type="password" id="in-pass" placeholder="ACCESS_CODE" required>
+                <button type="submit" class="btn-neon mt-4">Entrar en la Red</button>
             </form>
-            <p onclick="toggleAuth()" class="mt-8 text-[10px] text-zinc-500 font-bold uppercase cursor-pointer hover:text-white">
-                ¿Nueva Unidad? <span class="text-[var(--neon)] underline">Registrar Perfil</span>
+            <p onclick="toggleAuth()" class="mt-8 text-[10px] text-zinc-400 font-black uppercase cursor-pointer">
+                ¿Nueva Unidad? <span class="text-white underline">Registrar Perfil</span>
             </p>
         </div>
     </div>
 
     <div id="app-wrap" class="hidden">
         <header>
-            <div class="font-orbitron text-xs font-black text-[var(--neon)] tracking-widest">PHANTOM_PORTAL_v70</div>
-            <div id="xp-badge" class="font-orbitron text-[10px] bg-white/5 px-3 py-1 rounded-full border border-white/10">0 XP</div>
+            <div class="font-orbitron text-xs font-black text-[var(--neon)]">PHANTOM_SYS_v70</div>
+            <div id="xp-badge" class="font-orbitron text-[10px] bg-[var(--neon)] text-black px-3 py-1 font-bold">0 XP</div>
         </header>
 
         <section id="v-home" class="view active">
             <div class="flex flex-col items-center mb-10">
-                <img id="display-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Valorant" class="avatar-img mb-4">
-                <h2 id="display-nick" class="font-orbitron text-2xl font-black uppercase tracking-tighter text-white">---</h2>
-                <div class="flex gap-10 mt-6">
+                <img id="display-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Valorant" class="w-24 h-24 rounded-full border-2 border-[var(--neon)] p-1 bg-black/50 mb-4">
+                <h2 id="display-nick" class="font-orbitron text-3xl font-black uppercase tracking-tighter">OPERATIVO</h2>
+                <div class="flex gap-10 mt-8">
                     <div class="text-center">
-                        <p id="display-wins" class="text-xl font-bold">0</p>
-                        <p class="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Victorias</p>
+                        <p id="display-wins" class="text-2xl font-bold">0</p>
+                        <p class="text-[9px] text-zinc-500 font-black uppercase tracking-[0.2em]">Victorias</p>
                     </div>
                     <div class="text-center">
-                        <p id="display-xp" class="text-xl font-bold text-[var(--neon)]">0</p>
-                        <p class="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Total XP</p>
+                        <p id="display-xp" class="text-2xl font-bold text-[var(--neon)]">0</p>
+                        <p class="text-[9px] text-zinc-500 font-black uppercase tracking-[0.2em]">Puntos XP</p>
                     </div>
                 </div>
             </div>
-            <button onclick="changeV('arenas', this)" class="btn-gamer">Buscar Partida</button>
+            <button onclick="changeV('arenas', this)" class="btn-neon">Unirse a Combate</button>
         </section>
 
         <section id="v-arenas" class="view">
-            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Arenas_Activas</h3>
+            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Protocolos_Activos</h3>
             <div id="arena-list"></div>
         </section>
 
         <section id="v-ranking" class="view">
-            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Top_Operativos</h3>
+            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Jerarquía_Global</h3>
             <div id="ranking-list" class="space-y-1"></div>
         </section>
 
         <section id="v-support" class="view">
-            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Enlace_Comando</h3>
+            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Comando_Admin</h3>
             <div class="glass-card">
-                <p class="text-[11px] text-zinc-400 mb-4 font-medium uppercase">Envía un mensaje directo al administrador del evento:</p>
-                <textarea id="support-text" rows="4" placeholder="Escribe tu consulta o reporte aquí..."></textarea>
-                <button onclick="sendSupportMsg()" class="btn-gamer">Enviar Señal</button>
+                <textarea id="support-text" rows="4" placeholder="Reportar error o contactar al admin..."></textarea>
+                <button onclick="sendSupportMsg()" class="btn-neon">Enviar Reporte</button>
             </div>
         </section>
 
         <section id="v-settings" class="view">
-            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Ajustes_Perfil</h3>
+            <h3 class="font-orbitron text-[10px] text-zinc-400 mb-8 uppercase tracking-[0.3em]">Sincronización_Perfil</h3>
             <div class="glass-card">
-                <label class="text-[9px] font-black text-zinc-500 uppercase block mb-2">Editar Nickname</label>
-                <input type="text" id="new-nick-in" placeholder="Nuevo apodo...">
-                
-                <label class="text-[9px] font-black text-zinc-500 uppercase block mb-2">Tema de Avatar</label>
+                <input type="text" id="new-nick-in" placeholder="Cambiar Nickname...">
                 <select id="new-avatar-sel" onchange="previewAvatar()">
-                    <option value="Valorant">Valorant Style</option>
-                    <option value="Minecraft">Minecraft Style</option>
-                    <option value="FreeFire">Free Fire Style</option>
-                    <option value="FIFA">FIFA Style</option>
+                    <option value="Valorant">Tema Valorant</option>
+                    <option value="Minecraft">Tema Minecraft</option>
+                    <option value="FreeFire">Tema Free Fire</option>
+                    <option value="FIFA">Tema FIFA Mobile</option>
                 </select>
-                
-                <button onclick="saveSettings()" class="btn-gamer mt-4">Confirmar Cambios</button>
+                <button onclick="saveSettings()" class="btn-neon mt-4">Guardar Cambios</button>
             </div>
         </section>
 
         <nav class="nav-bottom">
-            <div class="nav-link active" onclick="changeV('home', this)">HOME</div>
+            <div class="nav-link active" onclick="changeV('home', this)">INICIO</div>
             <div class="nav-link" onclick="changeV('arenas', this)">ARENAS</div>
             <div class="nav-link" onclick="changeV('ranking', this)">TOP</div>
             <div class="nav-link" onclick="changeV('support', this)">HELP</div>
@@ -198,22 +188,23 @@
         const _db = supabase.createClient(SB_URL, SB_KEY);
 
         let userSession = null;
-        let isLoginMode = true;
+        let isLogin = true;
 
-        // SLIDER IMÁGENES
+        // --- IMÁGENES PRECARGADAS ---
         const gameBgs = [
-            'https://images8.alphacoders.com/107/1073860.png', // Valorant
+            'https://images8.alphacoders.com/107/1073860.png', // Valorant Art
+            'https://images.alphacoders.com/114/1149723.jpg', // Minecraft RTX
             'https://images7.alphacoders.com/112/1125211.jpg', // Free Fire
-            'https://images.alphacoders.com/114/1149723.jpg', // Minecraft
-            'https://images2.alphacoders.com/132/1328006.jpeg' // FIFA
+            'https://images2.alphacoders.com/132/1328006.jpeg', // FIFA / EA Sports FC
+            'https://wallpapers.com/images/featured/cod-mobile-background-7u3p99pndw37m7at.jpg' // Bonus: COD Mobile
         ];
-        let bgIndex = 0;
-        function slideBg() {
-            document.getElementById('bg-slider').style.backgroundImage = `url('${gameBgs[bgIndex]}')`;
-            bgIndex = (bgIndex + 1) % gameBgs.length;
+        let bgIdx = 0;
+        function slide() {
+            document.getElementById('bg-slider').style.backgroundImage = `url('${gameBgs[bgIdx]}')`;
+            bgIdx = (bgIdx + 1) % gameBgs.length;
         }
-        setInterval(slideBg, 6000);
-        slideBg();
+        setInterval(slide, 7000); // Cambia cada 7 segundos
+        slide();
 
         window.onload = async () => {
             const { data } = await _db.auth.getSession();
@@ -224,22 +215,19 @@
         };
 
         function toggleAuth() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('box-reg').classList.toggle('hidden', isLoginMode);
-            document.getElementById('btn-auth-txt').innerText = isLoginMode ? 'INGRESAR AL SISTEMA' : 'ESTABLECER CONEXIÓN';
+            isLogin = !isLogin;
+            document.getElementById('box-reg').classList.toggle('hidden', isLogin);
         }
 
         document.getElementById('form-auth').onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('in-email').value;
             const pass = document.getElementById('in-pass').value;
-
-            if (isLoginMode) {
+            if (isLogin) {
                 const { error } = await _db.auth.signInWithPassword({ email, password: pass });
-                if (error) alert("Credenciales incorrectas"); else location.reload();
+                if (error) alert("Acceso denegado"); else location.reload();
             } else {
                 const nick = document.getElementById('in-nick').value;
-                if(!nick) return alert("Nickname requerido");
                 const { data, error } = await _db.auth.signUp({ email, password: pass });
                 if (error) return alert(error.message);
                 await _db.from('perfiles').insert({ id: data.user.id, nombre: nick.toUpperCase(), xp: 0, victorias: 0 });
@@ -269,34 +257,33 @@
         }
 
         async function fetchArenas() {
-            const { data } = await _db.from('torneos').select('*').order('created_at', {ascending: false});
+            const { data } = await _db.from('torneos').select('*');
             const container = document.getElementById('arena-list');
             container.innerHTML = (data || []).map(t => `
                 <div class="glass-card">
                     <p class="text-[9px] font-black text-[var(--neon)] uppercase tracking-widest">${t.juego}</p>
-                    <h4 class="font-orbitron text-lg font-black uppercase italic">${t.nombre}</h4>
-                    <p class="text-[10px] text-zinc-500 mb-4">${t.inscritos}/${t.capacidad} OPERATIVOS</p>
-                    <button onclick="joinArena('${t.id}', ${t.inscritos}, ${t.capacidad})" class="btn-gamer" ${t.inscritos >= t.capacidad ? 'disabled' : ''}>
-                        ${t.inscritos >= t.capacidad ? 'ARENA LLENA' : 'INICIAR INSERCIÓN'}
+                    <h4 class="font-orbitron text-lg font-black italic uppercase">${t.nombre}</h4>
+                    <p class="text-[10px] text-zinc-400 mb-4">${t.inscritos}/${t.capacidad} JUGADORES</p>
+                    <button onclick="join('${t.id}', ${t.inscritos}, ${t.capacidad})" class="btn-neon" ${t.inscritos >= t.capacidad ? 'disabled' : ''}>
+                        ${t.inscritos >= t.capacidad ? 'LLENO' : 'INSCRIBIRSE'}
                     </button>
                 </div>
             `).join('');
         }
 
-        async function joinArena(id, cur, max) {
-            if(cur >= max) return;
+        async function join(id, cur, max) {
             const { error } = await _db.from('torneos').update({ inscritos: cur + 1 }).eq('id', id);
-            if(!error) { alert("¡Inscrito correctamente!"); fetchArenas(); }
+            if(!error) { alert("¡Inscrito!"); fetchArenas(); }
         }
 
         async function fetchRanking() {
             const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false});
             const container = document.getElementById('ranking-list');
             container.innerHTML = (data || []).map((u, i) => `
-                <div class="flex justify-between items-center p-4 bg-black/40 mb-1 ${u.id === userSession.user.id ? 'border-l-2 border-[var(--neon)]' : ''}">
-                    <span class="text-[10px] font-bold text-zinc-600">#${i+1}</span>
+                <div class="flex justify-between items-center p-4 bg-black/60 mb-1 ${u.id === userSession.user.id ? 'border-l-2 border-[var(--neon)] bg-white/5' : ''}">
+                    <span class="text-[10px] font-bold text-zinc-600 italic">#${i+1}</span>
                     <span class="text-sm font-bold uppercase">${u.nombre}</span>
-                    <span class="text-sm font-orbitron text-[var(--neon)]">${u.xp} XP</span>
+                    <span class="text-sm font-orbitron text-[var(--neon)]">${u.xp}</span>
                 </div>
             `).join('');
         }
@@ -315,11 +302,7 @@
             }
         }
 
-        function sendSupportMsg() {
-            alert("Mensaje enviado al Comando Administrativo.");
-            document.getElementById('support-text').value = '';
-        }
-
+        function sendSupportMsg() { alert("Reporte enviado al comando."); document.getElementById('support-text').value = ''; }
         async function logout() { await _db.auth.signOut(); location.reload(); }
     </script>
 </body>
