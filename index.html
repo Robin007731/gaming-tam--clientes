@@ -3,112 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEON ARENA | CLIENTE OFICIAL</title>
+    <title>ARENA NEON | ULTIMATE CLIENT</title>
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     
     <style>
-        :root { --neon: #00f2ff; --pink: #ff00ff; --dark: #020408; }
-        body { background: var(--dark); color: white; font-family: 'Rajdhani', sans-serif; margin: 0; overflow-x: hidden; }
-        .font-orbitron { font-family: 'Orbitron', sans-serif; }
-        
-        /* DISEÑO CYBERPUNK */
-        .glass { background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
-        .btn-cyber { 
-            background: transparent; border: 2px solid var(--neon); color: white; padding: 10px 20px;
-            font-family: 'Orbitron'; font-weight: 900; font-size: 11px; text-transform: uppercase;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); transition: 0.3s;
+        :root {
+            --neon: #00f2ff;
+            --pink: #ff00ff;
+            --dark: #020408;
+            --glass: rgba(13, 17, 23, 0.75);
         }
-        .btn-cyber:hover:not(:disabled) { background: var(--neon); color: black; box-shadow: 0 0 20px var(--neon); }
-        .btn-cyber:disabled { border-color: #334155; color: #334155; cursor: not-allowed; }
 
-        /* PANTALLA DE CARGA */
-        #loader { position: fixed; inset: 0; background: black; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            background: var(--dark);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- SISTEMA DE FONDO CINEMÁTICO (SLIDESHOW) --- */
+        .video-bg-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; overflow: hidden; background: #000;
+        }
+        .slide {
+            position: absolute; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            opacity: 0; transform: scale(1.2);
+            animation: kenBurns 42s linear infinite;
+        }
+        .slide:nth-child(1) { background-image: url('bg1.jpg'); animation-delay: 0s; }
+        .slide:nth-child(2) { background-image: url('bg2.jpg'); animation-delay: 7s; }
+        .slide:nth-child(3) { background-image: url('bg3.jpg'); animation-delay: 14s; }
+        .slide:nth-child(4) { background-image: url('bg4.jpg'); animation-delay: 21s; }
+        .slide:nth-child(5) { background-image: url('bg5.jpg'); animation-delay: 28s; }
+        .slide:nth-child(6) { background-image: url('bg6.jpg'); animation-delay: 35s; }
+
+        @keyframes kenBurns {
+            0% { opacity: 0; transform: scale(1.2); }
+            5% { opacity: 0.5; }
+            16% { opacity: 0.5; }
+            22% { opacity: 0; transform: scale(1.0); }
+            100% { opacity: 0; }
+        }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 20%, var(--dark) 95%);
+            z-index: -1;
+        }
+
+        /* --- ESTILOS CYBERPUNK --- */
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .glass { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.08); }
         
-        .app-view { display: none; }
-        .app-view.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-cyber {
+            position: relative; background: transparent; border: 2px solid var(--neon);
+            color: white; font-family: 'Orbitron'; font-weight: 900; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 2px;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            transition: all 0.3s; cursor: pointer; padding: 12px 25px;
+        }
+        .btn-cyber:hover:not(:disabled) {
+            background: var(--neon); color: black; box-shadow: 0 0 20px var(--neon);
+        }
+        .btn-cyber:disabled { border-color: #334155; color: #475569; opacity: 0.5; cursor: not-allowed; }
 
-        .avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; max-height: 150px; overflow-y: auto; }
-        .avatar-opt { width: 100%; border-radius: 8px; border: 2px solid transparent; cursor: pointer; opacity: 0.5; }
-        .avatar-opt.selected { border-color: var(--neon); opacity: 1; }
+        /* VISTAS */
+        .app-view { display: none; }
+        .app-view.active { display: block; animation: viewIn 0.6s ease-out; }
+        @keyframes viewIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* LOADER */
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        /* AVATARES */
+        .avatar-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+            gap: 12px; max-height: 200px; overflow-y: auto;
+        }
+        .avatar-card {
+            width: 100%; aspect-ratio: 1; border-radius: 12px; border: 2px solid transparent;
+            cursor: pointer; opacity: 0.4; transition: 0.3s;
+        }
+        .avatar-card.selected { border-color: var(--neon); opacity: 1; background: rgba(0, 242, 255, 0.1); }
+
+        input { outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--neon) !important; box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
     </style>
 </head>
 <body>
 
+    <div class="video-bg-container">
+        <div class="slide"></div><div class="slide"></div><div class="slide"></div>
+        <div class="slide"></div><div class="slide"></div><div class="slide"></div>
+    </div>
+    <div class="overlay"></div>
+
     <div id="loader">
-        <div class="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="font-orbitron text-[10px] text-cyan-500 mt-4 tracking-widest">SISTEMA_CARGANDO</p>
+        <div class="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="font-orbitron text-[10px] tracking-[0.5em] text-cyan-500">SISTEMA_INICIANDO</p>
     </div>
 
     <div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-4">
-        <div class="glass p-8 rounded-3xl w-full max-w-md border-t-2 border-cyan-500 shadow-2xl">
-            <h2 class="font-orbitron text-3xl font-black text-center mb-8 italic">ARENA<span class="text-cyan-400">NEON</span></h2>
-            
+        <div class="glass p-10 rounded-[2.5rem] w-full max-w-md border-t-2 border-cyan-500 shadow-2xl">
+            <div class="text-center mb-10">
+                <h2 class="font-orbitron text-4xl font-black italic">ARENA<span class="text-cyan-400">NEON</span></h2>
+                <div class="h-1 w-16 bg-cyan-500 mx-auto mt-2"></div>
+            </div>
+
             <form id="auth-form" class="space-y-4">
-                <div id="reg-fields" class="hidden space-y-4">
-                    <p class="text-[9px] font-bold text-center text-zinc-500 uppercase">Selecciona tu Identidad</p>
-                    <div id="avatar-grid-auth" class="avatar-grid p-2 bg-black/40 rounded-xl"></div>
-                    <input id="reg-name" type="text" placeholder="APODO DE GUERRERO" class="w-full bg-black/60 p-4 rounded-xl border border-white/10 text-xs font-bold uppercase">
+                <div id="reg-extra" class="hidden">
+                    <label class="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-4 text-center">Elige tu Avatar</label>
+                    <div id="avatar-grid-auth" class="avatar-grid mb-6 p-2 bg-black/40 rounded-2xl"></div>
+                    <input id="reg-name" type="text" placeholder="APODO DE GUERRERO" class="w-full bg-black/60 border border-white/10 p-4 rounded-xl text-white font-bold uppercase mb-4">
                 </div>
                 
-                <input id="auth-email" type="email" placeholder="EMAIL" class="w-full bg-black/60 p-4 rounded-xl border border-white/10 text-white text-xs font-bold">
-                <input id="auth-pass" type="password" placeholder="PASSWORD" class="w-full bg-black/60 p-4 rounded-xl border border-white/10 text-white text-xs font-bold">
+                <input id="auth-email" type="email" placeholder="EMAIL" class="w-full bg-black/60 border border-white/10 p-4 rounded-xl text-white font-bold" required>
+                <input id="auth-pass" type="password" placeholder="CONTRASEÑA" class="w-full bg-black/60 border border-white/10 p-4 rounded-xl text-white font-bold" required>
                 
-                <button type="submit" id="auth-submit" class="w-full btn-cyber mt-4 py-4">Acceder</button>
+                <button type="submit" id="auth-btn" class="w-full btn-cyber mt-4 py-4">Ingresar al Sistema</button>
             </form>
-            
-            <button onclick="toggleAuth()" id="auth-toggle" class="w-full text-[10px] text-zinc-500 font-bold uppercase mt-6 hover:text-cyan-400">¿No tienes cuenta? Registrate aquí</button>
+
+            <button onclick="toggleAuth()" id="auth-toggle" class="w-full text-center mt-8 text-[10px] font-bold text-zinc-500 uppercase hover:text-cyan-400 transition">¿No tienes cuenta? Registrate</button>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
-        <header class="fixed top-0 w-full z-50 glass border-b border-white/5 p-5 flex justify-between items-center">
-            <h1 class="font-orbitron text-[10px] font-black tracking-widest text-cyan-500">NEON_NETWORK_V11</h1>
-            <button onclick="logout()" class="text-[9px] font-bold text-red-500 uppercase border border-red-500/20 px-3 py-1 rounded">Cerrar Sesión</button>
+        
+        <header class="fixed top-0 w-full z-50 glass p-6 flex justify-between items-center border-b border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_10px_#00f2ff]"></div>
+                <h1 class="font-orbitron text-[10px] font-black tracking-widest">NEON_CLIENT_V14</h1>
+            </div>
+            <button onclick="logout()" class="text-[10px] font-black text-red-500 uppercase border border-red-500/20 px-4 py-2 rounded-lg hover:bg-red-500 hover:text-white transition">Salir</button>
         </header>
 
-        <main class="pt-28 pb-32 px-6 max-w-5xl mx-auto">
+        <main class="pt-32 pb-32 px-6">
             
-            <section id="view-home" class="app-view active text-center py-10">
-                <h2 class="font-orbitron text-5xl md:text-7xl font-black italic mb-6 leading-none">DOMINA LA<br><span class="text-transparent" style="-webkit-text-stroke: 1px #00f2ff">ARENA.</span></h2>
-                <button onclick="nav('torneos')" class="btn-cyber px-10 py-4">Ver Torneos</button>
+            <section id="view-home" class="app-view active text-center max-w-4xl mx-auto">
+                <p class="text-cyan-400 font-bold tracking-[0.5em] text-[10px] uppercase mb-4">BIENVENIDO A LA RED</p>
+                <h2 class="font-orbitron text-6xl md:text-8xl font-black italic mb-12 leading-none">DOMINA LA<br><span class="text-transparent" style="-webkit-text-stroke: 1px #fff">ARENA.</span></h2>
+                <button onclick="nav('torneos')" class="btn-cyber px-12 py-5">Explorar Torneos</button>
             </section>
 
-            <section id="view-torneos" class="app-view">
-                <h3 class="font-orbitron text-2xl font-black mb-8 uppercase italic border-l-4 border-cyan-500 pl-4">Combates_Activos</h3>
-                <div id="torneos-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            <section id="view-torneos" class="app-view max-w-5xl mx-auto">
+                <h3 class="font-orbitron text-2xl font-black mb-10 uppercase italic border-l-4 border-cyan-500 pl-4">Combates_Disponibles</h3>
+                <div id="torneos-list" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
             </section>
 
-            <section id="view-ranking" class="app-view">
-                <h3 class="font-orbitron text-2xl font-black mb-8 uppercase italic text-center">Líderes de la Red</h3>
-                <div id="ranking-list" class="space-y-3 max-w-2xl mx-auto"></div>
+            <section id="view-ranking" class="app-view max-w-3xl mx-auto">
+                <div class="text-center mb-12">
+                    <h3 class="font-orbitron text-3xl font-black italic uppercase text-amber-500">Hall of Fame</h3>
+                    <p class="text-zinc-500 text-[10px] font-bold tracking-widest mt-2 uppercase">Top 50 Guerreros de la Red</p>
+                </div>
+                <div id="ranking-list" class="space-y-3"></div>
             </section>
 
-            <section id="view-perfil" class="app-view">
-                <div class="glass p-8 rounded-3xl max-w-md mx-auto text-center border-t-2 border-cyan-500">
-                    <img id="u-avatar" src="" class="w-24 h-24 rounded-2xl mx-auto border-2 border-cyan-500 mb-4 bg-black">
-                    <h4 id="u-name" class="font-orbitron text-2xl font-black uppercase">---</h4>
-                    <p id="u-xp" class="text-cyan-500 font-bold text-xs mt-1">XP: 0</p>
-                    <div class="h-[1px] bg-white/10 my-6"></div>
-                    <button onclick="nav('home')" class="btn-cyber w-full mb-2">Volver al Inicio</button>
+            <section id="view-perfil" class="app-view max-w-md mx-auto">
+                <div class="glass p-8 rounded-[2.5rem] border-t-2 border-cyan-500 text-center relative overflow-hidden">
+                    <div id="profile-main">
+                        <img id="u-avatar" src="" class="w-24 h-24 rounded-2xl mx-auto border-2 border-cyan-500 mb-6 bg-black shadow-2xl">
+                        <h4 id="u-name" class="font-orbitron text-3xl font-black uppercase tracking-tighter">---</h4>
+                        <p id="u-email" class="text-zinc-500 text-[10px] font-bold mb-8">---</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-8">
+                            <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
+                                <p class="text-[9px] text-zinc-500 font-bold mb-1 uppercase">Puntos XP</p>
+                                <p id="u-xp" class="font-orbitron text-2xl text-cyan-400 font-black">0</p>
+                            </div>
+                            <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
+                                <p class="text-[9px] text-zinc-500 font-bold mb-1 uppercase">Victorias</p>
+                                <p id="u-wins" class="font-orbitron text-2xl text-pink-500 font-black">0</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleEdit(true)" class="btn-cyber w-full">Editar Perfil</button>
+                    </div>
+
+                    <div id="profile-edit" class="hidden text-left">
+                        <h4 class="font-orbitron text-lg font-black text-cyan-400 mb-6 uppercase">Actualizar Identidad</h4>
+                        <div id="avatar-grid-edit" class="avatar-grid mb-6 p-2 bg-black/40 rounded-2xl"></div>
+                        <input id="edit-name" type="text" class="w-full bg-black/60 border border-white/10 p-4 rounded-xl text-white font-bold uppercase mb-6">
+                        <div class="flex gap-4">
+                            <button onclick="saveProfile()" class="flex-1 btn-cyber">Guardar</button>
+                            <button onclick="toggleEdit(false)" class="flex-1 text-[10px] font-bold text-zinc-500 uppercase">Cancelar</button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
         </main>
 
-        <nav class="fixed bottom-6 left-6 right-6 z-50 glass rounded-2xl flex justify-around p-4 border border-white/10 shadow-2xl md:max-w-xs md:mx-auto">
-            <button onclick="nav('home')" class="text-xl">🏠</button>
-            <button onclick="nav('torneos')" class="text-xl">⚔️</button>
-            <button onclick="nav('ranking')" class="text-xl">🏆</button>
-            <button onclick="nav('perfil')" class="text-xl">👤</button>
+        <nav class="fixed bottom-8 left-6 right-6 z-50 glass rounded-[2rem] flex justify-around p-5 border border-white/10 shadow-2xl max-w-sm mx-auto">
+            <button onclick="nav('home')" class="nav-icon opacity-40 text-xl transition" data-v="home">🏠</button>
+            <button onclick="nav('torneos')" class="nav-icon opacity-40 text-xl transition" data-v="torneos">⚔️</button>
+            <button onclick="nav('ranking')" class="nav-icon opacity-40 text-xl transition" data-v="ranking">🏆</button>
+            <button onclick="nav('perfil')" class="nav-icon opacity-40 text-xl transition" data-v="perfil">👤</button>
         </nav>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE SUPABASE (CON PARCHE ANTI-BLOQUEO)
+        // CONFIG SUPABASE
         const SB_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
         const SB_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
         
@@ -119,130 +222,192 @@
         let session = null;
         let profile = null;
         let isLogin = true;
-        let selAvatar = "https://api.dicebear.com/7.x/bottts/svg?seed=neon1";
+        let selectedAvatar = "https://api.dicebear.com/7.x/bottts/svg?seed=neon1";
 
+        // INICIO
         window.onload = async () => {
-            initAvatars();
-            const { data } = await _supa.auth.getSession();
-            if (data.session) {
-                session = data.session;
-                await loadProfile();
-            } else {
-                showAuth();
-            }
-            // SEGURO DE VIDA: Quitar loader pase lo que pase
-            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 2000);
+            renderAvatars('avatar-grid-auth');
+            renderAvatars('avatar-grid-edit');
+
+            try {
+                const { data } = await _supa.auth.getSession();
+                if (data.session) {
+                    session = data.session;
+                    await fetchProfile();
+                } else {
+                    showAuth();
+                }
+            } catch (e) { showAuth(); }
+            
+            // Seguro contra pantalla azul
+            setTimeout(() => { 
+                const l = document.getElementById('loader');
+                l.style.opacity = '0';
+                setTimeout(() => l.style.display = 'none', 600);
+            }, 1500);
         };
 
-        function initAvatars() {
-            const grid = document.getElementById('avatar-grid-auth');
-            for(let i=1; i<=12; i++) {
-                const url = `https://api.dicebear.com/7.x/bottts/svg?seed=bot${i}&backgroundColor=020408`;
+        function renderAvatars(containerId) {
+            const grid = document.getElementById(containerId);
+            grid.innerHTML = '';
+            for(let i=1; i<=15; i++) {
+                const url = `https://api.dicebear.com/7.x/bottts/svg?seed=neon${i}&backgroundColor=020408`;
                 const img = document.createElement('img');
-                img.src = url; img.className = 'avatar-opt';
-                if(i===1) img.classList.add('selected');
+                img.src = url; img.className = 'avatar-card';
+                if(i===1) { img.classList.add('selected'); selectedAvatar = url; }
                 img.onclick = () => {
-                    document.querySelectorAll('.avatar-opt').forEach(el => el.classList.remove('selected'));
-                    img.classList.add('selected'); selAvatar = url;
+                    grid.querySelectorAll('.avatar-card').forEach(el => el.classList.remove('selected'));
+                    img.classList.add('selected'); selectedAvatar = url;
                 };
                 grid.appendChild(img);
             }
         }
 
-        async function loadProfile() {
+        async function fetchProfile() {
             const { data, error } = await _supa.from('perfiles').select('*').eq('id', session.user.id).single();
             if (data) {
                 profile = data;
-                document.getElementById('u-name').innerText = profile.nombre;
-                document.getElementById('u-avatar').src = profile.avatar_url;
-                document.getElementById('u-xp').innerText = `XP: ${profile.xp}`;
+                updateUI();
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
                 nav('home');
             } else { logout(); }
         }
 
+        function updateUI() {
+            document.getElementById('u-name').innerText = profile.nombre;
+            document.getElementById('u-avatar').src = profile.avatar_url;
+            document.getElementById('u-xp').innerText = profile.xp;
+            document.getElementById('u-wins').innerText = profile.victorias;
+            document.getElementById('u-email').innerText = session.user.email;
+        }
+
+        // AUTENTICACIÓN
         function toggleAuth() {
             isLogin = !isLogin;
-            document.getElementById('reg-fields').classList.toggle('hidden', isLogin);
-            document.getElementById('auth-submit').innerText = isLogin ? 'Acceder' : 'Crear Identidad';
-            document.getElementById('auth-toggle').innerText = isLogin ? '¿No tienes cuenta? Registrate aquí' : '¿Ya tienes cuenta? Inicia sesión';
+            document.getElementById('reg-extra').classList.toggle('hidden', isLogin);
+            document.getElementById('auth-btn').innerText = isLogin ? 'Ingresar al Sistema' : 'Crear Identidad';
+            document.getElementById('auth-toggle').innerText = isLogin ? '¿No tienes cuenta? Registrate' : '¿Ya tienes cuenta? Inicia sesión';
         }
 
         document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
-            const name = document.getElementById('reg-name').value;
 
             if (isLogin) {
                 const { error } = await _supa.auth.signInWithPassword({ email, password: pass });
-                if (error) alert("Error: " + error.message); else location.reload();
+                if (error) alert("ERROR: " + error.message); else location.reload();
             } else {
+                const name = document.getElementById('reg-name').value;
                 const { data, error } = await _supa.auth.signUp({ email, password: pass });
                 if (error) return alert(error.message);
-                // El trigger de SQL creará el perfil, pero aquí lo actualizamos con el nombre elegido
-                await _supa.from('perfiles').update({ nombre: name.toUpperCase(), avatar_url: selAvatar }).eq('id', data.user.id);
-                alert("Cuenta creada con éxito.");
-                location.reload();
+                if (data.user) {
+                    await _supa.from('perfiles').insert({
+                        id: data.user.id,
+                        nombre: name.toUpperCase() || 'GUERRERO_X',
+                        avatar_url: selectedAvatar
+                    });
+                    alert("REGISTRO EXITOSO.");
+                    location.reload();
+                }
             }
         };
 
+        // NAVEGACIÓN
         function nav(id) {
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-icon').forEach(n => n.classList.add('opacity-40'));
+            
             document.getElementById('view-' + id).classList.add('active');
+            const icon = document.querySelector(`[data-v="${id}"]`);
+            if(icon) icon.classList.remove('opacity-40');
+
             if(id === 'torneos') loadTorneos();
             if(id === 'ranking') loadRanking();
         }
 
+        // TORNEOS
         async function loadTorneos() {
             const { data: torneos } = await _supa.from('torneos').select('*').order('created_at', {ascending: false});
             const { data: inscritos } = await _supa.from('inscripciones').select('torneo_id').eq('user_id', session.user.id);
             const misIds = inscritos.map(i => i.torneo_id);
-            
+
             const container = document.getElementById('torneos-list');
             container.innerHTML = torneos.map(t => {
-                const estaInscrito = misIds.includes(t.id);
+                const yaInscrito = misIds.includes(t.id);
                 const lleno = t.inscritos >= t.capacidad;
 
                 return `
-                    <div class="glass p-6 rounded-2xl border-l-4 ${estaInscrito ? 'border-green-500' : 'border-cyan-500'}">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">${t.juego}</span>
-                            <span class="text-[9px] font-bold ${lleno ? 'text-red-500' : 'text-cyan-500'}">${t.inscritos}/${t.capacidad} JUGADORES</span>
+                    <div class="glass p-8 rounded-3xl border-l-4 ${yaInscrito ? 'border-green-500' : 'border-cyan-500'}">
+                        <div class="flex justify-between items-start mb-6">
+                            <span class="text-[9px] bg-white/5 px-3 py-1 rounded-full font-bold uppercase tracking-widest text-zinc-400">${t.juego}</span>
+                            <span class="text-[10px] font-black text-cyan-400">${t.inscritos}/${t.capacidad} JUGADORES</span>
                         </div>
-                        <h4 class="font-orbitron font-black text-lg mb-6 uppercase">${t.nombre}</h4>
-                        ${estaInscrito 
-                            ? `<button disabled class="w-full py-2 bg-green-500/10 text-green-500 font-bold rounded text-[10px] uppercase border border-green-500/20">✓ Ya inscrito</button>`
+                        <h4 class="font-orbitron text-xl font-black mb-8 uppercase tracking-tighter">${t.nombre}</h4>
+                        ${yaInscrito 
+                            ? `<button disabled class="w-full py-3 bg-green-500/10 text-green-500 font-bold rounded-xl text-[10px] uppercase border border-green-500/20">✓ Inscripción Confirmada</button>`
                             : lleno 
-                                ? `<button disabled class="w-full py-2 bg-white/5 text-zinc-600 font-bold rounded text-[10px] uppercase">Lleno</button>`
-                                : `<button onclick="inscribir('${t.id}', ${t.inscritos})" class="btn-cyber w-full py-2">Inscribirse</button>`
+                                ? `<button disabled class="w-full btn-cyber opacity-30">Arena Completa</button>`
+                                : `<button onclick="unirse('${t.id}', ${t.inscritos})" class="w-full btn-cyber">Unirse al Combate</button>`
                         }
                     </div>
                 `;
             }).join('');
         }
 
-        async function inscribir(tId, actual) {
+        async function unirse(tId, actual) {
             const { error } = await _supa.from('inscripciones').insert({ torneo_id: tId, user_id: session.user.id });
             if (!error) {
                 await _supa.from('torneos').update({ inscritos: actual + 1 }).eq('id', tId);
-                alert("¡Inscrito con éxito!"); loadTorneos();
-            } else { alert("Ya estás inscrito o hubo un error."); }
+                alert("¡INSCRIPCIÓN COMPLETADA!"); loadTorneos();
+            } else { alert("Error al inscribirse."); }
         }
 
+        // RANKING
         async function loadRanking() {
-            const { data } = await _supa.from('perfiles').select('*').order('xp', {ascending: false}).limit(20);
-            document.getElementById('ranking-list').innerHTML = data.map((u, i) => `
-                <div class="glass p-4 rounded-xl flex items-center justify-between border-l-2 ${i < 3 ? 'border-amber-500' : 'border-white/10'}">
-                    <div class="flex items-center gap-4">
-                        <span class="font-orbitron font-black text-zinc-700">#${i+1}</span>
-                        <img src="${u.avatar_url}" class="w-10 h-10 rounded-lg">
-                        <span class="font-bold text-sm uppercase">${u.nombre}</span>
+            const { data } = await _supa.from('perfiles').select('*').order('xp', {ascending: false}).limit(50);
+            const container = document.getElementById('ranking-list');
+            container.innerHTML = data.map((u, i) => `
+                <div class="glass p-5 rounded-2xl flex items-center justify-between border-l-2 ${i < 3 ? 'border-amber-500' : 'border-white/5'}">
+                    <div class="flex items-center gap-5">
+                        <span class="font-orbitron font-black text-lg ${i < 3 ? 'text-amber-500' : 'text-zinc-700'}">#${i + 1}</span>
+                        <img src="${u.avatar_url}" class="w-12 h-12 rounded-xl border border-white/5">
+                        <span class="font-bold uppercase text-xs tracking-widest">${u.nombre}</span>
                     </div>
-                    <span class="font-orbitron text-cyan-500 font-black">${u.xp} XP</span>
+                    <div class="text-right">
+                        <p class="text-cyan-400 font-orbitron font-black text-lg">${u.xp}</p>
+                        <p class="text-[8px] text-zinc-500 font-black uppercase">Puntos XP</p>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        // EDICIÓN DE PERFIL
+        function toggleEdit(show) {
+            document.getElementById('profile-main').classList.toggle('hidden', show);
+            document.getElementById('profile-edit').classList.toggle('hidden', !show);
+            if(show) {
+                document.getElementById('edit-name').value = profile.nombre;
+                selectedAvatar = profile.avatar_url;
+            }
+        }
+
+        async function saveProfile() {
+            const newName = document.getElementById('edit-name').value.toUpperCase();
+            if(!newName) return alert("Nombre obligatorio");
+
+            const { error } = await _supa.from('perfiles')
+                .update({ nombre: newName, avatar_url: selectedAvatar })
+                .eq('id', session.user.id);
+
+            if(!error) {
+                profile.nombre = newName;
+                profile.avatar_url = selectedAvatar;
+                updateUI();
+                toggleEdit(false);
+                alert("IDENTIDAD ACTUALIZADA.");
+            }
         }
 
         function showAuth() { document.getElementById('auth-screen').classList.remove('hidden'); }
