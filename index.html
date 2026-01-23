@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARENA NEON | GLITCHCORE</title>
+    <title>ARENA NEON | COMMAND CENTER v95</title>
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,316 +12,397 @@
     <style>
         :root {
             --neon: #39ff14;
-            --neon-glow: rgba(57, 255, 20, 0.4);
-            --dark-bg: #1a1a1a; /* Un negro menos absoluto para profundidad */
-            --glitch-color: #ff00ff; /* Color para el efecto glitch */
+            --neon-glow: rgba(57, 255, 20, 0.3);
+            --bg-dark: #0a0a0a;
+            --panel-bg: #111111;
         }
 
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background: #000; /* Fondo negro puro */
-            color: #fff; font-family: 'Rajdhani', sans-serif;
-            overflow: hidden; /* No hay scroll en el cuerpo principal */
+        /* --- RESET & BASE --- */
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0; padding: 15px;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
         }
 
-        /* --- EFECTO GLITCH DE FONDO (SUBTIL) --- */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(
-                45deg,
-                rgba(0,0,0,0.05),
-                rgba(0,0,0,0.05) 1px,
-                transparent 1px,
-                transparent 3px
-            );
-            z-index: -1;
-            opacity: 0.1; /* Muy sutil */
-            animation: glitchBg 10s infinite alternate;
+        /* --- CONTENEDOR DE PANELES (ACORDEÓN) --- */
+        .command-center {
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        @keyframes glitchBg {
-            0% { transform: translate(0, 0); }
-            25% { transform: translate(1px, -1px); }
-            50% { transform: translate(-1px, 1px); }
-            75% { transform: translate(1px, 1px); }
-            100% { transform: translate(0, 0); }
-        }
-
-        /* --- CONTENEDOR PRINCIPAL (SCROLLABLE) --- */
-        #main-view {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            overflow-y: auto; -webkit-overflow-scrolling: touch;
-            background: transparent; /* Permite ver el glitch de fondo */
-        }
-
-        .view { display: none; padding: 5rem 1rem 8rem 1rem; max-width: 450px; margin: 0 auto; }
-        .view.active { display: block; animation: slideIn 0.4s ease-out; }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- PANELES CON BORDES NEON --- */
-        .neon-panel {
-            background: var(--dark-bg);
-            border: 2px solid var(--neon); /* Borde neón flúor */
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 15px var(--neon-glow);
-            position: relative;
+        /* --- ESTILO DE PANEL INDIVIDUAL --- */
+        .panel {
+            background: var(--panel-bg);
+            border: 2px solid var(--neon);
+            border-radius: 12px;
             overflow: hidden;
-            animation: neonBorderPulse 5s infinite alternate; /* Efecto de pulso */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
-        @keyframes neonBorderPulse {
-            0% { box-shadow: 0 0 10px var(--neon-glow); }
-            100% { box-shadow: 0 0 25px var(--neon); }
+        .panel-header {
+            padding: 18px 20px;
+            background: linear-gradient(90deg, rgba(57, 255, 20, 0.1) 0%, transparent 100%);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
         }
 
-        /* --- BOTONES GLITCH-NEON --- */
-        .btn-glitch-neon {
-            background: var(--neon); color: #000;
-            font-family: 'Orbitron'; font-weight: 900;
-            padding: 16px; border-radius: 4px;
-            text-transform: uppercase; font-size: 0.8rem;
-            box-shadow: 0 0 15px var(--neon-glow);
-            width: 100%; cursor: pointer; border: none;
-            position: relative; overflow: hidden;
-            transition: 0.3s;
+        .panel-header h2 {
+            font-family: 'Orbitron';
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: var(--neon);
+            margin: 0;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px var(--neon-glow);
         }
-        .btn-glitch-neon:hover { transform: scale(1.02); box-shadow: 0 0 25px var(--neon); }
 
-        /* Efecto Glitch en botones (al pasar el ratón) */
-        .btn-glitch-neon::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(
-                90deg,
-                var(--glitch-color) 0%,
-                transparent 10%,
-                transparent 90%,
-                var(--glitch-color) 100%
-            );
+        .panel-content {
+            max-height: 0;
             opacity: 0;
-            mix-blend-mode: overlay;
-            animation: none;
-        }
-        .btn-glitch-neon:hover::before { animation: buttonGlitch 0.4s infinite; }
-
-        @keyframes buttonGlitch {
-            0% { opacity: 0; transform: translateX(0); }
-            20% { opacity: 1; transform: translateX(5px); }
-            40% { opacity: 0; transform: translateX(-5px); }
-            60% { opacity: 1; transform: translateX(5px); }
-            80% { opacity: 0; transform: translateX(-5px); }
-            100% { opacity: 0; transform: translateX(0); }
+            overflow: hidden;
+            transition: all 0.5s ease;
+            padding: 0 20px;
         }
 
+        /* ESTADO ACTIVO */
+        .panel.active {
+            box-shadow: 0 0 20px var(--neon-glow);
+            transform: scale(1.01);
+        }
 
-        /* --- INPUTS ESTILO HACKER --- */
+        .panel.active .panel-content {
+            max-height: 1200px;
+            opacity: 1;
+            padding: 20px;
+            border-top: 1px solid rgba(57, 255, 20, 0.1);
+        }
+
+        .indicator {
+            font-size: 0.7rem;
+            color: var(--neon);
+            transition: transform 0.3s;
+        }
+        .panel.active .indicator { transform: rotate(180deg); }
+
+        /* --- COMPONENTES --- */
+        .btn-neon {
+            background: var(--neon);
+            color: #000;
+            font-family: 'Orbitron';
+            font-weight: 900;
+            padding: 14px;
+            width: 100%;
+            border-radius: 6px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 15px var(--neon-glow);
+        }
+        .btn-neon:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--neon); }
+        .btn-neon:active { transform: scale(0.98); }
+
         input, select, textarea {
-            background: rgba(0,0,0,0.6);
-            border: 1px solid var(--neon); /* Borde neón para inputs */
-            color: var(--neon); /* Texto en neón */
-            padding: 12px; width: 100%;
-            border-radius: 4px; margin-bottom: 12px; outline: none;
-            text-shadow: 0 0 5px var(--neon-glow);
-            transition: border-color 0.3s, box-shadow 0.3s;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--neon-glow);
+            color: #fff;
+            padding: 12px;
+            width: 100%;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            outline: none;
+            font-size: 0.9rem;
         }
-        input:focus, textarea:focus, select:focus {
-            border-color: var(--neon);
-            box-shadow: 0 0 8px var(--neon-glow);
+        input:focus { border-color: var(--neon); box-shadow: 0 0 10px var(--neon-glow); }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        /* --- NAVEGACIÓN INFERIOR --- */
-        nav {
-            position: fixed; bottom: 0; width: 100%;
-            display: flex; justify-content: space-around;
-            padding: 1.2rem 0; background: #000;
-            border-top: 2px solid var(--neon); /* Borde neón arriba del nav */
-            z-index: 100;
+        .stat-card {
+            background: rgba(57, 255, 20, 0.05);
+            border: 1px solid var(--neon-glow);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
         }
-        .nav-item { color: #666; font-size: 0.6rem; font-weight: 800; cursor: pointer; text-align: center; }
-        .nav-item.active { color: var(--neon); text-shadow: 0 0 8px var(--neon); }
+
+        .avatar-circle {
+            width: 90px; height: 90px;
+            border: 3px solid var(--neon);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            padding: 5px;
+            background: #000;
+            box-shadow: 0 0 20px var(--neon-glow);
+        }
+
+        /* --- ANIMACIÓN DE ENTRADA --- */
+        @keyframes scanline {
+            0% { top: -10%; }
+            100% { top: 110%; }
+        }
+        .scan {
+            position: fixed; top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(57, 255, 20, 0.1);
+            z-index: 1000; pointer-events: none;
+            animation: scanline 4s linear infinite;
+        }
     </style>
 </head>
 <body>
 
-    <div id="main-view">
-        
-        <div id="view-auth" class="min-h-screen flex items-center justify-center p-6">
-            <div class="neon-panel w-full text-center">
-                <h1 class="font-orbitron text-3xl font-black text-[var(--neon)] mb-8 italic drop-shadow-[0_0_10px_rgba(57,255,20,0.8)]">ARENA NEON</h1>
+    <div class="scan"></div>
+
+    <div id="auth-screen" class="max-w-md mx-auto mt-20">
+        <div class="panel active">
+            <div class="panel-header">
+                <h2>IDENTIFICACIÓN REQUERIDA</h2>
+            </div>
+            <div class="panel-content">
                 <form id="auth-form">
-                    <div id="reg-extra" class="hidden">
-                        <input type="text" id="reg-nick" placeholder="CODENAME_OPERATIVO">
+                    <div id="reg-box" class="hidden">
+                        <input type="text" id="reg-nick" placeholder="CODENAME (EJ: GHOST_99)">
                     </div>
-                    <input type="email" id="auth-email" placeholder="CREDENTIAL_EMAIL" required>
-                    <input type="password" id="auth-pass" placeholder="ACCESS_KEY" required>
-                    <button type="submit" class="btn-glitch-neon">Sincronizar ADN</button>
+                    <input type="email" id="auth-email" placeholder="EMAIL_OPERATIVO" required>
+                    <input type="password" id="auth-pass" placeholder="PASSWORD" required>
+                    <button type="submit" class="btn-neon">ACCEDER AL TERMINAL</button>
                 </form>
-                <p onclick="toggleAuth()" class="mt-6 text-[10px] text-zinc-400 font-bold uppercase cursor-pointer">
-                    ¿Sin Unidad? <span class="text-white underline">Registrar Nuevo Perfil</span>
+                <p onclick="toggleAuth()" class="text-center text-[10px] mt-6 text-zinc-500 cursor-pointer uppercase font-bold tracking-widest">
+                    ¿Nueva unidad? <span class="text-[var(--neon)] underline">Crear registro</span>
                 </p>
             </div>
         </div>
-
-        <div id="app-content" class="hidden">
-            
-            <section id="v-home" class="view active">
-                <div class="neon-panel text-center">
-                    <img id="u-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Glitch" class="w-20 h-20 mx-auto rounded-full border-2 border-[var(--neon)] p-1 mb-4 shadow-[0_0_15px_var(--neon)]">
-                    <h2 id="u-nick" class="font-orbitron text-2xl font-black uppercase drop-shadow-[0_0_8px_var(--neon)]">PLAYER_001</h2>
-                    <div class="flex justify-around mt-6 pt-4 border-t border-[var(--neon)]/30">
-                        <div><p id="u-wins" class="text-xl font-bold">0</p><p class="text-[9px] text-zinc-500 font-bold">VICTORIAS</p></div>
-                        <div><p id="u-xp" class="text-xl font-bold text-[var(--neon)]">0</p><p class="text-[9px] text-zinc-500 font-bold">XP TOTAL</p></div>
-                    </div>
-                </div>
-                <button onclick="changeV('arenas')" class="btn-glitch-neon">ACCEDER A LAS ARENAS</button>
-            </section>
-
-            <section id="v-arenas" class="view">
-                <h3 class="font-orbitron text-xs text-center mb-6 text-[var(--neon)] tracking-widest uppercase drop-shadow-[0_0_5px_var(--neon)]">Sectores de Combate</h3>
-                <div id="arena-list"></div>
-            </section>
-
-            <section id="v-ranking" class="view">
-                <h3 class="font-orbitron text-xs text-center mb-6 text-[var(--neon)] tracking-widest uppercase drop-shadow-[0_0_5px_var(--neon)]">Jerarquía Global</h3>
-                <div id="rank-list" class="neon-panel !p-0 overflow-hidden"></div>
-            </section>
-
-            <section id="v-settings" class="view">
-                <div class="neon-panel">
-                    <h3 class="font-orbitron text-xs mb-4 uppercase text-[var(--neon)] drop-shadow-[0_0_5px_var(--neon)]">Configurar Operativo</h3>
-                    <input type="text" id="set-nick" placeholder="Cambiar CODENAME">
-                    <select id="set-avatar" onchange="previewAv()">
-                        <option value="Glitch">Estilo GlitchCore</option>
-                        <option value="Cyber">Estilo CyberPunk</option>
-                        <option value="Bot">Estilo Robotico</option>
-                    </select>
-                    <button onclick="saveP()" class="btn-glitch-neon mb-4">Actualizar Datos</button>
-                    <hr class="border-[var(--neon)]/30 my-4">
-                    <h3 class="font-orbitron text-xs mb-4 uppercase text-[var(--neon)] drop-shadow-[0_0_5px_var(--neon)]">Reporte de Fallos</h3>
-                    <textarea id="support-msg" placeholder="Describa su incidencia..." rows="3"></textarea>
-                    <button onclick="sendS()" class="btn-glitch-neon !bg-red-700 !shadow-none">ENVIAR A CUARENTENA</button>
-                </div>
-            </section>
-
-        </div>
     </div>
 
-    <nav id="navbar" class="hidden">
-        <div class="nav-item active" onclick="changeV('home', this)">HOME</div>
-        <div class="nav-item" onclick="changeV('arenas', this)">ARENAS</div>
-        <div class="nav-item" onclick="changeV('ranking', this)">TOP</div>
-        <div class="nav-item" onclick="changeV('settings', this)">AJUSTES</div>
-    </nav>
+    <div id="app-screen" class="command-center hidden">
+        
+        <div class="text-center mb-6">
+            <h1 class="font-orbitron text-2xl font-black text-[var(--neon)] italic">ARENA NEON</h1>
+            <p class="text-[9px] text-zinc-500 tracking-[0.5em] uppercase">Control System v9.5</p>
+        </div>
+
+        <div class="panel active" id="p-home">
+            <div class="panel-header" onclick="togglePanel('p-home')">
+                <h2>01. ESTADO DE OPERATIVO</h2>
+                <span class="indicator">▼</span>
+            </div>
+            <div class="panel-content">
+                <div class="avatar-circle">
+                    <img id="u-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Neon" class="rounded-full">
+                </div>
+                <h3 id="u-nick" class="font-orbitron text-2xl text-center mb-6 uppercase tracking-tighter">---</h3>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <p class="text-[9px] text-zinc-500 font-bold uppercase">Victorias</p>
+                        <p id="u-wins" class="text-2xl font-black">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[9px] text-zinc-500 font-bold uppercase">Rango XP</p>
+                        <p id="u-xp" class="text-2xl font-black text-[var(--neon)]">0</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="text-[9px] w-full text-zinc-600 font-bold uppercase hover:text-red-500 transition">Finalizar Sesión</button>
+            </div>
+        </div>
+
+        <div class="panel" id="p-arenas">
+            <div class="panel-header" onclick="togglePanel('p-arenas')">
+                <h2>02. SECTORES DISPONIBLES</h2>
+                <span class="indicator">▼</span>
+            </div>
+            <div class="panel-content">
+                <div id="arena-list" class="space-y-3">
+                    </div>
+            </div>
+        </div>
+
+        <div class="panel" id="p-rank">
+            <div class="panel-header" onclick="togglePanel('p-rank')">
+                <h2>03. LIDERAZGO GLOBAL</h2>
+                <span class="indicator">▼</span>
+            </div>
+            <div class="panel-content">
+                <div id="rank-list" class="space-y-1">
+                    </div>
+            </div>
+        </div>
+
+        <div class="panel" id="p-settings">
+            <div class="panel-header" onclick="togglePanel('p-settings')">
+                <h2>04. CONFIGURACIÓN</h2>
+                <span class="indicator">▼</span>
+            </div>
+            <div class="panel-content">
+                <label class="text-[10px] text-zinc-500 font-bold uppercase mb-2 block">Modificar Codename</label>
+                <input type="text" id="new-nick" placeholder="Nuevo apodo...">
+                
+                <label class="text-[10px] text-zinc-500 font-bold uppercase mb-2 block mt-2">Soporte Técnico</label>
+                <textarea id="support-text" placeholder="Reportar error al administrador..." rows="2"></textarea>
+                
+                <button onclick="saveProfile()" class="btn-neon">Sincronizar Datos</button>
+            </div>
+        </div>
+
+    </div>
 
     <script>
+        // CONFIGURACIÓN SUPABASE
         const SB_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
         const SB_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
         const _db = supabase.createClient(SB_URL, SB_KEY);
 
-        let user = null;
-        let isLogin = true;
+        let currentUser = null;
+        let isLoginMode = true;
 
-        // --- LÓGICA DE USUARIOS ---
+        // LÓGICA DE ACORDEÓN (SOLO UNO ABIERTO)
+        function togglePanel(id) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(id);
+            target.classList.add('active');
+            
+            // Cargas específicas según el panel abierto
+            if(id === 'p-arenas') fetchArenas();
+            if(id === 'p-rank') fetchRanking();
+        }
+
+        // CONTROL DE SESIÓN
         window.onload = async () => {
             const { data } = await _db.auth.getSession();
             if (data.session) {
-                user = data.session.user;
-                await loadP();
+                currentUser = data.session.user;
+                await loadProfile();
             }
         };
 
         function toggleAuth() {
-            isLogin = !isLogin;
-            document.getElementById('reg-extra').classList.toggle('hidden', isLogin);
+            isLoginMode = !isLoginMode;
+            document.getElementById('reg-box').classList.toggle('hidden', isLoginMode);
         }
 
         document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
-            if(isLogin) {
+
+            if(isLoginMode) {
                 const { error } = await _db.auth.signInWithPassword({ email, password: pass });
-                if(error) alert("Error"); else location.reload();
+                if(error) alert("ACCESO DENEGADO: Credenciales inválidas"); else location.reload();
             } else {
                 const nick = document.getElementById('reg-nick').value;
                 const { data, error } = await _db.auth.signUp({ email, password: pass });
                 if(error) return alert(error.message);
-                await _db.from('perfiles').insert({ id: data.user.id, nombre: nick.toUpperCase(), xp: 0, victorias: 0 });
+                
+                // Crear perfil en la tabla 'perfiles'
+                await _db.from('perfiles').insert({ 
+                    id: data.user.id, 
+                    nombre: nick.toUpperCase(), 
+                    xp: 0, 
+                    victorias: 0 
+                });
                 location.reload();
             }
         };
 
-        async function loadP() {
-            const { data } = await _db.from('perfiles').select('*').eq('id', user.id).single();
+        async function loadProfile() {
+            const { data, error } = await _db.from('perfiles').select('*').eq('id', currentUser.id).single();
             if(data) {
                 document.getElementById('u-nick').innerText = data.nombre;
                 document.getElementById('u-xp').innerText = data.xp;
                 document.getElementById('u-wins').innerText = data.victorias;
-                document.getElementById('view-auth').classList.add('hidden');
-                document.getElementById('app-content').classList.remove('hidden');
-                document.getElementById('navbar').classList.remove('hidden');
+                document.getElementById('u-avatar').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${data.nombre}`;
+                
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
             }
         }
 
-        function changeV(id, el) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('v-' + id).classList.add('active');
-            if(el) el.classList.add('active');
-            if(id === 'arenas') loadA();
-            if(id === 'ranking') loadR();
-        }
-
-        async function loadA() {
+        // CARGA DE ARENAS (TORNEOS)
+        async function fetchArenas() {
             const { data } = await _db.from('torneos').select('*');
-            document.getElementById('arena-list').innerHTML = (data || []).map(t => `
-                <div class="neon-panel">
-                    <p class="text-[10px] text-[var(--neon)] font-bold uppercase tracking-widest">${t.juego}</p>
-                    <h4 class="font-orbitron text-xl font-black italic uppercase text-white drop-shadow-[0_0_5px_var(--neon)]">${t.nombre}</h4>
-                    <p class="text-xs text-zinc-400 mb-6">${t.inscritos}/${t.capacidad} PARTICIPANTES</p>
-                    <button onclick="join('${t.id}', ${t.inscritos})" class="btn-glitch-neon">ENTRAR EN LA ARENA</button>
+            const container = document.getElementById('arena-list');
+            
+            if(!data || data.length === 0) {
+                container.innerHTML = "<p class='text-center text-zinc-600 text-xs'>NO HAY SECTORES ACTIVOS</p>";
+                return;
+            }
+
+            container.innerHTML = data.map(t => `
+                <div class="p-4 border border-[var(--neon-glow)] rounded-lg bg-black/40">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="text-[8px] text-[var(--neon)] font-bold tracking-widest uppercase">${t.juego}</p>
+                            <h4 class="font-orbitron text-sm font-bold text-white">${t.nombre}</h4>
+                        </div>
+                        <span class="text-[10px] bg-white/5 px-2 py-1 rounded text-zinc-400">${t.inscritos}/${t.capacidad}</span>
+                    </div>
+                    <button onclick="joinTournament('${t.id}', ${t.inscritos}, ${t.capacidad})" 
+                            class="btn-neon !py-2 !text-[9px] ${t.inscritos >= t.capacidad ? 'opacity-30 pointer-events-none' : ''}">
+                        ${t.inscritos >= t.capacidad ? 'SECTOR LLENO' : 'INICIAR REGISTRO'}
+                    </button>
                 </div>
             `).join('');
         }
 
-        async function join(id, cur) {
-            await _db.from('torneos').update({ inscritos: cur + 1 }).eq('id', id);
-            alert("¡Inscripción Exitosa! Acceso concedido.");
-            loadA();
-        }
-
-        async function loadR() {
-            const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false});
-            document.getElementById('rank-list').innerHTML = (data || []).map((u, i) => `
-                <div class="flex justify-between items-center p-4 border-b border-[var(--neon)]/20 ${u.id === user.id ? 'bg-[var(--neon)]/10' : ''}">
-                    <span class="text-xs font-bold text-zinc-600">#${i+1}</span>
-                    <span class="flex-1 font-bold ml-4 uppercase text-white">${u.nombre}</span>
-                    <span class="font-orbitron text-[var(--neon)] font-black">${u.xp}</span>
-                </div>
-            `).join('');
-        }
-
-        function previewAv() {
-            const s = document.getElementById('set-avatar').value;
-            document.getElementById('u-avatar').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${s}`;
-        }
-
-        async function saveP() {
-            const n = document.getElementById('set-nick').value;
-            if(n) {
-                await _db.from('perfiles').update({ nombre: n.toUpperCase() }).eq('id', user.id);
-                loadP();
-                alert("Perfil Actualizado");
+        async function joinTournament(id, current, max) {
+            if(current >= max) return;
+            const { error } = await _db.from('torneos').update({ inscritos: current + 1 }).eq('id', id);
+            if(!error) {
+                alert("Sincronización completa. Estás inscrito.");
+                fetchArenas();
             }
         }
 
-        function sendS() { alert("Reporte enviado al Centro de Control. Gracias por su cooperación."); document.getElementById('support-msg').value = ''; }
+        // CARGA DE RANKING
+        async function fetchRanking() {
+            const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false}).limit(10);
+            const container = document.getElementById('rank-list');
+            
+            container.innerHTML = (data || []).map((u, i) => `
+                <div class="flex justify-between items-center p-3 border-b border-white/5 ${u.id === currentUser.id ? 'bg-[var(--neon-glow)] border-l-2 border-[var(--neon)]' : ''}">
+                    <span class="text-[10px] font-bold text-zinc-600 w-6">#${i+1}</span>
+                    <span class="flex-1 font-bold text-xs uppercase ml-2">${u.nombre}</span>
+                    <span class="font-orbitron text-[var(--neon)] text-xs">${u.xp} XP</span>
+                </div>
+            `).join('');
+        }
+
+        // GUARDAR CAMBIOS
+        async function saveProfile() {
+            const n = document.getElementById('new-nick').value;
+            const s = document.getElementById('support-text').value;
+
+            if(n) {
+                const { error } = await _db.from('perfiles').update({ nombre: n.toUpperCase() }).eq('id', currentUser.id);
+                if(!error) {
+                    alert("Codename actualizado");
+                    loadProfile();
+                }
+            }
+            if(s) {
+                alert("Mensaje enviado al centro de mando técnico.");
+                document.getElementById('support-text').value = "";
+            }
+        }
+
+        async function logout() { 
+            await _db.auth.signOut(); 
+            location.reload(); 
+        }
     </script>
 </body>
 </html>
