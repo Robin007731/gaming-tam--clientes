@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARENA NEON | GRID INTERFACE</title>
+    <title>ARENA NEON | ULTIMATE COMMAND CENTER</title>
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,245 +12,297 @@
     <style>
         :root {
             --neon: #39ff14;
-            --neon-glow: rgba(57, 255, 20, 0.4);
-            --bg-deep: #050505;
+            --neon-glow: rgba(57, 255, 20, 0.5);
+            --bg-ultra-dark: #020202;
         }
 
         body {
             background-color: #000;
             color: #fff;
             font-family: 'Rajdhani', sans-serif;
-            padding: 20px;
+            margin: 0;
+            padding: 15px;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
         }
 
-        /* --- MARCO PRINCIPAL EXTERNO --- */
+        /* --- MARCO NEÓN PERIMETRAL --- */
         .main-frame {
-            border: 4px solid var(--neon);
-            box-shadow: 0 0 40px var(--neon-glow), inset 0 0 20px var(--neon-glow);
-            padding: 30px;
+            border: 3px solid var(--neon);
+            box-shadow: 0 0 30px var(--neon-glow), inset 0 0 15px var(--neon-glow);
+            padding: 25px;
             width: 100%;
-            max-width: 1200px;
-            background: var(--bg-deep);
-            border-radius: 10px;
+            max-width: 1100px;
+            background: var(--bg-ultra-dark);
+            border-radius: 15px;
             position: relative;
         }
 
-        /* --- GRID LAYOUT --- */
+        /* --- SISTEMA DE PANELES (GRID & ACCORDION) --- */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        /* --- ESTILO DE CADA MÓDULO --- */
-        .neon-module {
+        .panel {
+            background: #0a0a0a;
             border: 2px solid var(--neon);
-            background: rgba(0,0,0,0.8);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
-            transition: 0.3s;
-            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        .neon-module.inactive {
-            opacity: 0.4;
-            filter: grayscale(0.8);
-            pointer-events: none;
-        }
-
-        .module-header {
-            border-bottom: 1px solid var(--neon);
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+        /* Encabezados de Panel Estilo Imagen */
+        .panel-header {
+            padding: 15px;
+            background: linear-gradient(90deg, rgba(57, 255, 20, 0.15), transparent);
+            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--neon);
         }
 
-        .module-header h2 {
+        .panel-header h2 {
             font-family: 'Orbitron';
-            color: var(--neon);
             font-size: 0.8rem;
+            color: var(--neon);
             letter-spacing: 2px;
+            margin: 0;
             text-transform: uppercase;
         }
 
-        /* --- COMPONENTES --- */
+        .panel-content {
+            max-height: 0;
+            opacity: 0;
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+        /* Clase para abrir el panel activo */
+        .panel.active .panel-content {
+            max-height: 800px;
+            opacity: 1;
+            padding: 20px;
+        }
+
+        /* --- BOTONES Y CONTROLES --- */
         .btn-neon {
             background: var(--neon);
             color: #000;
             font-family: 'Orbitron';
             font-weight: 900;
-            padding: 10px;
+            padding: 12px;
             width: 100%;
-            border-radius: 4px;
-            font-size: 0.7rem;
+            border-radius: 5px;
             text-transform: uppercase;
-            margin-top: 10px;
-            box-shadow: 0 0 10px var(--neon-glow);
+            font-size: 0.7rem;
+            border: none;
             cursor: pointer;
+            box-shadow: 0 0 15px var(--neon-glow);
+            transition: 0.3s;
         }
+        .btn-neon:hover { transform: scale(1.02); box-shadow: 0 0 25px var(--neon); }
 
         input, textarea, select {
             background: #111;
             border: 1px solid var(--neon);
-            color: var(--neon);
+            color: #fff;
+            padding: 10px;
+            margin-bottom: 12px;
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
             border-radius: 4px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            outline: none;
         }
 
-        .stat-line {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(57, 255, 20, 0.1);
+        .avatar-box {
+            width: 70px; height: 70px;
+            border: 2px solid var(--neon);
+            border-radius: 50%;
+            padding: 5px;
+            margin: 0 auto 15px;
+            box-shadow: 0 0 10px var(--neon-glow);
         }
 
-        /* --- AUTH SCREEN --- */
+        /* --- AUTH OVERLAY --- */
         #auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 1000;
+            position: fixed; inset: 0;
+            background: #000;
+            z-index: 9999;
             display: flex; justify-content: center; align-items: center;
+            padding: 20px;
         }
 
-        /* --- ANIMACIONES --- */
-        @keyframes pulse { 0% { opacity: 0.8; } 100% { opacity: 1; } }
-        .active-module { animation: pulse 2s infinite alternate; }
-
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div class="main-frame" style="max-width: 400px;">
-            <div class="module-header"><h2>ACCESO REQUERIDO</h2></div>
-            <form id="auth-form">
-                <div id="reg-box" class="hidden">
-                    <input type="text" id="reg-nick" placeholder="NICKNAME_OPERATIVO">
+            <div class="panel active">
+                <div class="panel-header"><h2>ACCESO OPERATIVO</h2></div>
+                <div class="panel-content">
+                    <form id="auth-form">
+                        <div id="reg-box" class="hidden">
+                            <input type="text" id="reg-nick" placeholder="CODENAME (NICKNAME)">
+                        </div>
+                        <input type="email" id="auth-email" placeholder="EMAIL" required>
+                        <input type="password" id="auth-pass" placeholder="PASSWORD" required>
+                        <button type="submit" class="btn-neon">Sincronizar Unidad</button>
+                    </form>
+                    <p onclick="toggleAuth()" class="text-center text-[10px] mt-6 text-zinc-500 cursor-pointer uppercase font-bold">
+                        ¿Nueva unidad? <span class="text-[var(--neon)] underline">Crear registro</span>
+                    </p>
                 </div>
-                <input type="email" id="auth-email" placeholder="EMAIL" required>
-                <input type="password" id="auth-pass" placeholder="PASSWORD" required>
-                <button type="submit" class="btn-neon">Sincronizar ADN</button>
-            </form>
-            <p onclick="toggleAuth()" class="text-center text-[9px] mt-4 text-zinc-500 cursor-pointer underline">¿NUEVA UNIDAD? REGISTRAR</p>
+            </div>
         </div>
     </div>
 
-    <div id="dashboard" class="main-frame hidden">
+    <div id="main-app" class="main-frame hidden">
         
-        <div class="text-center mb-8">
-            <h1 class="font-orbitron text-3xl font-black text-[var(--neon)] italic tracking-tighter">ARENA NEON | CMD_CENTER</h1>
-            <p class="text-[10px] text-zinc-500 uppercase tracking-[0.5em]">Terminal de Control de Torneos</p>
+        <div class="text-center mb-6">
+            <h1 class="font-orbitron text-2xl font-black text-[var(--neon)] italic italic tracking-tighter">ARENA NEON | CMD</h1>
+            <div class="h-1 w-20 bg-[var(--neon)] mx-auto mt-2 shadow-[0_0_10px_var(--neon)]"></div>
         </div>
 
         <div class="dashboard-grid">
             
-            <div class="neon-module" id="mod-perfil">
-                <div class="module-header">
+            <div class="panel active" id="p-home">
+                <div class="panel-header" onclick="switchPanel('p-home')">
                     <h2>01. ESTADO_PERFIL</h2>
-                    <span class="text-[var(--neon)] text-[10px]">● ONLINE</span>
+                    <span class="text-[var(--neon)]">▼</span>
                 </div>
-                <div class="text-center">
-                    <img id="u-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Neon" class="w-16 h-16 mx-auto mb-4 border border-[var(--neon)] p-1 rounded-full">
-                    <h3 id="u-nick" class="font-orbitron text-xl mb-4 uppercase">GUEST_USER</h3>
-                    <div class="stat-line"><span>VICTORIAS:</span><span id="u-wins">0</span></div>
-                    <div class="stat-line"><span>XP ACUMULADA:</span><span id="u-xp" class="text-[var(--neon)]">0</span></div>
-                    <button onclick="logout()" class="text-[8px] mt-4 text-zinc-600 underline uppercase">Desconectar Unidad</button>
+                <div class="panel-content text-center">
+                    <div class="avatar-box">
+                        <img id="u-avatar" src="" class="rounded-full bg-black">
+                    </div>
+                    <h3 id="u-nick" class="font-orbitron text-lg mb-4 text-white">---</h3>
+                    <div class="flex justify-between border-t border-white/10 pt-4 mt-2">
+                        <div class="text-center">
+                            <p class="text-[9px] text-zinc-500 uppercase">Victorias</p>
+                            <p id="u-wins" class="font-bold text-xl">0</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[9px] text-zinc-500 uppercase">Puntos XP</p>
+                            <p id="u-xp" class="font-bold text-xl text-[var(--neon)]">0</p>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="text-[9px] mt-6 text-zinc-600 font-bold uppercase underline">Finalizar Sesión</button>
                 </div>
             </div>
 
-            <div class="neon-module" id="mod-torneos">
-                <div class="module-header">
+            <div class="panel" id="p-arenas">
+                <div class="panel-header" onclick="switchPanel('p-arenas')">
                     <h2>02. SECTORES_ACTIVOS</h2>
-                    <span class="text-[var(--neon)] text-[10px]">RECARGANDO...</span>
+                    <span class="text-[var(--neon)]">▼</span>
                 </div>
-                <div id="arena-list" class="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-                    </div>
+                <div class="panel-content">
+                    <div id="arena-list" class="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                        </div>
+                </div>
             </div>
 
-            <div class="neon-module" id="mod-ranking">
-                <div class="module-header">
+            <div class="panel" id="p-rank">
+                <div class="panel-header" onclick="switchPanel('p-rank')">
                     <h2>03. JERARQUÍA_GLOBAL</h2>
+                    <span class="text-[var(--neon)]">▼</span>
                 </div>
-                <div id="rank-list" class="space-y-2">
-                    </div>
+                <div class="panel-content">
+                    <div id="rank-list" class="space-y-2">
+                        </div>
+                </div>
             </div>
 
-            <div class="neon-module" id="mod-soporte">
-                <div class="module-header">
-                    <h2>04. SOPORTE_TÉCNICO</h2>
+            <div class="panel" id="p-support">
+                <div class="panel-header" onclick="switchPanel('p-support')">
+                    <h2>04. AJUSTES_COMANDO</h2>
+                    <span class="text-[var(--neon)]">▼</span>
                 </div>
-                <label class="text-[9px] text-zinc-500 block mb-1">CAMBIAR APODO</label>
-                <input type="text" id="new-nick" placeholder="Nuevo Codename">
-                
-                <label class="text-[9px] text-zinc-500 block mb-1">MENSAJE AL COMANDO</label>
-                <textarea id="support-text" placeholder="Describa el error..." rows="2"></textarea>
-                
-                <button onclick="saveData()" class="btn-neon">ENVIAR Y ACTUALIZAR</button>
+                <div class="panel-content">
+                    <label class="text-[10px] text-zinc-500 font-bold uppercase mb-1 block">Modificar Codename</label>
+                    <input type="text" id="new-nick" placeholder="Nuevo apodo...">
+                    
+                    <label class="text-[10px] text-zinc-500 font-bold uppercase mb-1 block">Reportar Incidencia</label>
+                    <textarea id="support-text" placeholder="Escribe al administrador..." rows="2"></textarea>
+                    
+                    <button onclick="saveChanges()" class="btn-neon">Actualizar Terminal</button>
+                </div>
             </div>
 
         </div>
     </div>
 
     <script>
+        // CONFIGURACIÓN SUPABASE
         const SB_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
         const SB_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
         const _db = supabase.createClient(SB_URL, SB_KEY);
 
-        let user = null;
-        let isLogin = true;
+        let currentUser = null;
+        let isLoginMode = true;
 
-        // --- AUTH ---
+        // LÓGICA DE ACORDEÓN: CIERRA OTROS AL ABRIR UNO
+        function switchPanel(id) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            if(id === 'p-arenas') loadArenas();
+            if(id === 'p-rank') loadRanking();
+        }
+
+        // CONTROL DE ACCESO
+        function toggleAuth() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('reg-box').classList.toggle('hidden', isLoginMode);
+        }
+
         window.onload = async () => {
             const { data } = await _db.auth.getSession();
             if (data.session) {
-                user = data.session.user;
-                await initApp();
+                currentUser = data.session.user;
+                initDashboard();
             }
         };
-
-        function toggleAuth() {
-            isLogin = !isLogin;
-            document.getElementById('reg-box').classList.toggle('hidden', isLogin);
-        }
 
         document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
 
-            if(isLogin) {
+            if(isLoginMode) {
                 const { error } = await _db.auth.signInWithPassword({ email, password: pass });
-                if(error) alert("ACCESO DENEGADO"); else location.reload();
+                if(error) alert("FALLA EN LA CONEXIÓN"); else location.reload();
             } else {
                 const nick = document.getElementById('reg-nick').value;
                 const { data, error } = await _db.auth.signUp({ email, password: pass });
                 if(error) return alert(error.message);
-                await _db.from('perfiles').insert({ id: data.user.id, nombre: nick.toUpperCase(), xp: 0, victorias: 0 });
+                
+                await _db.from('perfiles').insert({ 
+                    id: data.user.id, 
+                    nombre: nick.toUpperCase(), 
+                    xp: 0, 
+                    victorias: 0 
+                });
                 location.reload();
             }
         };
 
-        // --- APP LOGIC ---
-        async function initApp() {
+        // LÓGICA DE DATOS
+        async function initDashboard() {
             document.getElementById('auth-overlay').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
             await loadProfile();
-            await fetchTorneos();
-            await fetchRank();
         }
 
         async function loadProfile() {
-            const { data } = await _db.from('perfiles').select('*').eq('id', user.id).single();
+            const { data } = await _db.from('perfiles').select('*').eq('id', currentUser.id).single();
             if(data) {
                 document.getElementById('u-nick').innerText = data.nombre;
                 document.getElementById('u-xp').innerText = data.xp;
@@ -259,40 +311,47 @@
             }
         }
 
-        async function fetchTorneos() {
+        async function loadArenas() {
             const { data } = await _db.from('torneos').select('*');
-            document.getElementById('arena-list').innerHTML = (data || []).map(t => `
-                <div class="border border-[var(--neon)]/20 p-3 rounded bg-white/5">
-                    <p class="text-[8px] text-[var(--neon)] font-bold">${t.juego}</p>
-                    <h4 class="text-xs font-bold uppercase">${t.nombre}</h4>
-                    <p class="text-[10px] text-zinc-500 mb-2">${t.inscritos}/${t.capacidad} JUGADORES</p>
-                    <button onclick="join('${t.id}', ${t.inscritos})" class="btn-neon !p-1 !text-[8px]">REGISTRARSE</button>
+            const container = document.getElementById('arena-list');
+            container.innerHTML = (data || []).map(t => `
+                <div class="p-3 border border-[var(--neon)]/20 rounded bg-white/5">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-orbitron text-[10px] text-[var(--neon)]">${t.juego}</h4>
+                        <span class="text-[9px] text-zinc-500">${t.inscritos}/${t.capacidad}</span>
+                    </div>
+                    <p class="text-xs font-bold uppercase mb-3">${t.nombre}</p>
+                    <button onclick="join('${t.id}', ${t.inscritos})" class="btn-neon !py-1 !text-[8px]">REGISTRARSE</button>
                 </div>
             `).join('');
         }
 
-        async function fetchRank() {
-            const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false}).limit(5);
+        async function join(id, current) {
+            await _db.from('torneos').update({ inscritos: current + 1 }).eq('id', id);
+            alert("REGISTRO EXITOSO");
+            loadArenas();
+        }
+
+        async function loadRanking() {
+            const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false}).limit(10);
             document.getElementById('rank-list').innerHTML = (data || []).map((u, i) => `
-                <div class="flex justify-between text-[11px] p-2 border-b border-white/5">
-                    <span>#${i+1} ${u.nombre}</span>
-                    <span class="text-[var(--neon)]">${u.xp} XP</span>
+                <div class="flex justify-between items-center p-2 border-b border-white/5 ${u.id === currentUser.id ? 'bg-[var(--neon)]/10' : ''}">
+                    <span class="text-[10px] text-zinc-600 font-bold">#${i+1}</span>
+                    <span class="flex-1 ml-4 text-[11px] uppercase">${u.nombre}</span>
+                    <span class="font-orbitron text-[var(--neon)] text-[10px]">${u.xp} XP</span>
                 </div>
             `).join('');
         }
 
-        async function join(id, cur) {
-            await _db.from('torneos').update({ inscritos: cur + 1 }).eq('id', id);
-            alert("SINCRO COMPLETA");
-            fetchTorneos();
-        }
-
-        async function saveData() {
+        async function saveChanges() {
             const nick = document.getElementById('new-nick').value;
+            const msg = document.getElementById('support-text').value;
+
             if(nick) {
-                await _db.from('perfiles').update({ nombre: nick.toUpperCase() }).eq('id', user.id);
+                await _db.from('perfiles').update({ nombre: nick.toUpperCase() }).eq('id', currentUser.id);
                 loadProfile();
             }
+            if(msg) alert("MENSAJE ENVIADO AL COMANDO CENTRAL");
             alert("DATOS ACTUALIZADOS");
         }
 
