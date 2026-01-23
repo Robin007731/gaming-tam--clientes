@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARENA NEON | COMMAND CENTER v95</title>
+    <title>ARENA NEON | GRID INTERFACE</title>
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,87 +12,73 @@
     <style>
         :root {
             --neon: #39ff14;
-            --neon-glow: rgba(57, 255, 20, 0.3);
-            --bg-dark: #0a0a0a;
-            --panel-bg: #111111;
+            --neon-glow: rgba(57, 255, 20, 0.4);
+            --bg-deep: #050505;
         }
 
-        /* --- RESET & BASE --- */
         body {
             background-color: #000;
             color: #fff;
             font-family: 'Rajdhani', sans-serif;
-            margin: 0; padding: 15px;
-            overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
-        }
-
-        /* --- CONTENEDOR DE PANELES (ACORDEÓN) --- */
-        .command-center {
-            max-width: 480px;
-            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* --- ESTILO DE PANEL INDIVIDUAL --- */
-        .panel {
-            background: var(--panel-bg);
+        /* --- MARCO PRINCIPAL EXTERNO --- */
+        .main-frame {
+            border: 4px solid var(--neon);
+            box-shadow: 0 0 40px var(--neon-glow), inset 0 0 20px var(--neon-glow);
+            padding: 30px;
+            width: 100%;
+            max-width: 1200px;
+            background: var(--bg-deep);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        /* --- GRID LAYOUT --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* --- ESTILO DE CADA MÓDULO --- */
+        .neon-module {
             border: 2px solid var(--neon);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.8);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
+            transition: 0.3s;
+            position: relative;
         }
 
-        .panel-header {
-            padding: 18px 20px;
-            background: linear-gradient(90deg, rgba(57, 255, 20, 0.1) 0%, transparent 100%);
-            cursor: pointer;
+        .neon-module.inactive {
+            opacity: 0.4;
+            filter: grayscale(0.8);
+            pointer-events: none;
+        }
+
+        .module-header {
+            border-bottom: 1px solid var(--neon);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            user-select: none;
         }
 
-        .panel-header h2 {
+        .module-header h2 {
             font-family: 'Orbitron';
-            font-size: 0.85rem;
+            color: var(--neon);
+            font-size: 0.8rem;
             letter-spacing: 2px;
-            color: var(--neon);
-            margin: 0;
             text-transform: uppercase;
-            text-shadow: 0 0 8px var(--neon-glow);
         }
-
-        .panel-content {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: all 0.5s ease;
-            padding: 0 20px;
-        }
-
-        /* ESTADO ACTIVO */
-        .panel.active {
-            box-shadow: 0 0 20px var(--neon-glow);
-            transform: scale(1.01);
-        }
-
-        .panel.active .panel-content {
-            max-height: 1200px;
-            opacity: 1;
-            padding: 20px;
-            border-top: 1px solid rgba(57, 255, 20, 0.1);
-        }
-
-        .indicator {
-            font-size: 0.7rem;
-            color: var(--neon);
-            transition: transform 0.3s;
-        }
-        .panel.active .indicator { transform: rotate(180deg); }
 
         /* --- COMPONENTES --- */
         .btn-neon {
@@ -100,198 +86,141 @@
             color: #000;
             font-family: 'Orbitron';
             font-weight: 900;
-            padding: 14px;
+            padding: 10px;
             width: 100%;
-            border-radius: 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            font-size: 0.75rem;
-            border: none;
+            margin-top: 10px;
+            box-shadow: 0 0 10px var(--neon-glow);
             cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 0 15px var(--neon-glow);
         }
-        .btn-neon:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--neon); }
-        .btn-neon:active { transform: scale(0.98); }
 
-        input, select, textarea {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--neon-glow);
-            color: #fff;
-            padding: 12px;
+        input, textarea, select {
+            background: #111;
+            border: 1px solid var(--neon);
+            color: var(--neon);
             width: 100%;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            outline: none;
-            font-size: 0.9rem;
-        }
-        input:focus { border-color: var(--neon); box-shadow: 0 0 10px var(--neon-glow); }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
         }
 
-        .stat-card {
-            background: rgba(57, 255, 20, 0.05);
-            border: 1px solid var(--neon-glow);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(57, 255, 20, 0.1);
         }
 
-        .avatar-circle {
-            width: 90px; height: 90px;
-            border: 3px solid var(--neon);
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            padding: 5px;
-            background: #000;
-            box-shadow: 0 0 20px var(--neon-glow);
+        /* --- AUTH SCREEN --- */
+        #auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- ANIMACIÓN DE ENTRADA --- */
-        @keyframes scanline {
-            0% { top: -10%; }
-            100% { top: 110%; }
-        }
-        .scan {
-            position: fixed; top: 0; left: 0; width: 100%; height: 2px;
-            background: rgba(57, 255, 20, 0.1);
-            z-index: 1000; pointer-events: none;
-            animation: scanline 4s linear infinite;
-        }
+        /* --- ANIMACIONES --- */
+        @keyframes pulse { 0% { opacity: 0.8; } 100% { opacity: 1; } }
+        .active-module { animation: pulse 2s infinite alternate; }
+
     </style>
 </head>
 <body>
 
-    <div class="scan"></div>
-
-    <div id="auth-screen" class="max-w-md mx-auto mt-20">
-        <div class="panel active">
-            <div class="panel-header">
-                <h2>IDENTIFICACIÓN REQUERIDA</h2>
-            </div>
-            <div class="panel-content">
-                <form id="auth-form">
-                    <div id="reg-box" class="hidden">
-                        <input type="text" id="reg-nick" placeholder="CODENAME (EJ: GHOST_99)">
-                    </div>
-                    <input type="email" id="auth-email" placeholder="EMAIL_OPERATIVO" required>
-                    <input type="password" id="auth-pass" placeholder="PASSWORD" required>
-                    <button type="submit" class="btn-neon">ACCEDER AL TERMINAL</button>
-                </form>
-                <p onclick="toggleAuth()" class="text-center text-[10px] mt-6 text-zinc-500 cursor-pointer uppercase font-bold tracking-widest">
-                    ¿Nueva unidad? <span class="text-[var(--neon)] underline">Crear registro</span>
-                </p>
-            </div>
+    <div id="auth-overlay">
+        <div class="main-frame" style="max-width: 400px;">
+            <div class="module-header"><h2>ACCESO REQUERIDO</h2></div>
+            <form id="auth-form">
+                <div id="reg-box" class="hidden">
+                    <input type="text" id="reg-nick" placeholder="NICKNAME_OPERATIVO">
+                </div>
+                <input type="email" id="auth-email" placeholder="EMAIL" required>
+                <input type="password" id="auth-pass" placeholder="PASSWORD" required>
+                <button type="submit" class="btn-neon">Sincronizar ADN</button>
+            </form>
+            <p onclick="toggleAuth()" class="text-center text-[9px] mt-4 text-zinc-500 cursor-pointer underline">¿NUEVA UNIDAD? REGISTRAR</p>
         </div>
     </div>
 
-    <div id="app-screen" class="command-center hidden">
+    <div id="dashboard" class="main-frame hidden">
         
-        <div class="text-center mb-6">
-            <h1 class="font-orbitron text-2xl font-black text-[var(--neon)] italic">ARENA NEON</h1>
-            <p class="text-[9px] text-zinc-500 tracking-[0.5em] uppercase">Control System v9.5</p>
+        <div class="text-center mb-8">
+            <h1 class="font-orbitron text-3xl font-black text-[var(--neon)] italic tracking-tighter">ARENA NEON | CMD_CENTER</h1>
+            <p class="text-[10px] text-zinc-500 uppercase tracking-[0.5em]">Terminal de Control de Torneos</p>
         </div>
 
-        <div class="panel active" id="p-home">
-            <div class="panel-header" onclick="togglePanel('p-home')">
-                <h2>01. ESTADO DE OPERATIVO</h2>
-                <span class="indicator">▼</span>
-            </div>
-            <div class="panel-content">
-                <div class="avatar-circle">
-                    <img id="u-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Neon" class="rounded-full">
+        <div class="dashboard-grid">
+            
+            <div class="neon-module" id="mod-perfil">
+                <div class="module-header">
+                    <h2>01. ESTADO_PERFIL</h2>
+                    <span class="text-[var(--neon)] text-[10px]">● ONLINE</span>
                 </div>
-                <h3 id="u-nick" class="font-orbitron text-2xl text-center mb-6 uppercase tracking-tighter">---</h3>
-                <div class="stat-grid">
-                    <div class="stat-card">
-                        <p class="text-[9px] text-zinc-500 font-bold uppercase">Victorias</p>
-                        <p id="u-wins" class="text-2xl font-black">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <p class="text-[9px] text-zinc-500 font-bold uppercase">Rango XP</p>
-                        <p id="u-xp" class="text-2xl font-black text-[var(--neon)]">0</p>
-                    </div>
+                <div class="text-center">
+                    <img id="u-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Neon" class="w-16 h-16 mx-auto mb-4 border border-[var(--neon)] p-1 rounded-full">
+                    <h3 id="u-nick" class="font-orbitron text-xl mb-4 uppercase">GUEST_USER</h3>
+                    <div class="stat-line"><span>VICTORIAS:</span><span id="u-wins">0</span></div>
+                    <div class="stat-line"><span>XP ACUMULADA:</span><span id="u-xp" class="text-[var(--neon)]">0</span></div>
+                    <button onclick="logout()" class="text-[8px] mt-4 text-zinc-600 underline uppercase">Desconectar Unidad</button>
                 </div>
-                <button onclick="logout()" class="text-[9px] w-full text-zinc-600 font-bold uppercase hover:text-red-500 transition">Finalizar Sesión</button>
             </div>
-        </div>
 
-        <div class="panel" id="p-arenas">
-            <div class="panel-header" onclick="togglePanel('p-arenas')">
-                <h2>02. SECTORES DISPONIBLES</h2>
-                <span class="indicator">▼</span>
-            </div>
-            <div class="panel-content">
-                <div id="arena-list" class="space-y-3">
+            <div class="neon-module" id="mod-torneos">
+                <div class="module-header">
+                    <h2>02. SECTORES_ACTIVOS</h2>
+                    <span class="text-[var(--neon)] text-[10px]">RECARGANDO...</span>
+                </div>
+                <div id="arena-list" class="space-y-4 max-h-[300px] overflow-y-auto pr-2">
                     </div>
             </div>
-        </div>
 
-        <div class="panel" id="p-rank">
-            <div class="panel-header" onclick="togglePanel('p-rank')">
-                <h2>03. LIDERAZGO GLOBAL</h2>
-                <span class="indicator">▼</span>
-            </div>
-            <div class="panel-content">
-                <div id="rank-list" class="space-y-1">
+            <div class="neon-module" id="mod-ranking">
+                <div class="module-header">
+                    <h2>03. JERARQUÍA_GLOBAL</h2>
+                </div>
+                <div id="rank-list" class="space-y-2">
                     </div>
             </div>
-        </div>
 
-        <div class="panel" id="p-settings">
-            <div class="panel-header" onclick="togglePanel('p-settings')">
-                <h2>04. CONFIGURACIÓN</h2>
-                <span class="indicator">▼</span>
-            </div>
-            <div class="panel-content">
-                <label class="text-[10px] text-zinc-500 font-bold uppercase mb-2 block">Modificar Codename</label>
-                <input type="text" id="new-nick" placeholder="Nuevo apodo...">
+            <div class="neon-module" id="mod-soporte">
+                <div class="module-header">
+                    <h2>04. SOPORTE_TÉCNICO</h2>
+                </div>
+                <label class="text-[9px] text-zinc-500 block mb-1">CAMBIAR APODO</label>
+                <input type="text" id="new-nick" placeholder="Nuevo Codename">
                 
-                <label class="text-[10px] text-zinc-500 font-bold uppercase mb-2 block mt-2">Soporte Técnico</label>
-                <textarea id="support-text" placeholder="Reportar error al administrador..." rows="2"></textarea>
+                <label class="text-[9px] text-zinc-500 block mb-1">MENSAJE AL COMANDO</label>
+                <textarea id="support-text" placeholder="Describa el error..." rows="2"></textarea>
                 
-                <button onclick="saveProfile()" class="btn-neon">Sincronizar Datos</button>
+                <button onclick="saveData()" class="btn-neon">ENVIAR Y ACTUALIZAR</button>
             </div>
-        </div>
 
+        </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN SUPABASE
         const SB_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
         const SB_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
         const _db = supabase.createClient(SB_URL, SB_KEY);
 
-        let currentUser = null;
-        let isLoginMode = true;
+        let user = null;
+        let isLogin = true;
 
-        // LÓGICA DE ACORDEÓN (SOLO UNO ABIERTO)
-        function togglePanel(id) {
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            const target = document.getElementById(id);
-            target.classList.add('active');
-            
-            // Cargas específicas según el panel abierto
-            if(id === 'p-arenas') fetchArenas();
-            if(id === 'p-rank') fetchRanking();
-        }
-
-        // CONTROL DE SESIÓN
+        // --- AUTH ---
         window.onload = async () => {
             const { data } = await _db.auth.getSession();
             if (data.session) {
-                currentUser = data.session.user;
-                await loadProfile();
+                user = data.session.user;
+                await initApp();
             }
         };
 
         function toggleAuth() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('reg-box').classList.toggle('hidden', isLoginMode);
+            isLogin = !isLogin;
+            document.getElementById('reg-box').classList.toggle('hidden', isLogin);
         }
 
         document.getElementById('auth-form').onsubmit = async (e) => {
@@ -299,110 +228,75 @@
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
 
-            if(isLoginMode) {
+            if(isLogin) {
                 const { error } = await _db.auth.signInWithPassword({ email, password: pass });
-                if(error) alert("ACCESO DENEGADO: Credenciales inválidas"); else location.reload();
+                if(error) alert("ACCESO DENEGADO"); else location.reload();
             } else {
                 const nick = document.getElementById('reg-nick').value;
                 const { data, error } = await _db.auth.signUp({ email, password: pass });
                 if(error) return alert(error.message);
-                
-                // Crear perfil en la tabla 'perfiles'
-                await _db.from('perfiles').insert({ 
-                    id: data.user.id, 
-                    nombre: nick.toUpperCase(), 
-                    xp: 0, 
-                    victorias: 0 
-                });
+                await _db.from('perfiles').insert({ id: data.user.id, nombre: nick.toUpperCase(), xp: 0, victorias: 0 });
                 location.reload();
             }
         };
 
+        // --- APP LOGIC ---
+        async function initApp() {
+            document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            await loadProfile();
+            await fetchTorneos();
+            await fetchRank();
+        }
+
         async function loadProfile() {
-            const { data, error } = await _db.from('perfiles').select('*').eq('id', currentUser.id).single();
+            const { data } = await _db.from('perfiles').select('*').eq('id', user.id).single();
             if(data) {
                 document.getElementById('u-nick').innerText = data.nombre;
                 document.getElementById('u-xp').innerText = data.xp;
                 document.getElementById('u-wins').innerText = data.victorias;
                 document.getElementById('u-avatar').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${data.nombre}`;
-                
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app-screen').classList.remove('hidden');
             }
         }
 
-        // CARGA DE ARENAS (TORNEOS)
-        async function fetchArenas() {
+        async function fetchTorneos() {
             const { data } = await _db.from('torneos').select('*');
-            const container = document.getElementById('arena-list');
-            
-            if(!data || data.length === 0) {
-                container.innerHTML = "<p class='text-center text-zinc-600 text-xs'>NO HAY SECTORES ACTIVOS</p>";
-                return;
-            }
-
-            container.innerHTML = data.map(t => `
-                <div class="p-4 border border-[var(--neon-glow)] rounded-lg bg-black/40">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <p class="text-[8px] text-[var(--neon)] font-bold tracking-widest uppercase">${t.juego}</p>
-                            <h4 class="font-orbitron text-sm font-bold text-white">${t.nombre}</h4>
-                        </div>
-                        <span class="text-[10px] bg-white/5 px-2 py-1 rounded text-zinc-400">${t.inscritos}/${t.capacidad}</span>
-                    </div>
-                    <button onclick="joinTournament('${t.id}', ${t.inscritos}, ${t.capacidad})" 
-                            class="btn-neon !py-2 !text-[9px] ${t.inscritos >= t.capacidad ? 'opacity-30 pointer-events-none' : ''}">
-                        ${t.inscritos >= t.capacidad ? 'SECTOR LLENO' : 'INICIAR REGISTRO'}
-                    </button>
+            document.getElementById('arena-list').innerHTML = (data || []).map(t => `
+                <div class="border border-[var(--neon)]/20 p-3 rounded bg-white/5">
+                    <p class="text-[8px] text-[var(--neon)] font-bold">${t.juego}</p>
+                    <h4 class="text-xs font-bold uppercase">${t.nombre}</h4>
+                    <p class="text-[10px] text-zinc-500 mb-2">${t.inscritos}/${t.capacidad} JUGADORES</p>
+                    <button onclick="join('${t.id}', ${t.inscritos})" class="btn-neon !p-1 !text-[8px]">REGISTRARSE</button>
                 </div>
             `).join('');
         }
 
-        async function joinTournament(id, current, max) {
-            if(current >= max) return;
-            const { error } = await _db.from('torneos').update({ inscritos: current + 1 }).eq('id', id);
-            if(!error) {
-                alert("Sincronización completa. Estás inscrito.");
-                fetchArenas();
-            }
-        }
-
-        // CARGA DE RANKING
-        async function fetchRanking() {
-            const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false}).limit(10);
-            const container = document.getElementById('rank-list');
-            
-            container.innerHTML = (data || []).map((u, i) => `
-                <div class="flex justify-between items-center p-3 border-b border-white/5 ${u.id === currentUser.id ? 'bg-[var(--neon-glow)] border-l-2 border-[var(--neon)]' : ''}">
-                    <span class="text-[10px] font-bold text-zinc-600 w-6">#${i+1}</span>
-                    <span class="flex-1 font-bold text-xs uppercase ml-2">${u.nombre}</span>
-                    <span class="font-orbitron text-[var(--neon)] text-xs">${u.xp} XP</span>
+        async function fetchRank() {
+            const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false}).limit(5);
+            document.getElementById('rank-list').innerHTML = (data || []).map((u, i) => `
+                <div class="flex justify-between text-[11px] p-2 border-b border-white/5">
+                    <span>#${i+1} ${u.nombre}</span>
+                    <span class="text-[var(--neon)]">${u.xp} XP</span>
                 </div>
             `).join('');
         }
 
-        // GUARDAR CAMBIOS
-        async function saveProfile() {
-            const n = document.getElementById('new-nick').value;
-            const s = document.getElementById('support-text').value;
-
-            if(n) {
-                const { error } = await _db.from('perfiles').update({ nombre: n.toUpperCase() }).eq('id', currentUser.id);
-                if(!error) {
-                    alert("Codename actualizado");
-                    loadProfile();
-                }
-            }
-            if(s) {
-                alert("Mensaje enviado al centro de mando técnico.");
-                document.getElementById('support-text').value = "";
-            }
+        async function join(id, cur) {
+            await _db.from('torneos').update({ inscritos: cur + 1 }).eq('id', id);
+            alert("SINCRO COMPLETA");
+            fetchTorneos();
         }
 
-        async function logout() { 
-            await _db.auth.signOut(); 
-            location.reload(); 
+        async function saveData() {
+            const nick = document.getElementById('new-nick').value;
+            if(nick) {
+                await _db.from('perfiles').update({ nombre: nick.toUpperCase() }).eq('id', user.id);
+                loadProfile();
+            }
+            alert("DATOS ACTUALIZADOS");
         }
+
+        async function logout() { await _db.auth.signOut(); location.reload(); }
     </script>
 </body>
 </html>
