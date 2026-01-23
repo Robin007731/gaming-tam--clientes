@@ -3,346 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARENA NEON | ULTIMATE PLAYER PORTAL</title>
+    <title>ARENA NEON | PHANTOM PORTAL</title>
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --neon: #39ff14;
-            --neon-dim: rgba(57, 255, 20, 0.3);
-            --bg: #030303;
-            --card: rgba(10, 10, 10, 0.8);
+            --neon-soft: rgba(57, 255, 20, 0.15);
         }
 
+        /* FONDO ANIMADO GAMER */
         body { 
-            background-color: var(--bg); 
-            color: #ffffff; 
+            background: #000;
+            color: #fff; 
             font-family: 'Rajdhani', sans-serif;
             margin: 0; min-height: 100vh;
-            background-image: 
-                linear-gradient(var(--neon-dim) 1px, transparent 1px),
-                linear-gradient(90deg, var(--neon-dim) 1px, transparent 1px);
-            background-size: 40px 40px;
-            background-attachment: fixed;
+            overflow-x: hidden;
+            background: linear-gradient(45deg, #000000, #041404, #000000, #081a08);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
 
-        /* HEADER PRO */
+        /* HEADER FLOTANTE SIN RECUADROS */
         header {
-            background: rgba(0,0,0,0.9);
-            border-bottom: 1px solid var(--neon);
-            padding: 1rem 1.5rem;
+            padding: 1.5rem;
             position: fixed; top: 0; width: 100%; z-index: 100;
-            backdrop-filter: blur(10px);
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
         }
 
-        /* TARJETAS CON GLOW */
-        .neon-border {
-            background: var(--card);
-            border: 1px solid var(--neon);
-            border-radius: 12px;
-            box-shadow: inset 0 0 10px rgba(57, 255, 20, 0.1), 0 0 15px rgba(0,0,0,0.5);
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* SECCIONES SIN CAJAS */
+        .view { 
+            display: none; 
+            padding: 7rem 1.5rem 8rem 1.5rem; 
+            max-width: 500px; 
+            margin: 0 auto; 
         }
+        .view.active { display: block; animation: fadeIn 0.6s ease; }
 
-        .neon-border:hover {
-            box-shadow: 0 0 20px var(--neon-dim);
-            transform: translateY(-2px);
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* BOTONES CYBERPUNK */
-        .btn-apex {
+        /* BOTONES CYBER */
+        .btn-action {
             background: var(--neon);
             color: #000;
             font-family: 'Orbitron';
             font-weight: 900;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            padding: 14px;
-            border-radius: 4px;
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
-            transition: 0.3s;
+            padding: 12px;
+            border-radius: 2px;
             text-transform: uppercase;
-        }
-
-        .btn-apex:hover:not(:disabled) {
-            filter: brightness(1.2);
-            box-shadow: 0 0 20px var(--neon);
-        }
-
-        .btn-apex:disabled { background: #1a2e1a; color: #444; cursor: not-allowed; }
-
-        /* INPUTS */
-        input {
-            background: rgba(255,255,255,0.05) !important;
-            border: 1px solid #333 !important;
-            color: #fff !important;
-            padding: 14px !important;
-            border-radius: 4px !important;
-            margin-bottom: 1rem;
+            font-size: 0.7rem;
+            box-shadow: 0 0 15px var(--neon-soft);
+            transition: 0.3s;
+            cursor: pointer;
             width: 100%;
         }
-        input:focus { border-color: var(--neon) !important; outline: none; }
+        .btn-action:hover { box-shadow: 0 0 25px var(--neon); transform: scale(1.02); }
 
-        /* NAVBAR */
-        nav.bottom-nav {
-            background: rgba(5,5,5,0.95);
-            border-top: 1px solid var(--neon);
+        /* ESTILO DE LISTAS SIN BORDES */
+        .list-item {
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 1rem;
+            padding: 1.2rem;
+            border-left: 2px solid var(--neon);
+            border-radius: 0 10px 10px 0;
+            backdrop-filter: blur(5px);
+        }
+
+        /* INPUTS LIMPIOS */
+        input, select, textarea {
+            background: rgba(255,255,255,0.05);
+            border: none;
+            border-bottom: 1px solid var(--neon-soft);
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 1rem;
+            outline: none;
+        }
+        input:focus { border-bottom-color: var(--neon); }
+
+        /* AVATAR SELECTOR */
+        .avatar-circle {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--neon);
+            padding: 3px;
+            box-shadow: 0 0 20px var(--neon-soft);
+        }
+
+        /* NAV INFERIOR */
+        nav {
             position: fixed; bottom: 0; width: 100%;
             display: flex; justify-content: space-around;
-            padding: 12px 0; z-index: 100;
-            backdrop-filter: blur(10px);
+            padding: 1.5rem 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            z-index: 100;
         }
-
-        .nav-link {
-            text-align: center; font-size: 0.6rem; font-weight: 700; color: #555;
-            text-transform: uppercase; transition: 0.3s;
-        }
-        .nav-link.active { color: var(--neon); text-shadow: 0 0 8px var(--neon); }
-        .nav-link svg { width: 20px; height: 20px; margin: 0 auto 4px; }
-
-        /* SECCIONES */
-        .view { display: none; padding: 6rem 1.5rem 7rem 1.5rem; max-width: 450px; margin: 0 auto; }
-        .view.active { display: block; animation: fadeIn 0.5s ease forwards; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* RANKING ROW */
-        .rank-item {
-            background: rgba(255,255,255,0.02);
-            margin-bottom: 4px;
-            padding: 12px 16px;
-            border-left: 3px solid transparent;
-        }
-        .rank-item.me { background: rgba(57, 255, 20, 0.1); border-left-color: var(--neon); }
+        .nav-btn { color: #444; font-size: 0.6rem; font-weight: 800; cursor: pointer; text-align: center; }
+        .nav-btn.active { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="fixed inset-0 bg-black z-[200] flex flex-col items-center justify-center">
-        <div class="w-12 h-12 border-2 border-[var(--neon)] border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="font-orbitron text-[10px] tracking-[0.3em] text-[var(--neon)] animate-pulse">SINCRO_DATOS...</div>
-    </div>
-
-    <div id="auth-view" class="hidden min-h-screen flex items-center justify-center p-6">
-        <div class="w-full max-w-sm neon-border p-8">
-            <h1 class="font-orbitron text-2xl font-black text-[var(--neon)] italic mb-8 text-center tracking-tighter">ARENA_NEON</h1>
-            <form id="auth-form">
-                <div id="register-only" class="hidden">
-                    <input type="text" id="nick" placeholder="NICKNAME (EJ: ZERO_ONE)">
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-8">
+        <div class="w-full max-w-sm text-center">
+            <h1 class="font-orbitron text-3xl font-black text-[var(--neon)] mb-10 tracking-widest italic">NEON_PHANTOM</h1>
+            <form id="auth-form" class="space-y-4">
+                <div id="reg-box" class="hidden">
+                    <input type="text" id="reg-nick" placeholder="CODENAME">
                 </div>
-                <input type="email" id="email" placeholder="EMAIL DE OPERATIVO" required>
-                <input type="password" id="pass" placeholder="PASSWORD" required>
-                <button type="submit" id="btn-submit" class="btn-apex w-full mt-2">INGRESAR</button>
+                <input type="email" id="auth-email" placeholder="OPERATIVE_EMAIL">
+                <input type="password" id="auth-pass" placeholder="ACCESS_CODE">
+                <button type="submit" class="btn-action">Establecer Conexión</button>
             </form>
-            <p onclick="toggleAuth()" class="text-center mt-8 text-[10px] text-zinc-500 uppercase font-black cursor-pointer hover:text-[var(--neon)]">
-                ¿No tienes cuenta? <span class="text-white underline">Registrar nuevo perfil</span>
-            </p>
+            <p onclick="toggleAuth()" class="mt-8 text-[10px] text-zinc-600 font-bold uppercase cursor-pointer">Nueva Unidad? <span class="text-white">Registrar Perfil</span></p>
         </div>
     </div>
 
-    <div id="main-app" class="hidden">
+    <div id="app-content" class="hidden">
         <header>
-            <div class="font-orbitron font-black text-sm italic tracking-tighter">
-                ARENA<span class="text-[var(--neon)]">NEON</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <div id="xp-header" class="text-[var(--neon)] font-black font-orbitron text-[10px] bg-green-950/30 px-3 py-1 rounded border border-green-900">0 XP</div>
-                <button onclick="logout()" class="text-zinc-500 text-[10px] font-black hover:text-white">OUT</button>
-            </div>
+            <div class="font-orbitron text-xs font-black tracking-widest text-[var(--neon)]">ARENA_NEON_v60</div>
+            <div id="top-xp" class="font-orbitron text-[10px] bg-white/5 px-3 py-1 rounded-full">0 XP</div>
         </header>
 
         <section id="view-home" class="view active">
-            <div class="text-center mb-10">
-                <div class="w-20 h-20 bg-zinc-900 rounded-full border border-[var(--neon)] mx-auto mb-4 flex items-center justify-center shadow-[0_0_20px_rgba(57,255,20,0.2)]">
-                    <span class="text-3xl">🤖</span>
+            <div class="flex flex-col items-center mb-10">
+                <div class="relative">
+                    <img id="current-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="avatar-circle mb-4" alt="Avatar">
+                    <button onclick="changeView('settings')" class="absolute bottom-4 right-0 bg-[var(--neon)] p-1 rounded-full text-black">⚙️</button>
                 </div>
-                <h2 id="user-name" class="font-orbitron text-2xl font-black uppercase tracking-tighter">---</h2>
-                <p id="user-rank-text" class="text-[10px] text-[var(--neon)] font-black uppercase tracking-widest mt-1">NIVEL: RECLUTA</p>
+                <h2 id="p-name" class="font-orbitron text-2xl font-black uppercase">OPERATIVO</h2>
+                <div class="flex gap-4 mt-6">
+                    <div class="text-center">
+                        <p class="text-[9px] text-zinc-500 font-bold">WINS</p>
+                        <p id="p-wins" class="text-xl font-orbitron">0</p>
+                    </div>
+                    <div class="h-8 w-[1px] bg-zinc-800"></div>
+                    <div class="text-center">
+                        <p class="text-[9px] text-zinc-500 font-bold">GLOBAL XP</p>
+                        <p id="p-xp" class="text-xl font-orbitron text-[var(--neon)]">0</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="neon-border p-5 text-center bg-zinc-900/50">
-                    <p class="text-[9px] text-zinc-500 font-black uppercase mb-1 tracking-widest">Victorias</p>
-                    <p id="user-wins" class="text-2xl font-orbitron font-black">0</p>
-                </div>
-                <div class="neon-border p-5 text-center bg-zinc-900/50">
-                    <p class="text-[9px] text-zinc-500 font-black uppercase mb-1 tracking-widest">XP Global</p>
-                    <p id="user-xp" class="text-2xl font-orbitron font-black text-[var(--neon)]">0</p>
-                </div>
-            </div>
-
-            <div class="p-4 border-l-2 border-[var(--neon)] bg-green-950/10 text-[11px] font-medium text-zinc-400 leading-relaxed">
-                <span class="text-[var(--neon)] font-black">MENSAJE DEL SISTEMA:</span> Los torneos activos requieren presencia física o digital según la arena. Verifica los cupos antes de unirte.
-            </div>
+            <button onclick="changeView('arenas')" class="btn-action mb-12">Explorar Arenas Activas</button>
         </section>
 
         <section id="view-arenas" class="view">
-            <div class="flex items-center justify-between mb-8">
-                <h3 class="font-orbitron text-xs font-black uppercase italic tracking-widest">Arenas Disponibles</h3>
-                <span class="w-2 h-2 bg-[var(--neon)] rounded-full animate-ping"></span>
-            </div>
-            <div id="list-arenas" class="space-y-6">
-                </div>
+            <h3 class="font-orbitron text-xs text-zinc-500 mb-8 tracking-widest uppercase">Protocolos de Combate</h3>
+            <div id="arena-list"></div>
         </section>
 
         <section id="view-ranking" class="view">
-            <h3 class="font-orbitron text-xs font-black uppercase italic tracking-widest mb-8">Leaderboard_v1</h3>
-            <div id="list-ranking" class="neon-border overflow-hidden bg-black/40">
-                </div>
+            <h3 class="font-orbitron text-xs text-zinc-500 mb-8 tracking-widest uppercase">Unidades de Élite</h3>
+            <div id="rank-list" class="space-y-1"></div>
         </section>
 
-        <nav class="bottom-nav">
-            <div class="nav-link active" onclick="changeView('home', this)">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                PERFIL
+        <section id="view-support" class="view">
+            <h3 class="font-orbitron text-xs text-zinc-500 mb-8 tracking-widest uppercase">Enlace con Comando</h3>
+            <div class="list-item">
+                <textarea id="support-msg" rows="4" placeholder="Describe el problema o reporte..."></textarea>
+                <button onclick="sendSupport()" class="btn-action">Enviar Reporte</button>
             </div>
-            <div class="nav-link" onclick="changeView('arenas', this)">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                ARENAS
+            <div class="mt-4 text-[10px] text-zinc-500 text-center">Tiempo estimado de respuesta: 15 min.</div>
+        </section>
+
+        <section id="view-settings" class="view">
+            <h3 class="font-orbitron text-xs text-zinc-500 mb-8 tracking-widest uppercase">Modificar Perfil</h3>
+            <div class="list-item">
+                <label class="text-[10px] font-bold text-zinc-500 uppercase">Cambiar Nickname</label>
+                <input type="text" id="new-nick" placeholder="Nuevo apodo">
+                
+                <label class="text-[10px] font-bold text-zinc-500 uppercase">Estilo de Avatar</label>
+                <select id="avatar-style" onchange="updateAvatarPreview()">
+                    <option value="Felix">Estilo Felix</option>
+                    <option value="Aneka">Estilo Aneka</option>
+                    <option value="Midnight">Estilo Midnight</option>
+                </select>
+                
+                <button onclick="saveSettings()" class="btn-action mt-4">Guardar Cambios</button>
             </div>
-            <div class="nav-link" onclick="changeView('ranking', this)">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                TOP
-            </div>
+        </section>
+
+        <nav>
+            <div class="nav-btn active" onclick="nav('home', this)">PERFIL</div>
+            <div class="nav-btn" onclick="nav('arenas', this)">ARENAS</div>
+            <div class="nav-btn" onclick="nav('ranking', this)">TOP</div>
+            <div class="nav-btn" onclick="nav('support', this)">SOPORTE</div>
+            <div class="nav-btn" onclick="logout()">LOGOUT</div>
         </nav>
     </div>
 
     <script>
-        // CONFIGURACIÓN CORE
-        const DB_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
-        const DB_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
-        const _arena = supabase.createClient(DB_URL, DB_KEY);
+        const SB_URL = 'https://qxvqxdsfcvdmanxtzmkn.supabase.co';
+        const SB_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
+        const _api = supabase.createClient(SB_URL, SB_KEY);
 
         let user = null;
         let isLogin = true;
 
         window.onload = async () => {
-            const { data: { session } } = await _arena.auth.getSession();
+            const { data: { session } } = await _api.auth.getSession();
             if (session) {
                 user = session.user;
-                await initProfile();
-            } else {
-                document.getElementById('auth-view').classList.remove('hidden');
+                await loadUserData();
             }
-            hideLoader();
         };
-
-        function hideLoader() { 
-            setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500); 
-        }
 
         function toggleAuth() {
             isLogin = !isLogin;
-            document.getElementById('register-only').classList.toggle('hidden', isLogin);
-            document.getElementById('btn-submit').innerText = isLogin ? 'INGRESAR' : 'CREAR PERFIL';
+            document.getElementById('reg-box').classList.toggle('hidden', isLogin);
         }
 
-        // AUTH
         document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
-
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
             if (isLogin) {
-                const { error } = await _arena.auth.signInWithPassword({ email, password: pass });
-                if (error) alert("Error: Datos incorrectos"); else location.reload();
+                const { error } = await _api.auth.signInWithPassword({ email, password: pass });
+                if (error) alert("Error de acceso"); else location.reload();
             } else {
-                const nick = document.getElementById('nick').value;
-                if(!nick) return alert("Nickname requerido");
-                const { data, error } = await _arena.auth.signUp({ email, password: pass });
+                const nick = document.getElementById('reg-nick').value;
+                const { data, error } = await _api.auth.signUp({ email, password: pass });
                 if (error) return alert(error.message);
-                await _arena.from('perfiles').insert({ id: data.user.id, nombre: nick.toUpperCase(), xp: 0, victorias: 0 });
+                await _api.from('perfiles').insert({ id: data.user.id, nombre: nick.toUpperCase(), xp: 0, victorias: 0 });
                 location.reload();
             }
         };
 
-        async function initProfile() {
-            const { data } = await _arena.from('perfiles').select('*').eq('id', user.id).single();
+        async function loadUserData() {
+            const { data } = await _api.from('perfiles').select('*').eq('id', user.id).single();
             if (data) {
-                document.getElementById('user-name').innerText = data.nombre;
-                document.getElementById('user-xp').innerText = data.xp;
-                document.getElementById('user-wins').innerText = data.victorias;
-                document.getElementById('xp-header').innerText = data.xp + " XP";
-                
-                if(data.xp > 1000) document.getElementById('user-rank-text').innerText = "NIVEL: VETERANO";
-                if(data.xp > 5000) document.getElementById('user-rank-text').innerText = "NIVEL: LEYENDA";
-
-                document.getElementById('auth-view').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('p-name').innerText = data.nombre;
+                document.getElementById('p-xp').innerText = data.xp;
+                document.getElementById('p-wins').innerText = data.victorias;
+                document.getElementById('top-xp').innerText = data.xp + " XP";
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
             }
         }
 
-        function changeView(id, el) {
+        function nav(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
             document.getElementById('view-' + id).classList.add('active');
             el.classList.add('active');
             if(id === 'arenas') loadArenas();
             if(id === 'ranking') loadRanking();
         }
 
+        function changeView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + id).classList.add('active');
+        }
+
         async function loadArenas() {
-            const container = document.getElementById('list-arenas');
-            container.innerHTML = '<div class="text-center text-[10px] animate-pulse">CARGANDO ARENAS...</div>';
-            
-            const { data } = await _arena.from('torneos').select('*').order('created_at', {ascending: false});
-            container.innerHTML = (data || []).map(t => {
-                const full = t.inscritos >= t.capacidad;
-                const progress = (t.inscritos / t.capacidad) * 100;
-                return `
-                <div class="neon-border p-6 bg-zinc-900/40">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-[9px] font-black text-[var(--neon)] tracking-tighter uppercase">${t.juego}</span>
-                        <span class="text-[10px] font-bold">${t.inscritos}/${t.capacidad}</span>
-                    </div>
-                    <h4 class="font-orbitron text-lg font-black uppercase mb-4 italic">${t.nombre}</h4>
-                    <div class="w-full h-[2px] bg-zinc-800 mb-6">
-                        <div class="h-full bg-[var(--neon)]" style="width: ${progress}%"></div>
-                    </div>
-                    <button onclick="join('${t.id}', ${t.inscritos}, ${t.capacidad}, this)" 
-                            class="btn-apex w-full" ${full ? 'disabled' : ''}>
-                        ${full ? 'SIN ACCESO (FULL)' : 'UNIRSE A LA ARENA'}
-                    </button>
-                </div>`;
-            }).join('');
-        }
-
-        async function join(id, cur, max, btn) {
-            btn.disabled = true;
-            btn.innerText = "PROCESANDO...";
-            
-            const { error } = await _arena.from('torneos').update({ inscritos: cur + 1 }).eq('id', id);
-            if(!error) {
-                alert("CONEXIÓN ESTABLECIDA. Te has unido al torneo.");
-                loadArenas();
-            } else {
-                btn.disabled = false;
-                btn.innerText = "REINTENTAR";
-            }
-        }
-
-        async function loadRanking() {
-            const { data } = await _arena.from('perfiles').select('*').order('xp', {ascending: false}).limit(20);
-            const container = document.getElementById('list-ranking');
-            container.innerHTML = (data || []).map((u, i) => `
-                <div class="rank-item flex justify-between items-center ${u.id === user.id ? 'me' : ''}">
-                    <div class="flex items-center gap-4">
-                        <span class="font-orbitron text-[10px] w-4">${i+1}</span>
-                        <span class="text-sm font-bold uppercase">${u.nombre}</span>
-                    </div>
-                    <span class="font-orbitron text-xs text-[var(--neon)]">${u.xp} XP</span>
+            const { data } = await _api.from('torneos').select('*');
+            const container = document.getElementById('arena-list');
+            container.innerHTML = (data || []).map(t => `
+                <div class="list-item">
+                    <p class="text-[9px] font-bold text-[var(--neon)] tracking-tighter uppercase">${t.juego}</p>
+                    <h4 class="font-orbitron text-lg font-black italic uppercase">${t.nombre}</h4>
+                    <p class="text-[10px] text-zinc-500 mb-4">${t.inscritos}/${t.capacidad} OPERATIVOS</p>
+                    <button onclick="join('${t.id}', ${t.inscritos})" class="btn-action">Iniciar Inserción</button>
                 </div>
             `).join('');
         }
 
-        async function logout() { await _arena.auth.signOut(); location.reload(); }
+        async function join(id, cur) {
+            const { error } = await _api.from('torneos').update({ inscritos: cur + 1 }).eq('id', id);
+            if(!error) { alert("¡Inscrito!"); loadArenas(); }
+        }
+
+        async function loadRanking() {
+            const { data } = await _api.from('perfiles').select('*').order('xp', {ascending: false});
+            const container = document.getElementById('rank-list');
+            container.innerHTML = (data || []).map((u, i) => `
+                <div class="flex justify-between items-center p-4 bg-white/5 mb-1 ${u.id === user.id ? 'border-l-2 border-[var(--neon)] bg-white/10' : ''}">
+                    <span class="text-xs font-bold text-zinc-600">#${i+1}</span>
+                    <span class="text-sm font-bold uppercase">${u.nombre}</span>
+                    <span class="text-sm font-orbitron text-[var(--neon)]">${u.xp}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateAvatarPreview() {
+            const seed = document.getElementById('avatar-style').value;
+            document.getElementById('current-avatar').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
+        }
+
+        async function saveSettings() {
+            const newNick = document.getElementById('new-nick').value;
+            if(newNick) {
+                const { error } = await _api.from('perfiles').update({ nombre: newNick.toUpperCase() }).eq('id', user.id);
+                if(!error) { alert("Perfil Actualizado"); loadUserData(); nav('home', document.querySelector('.nav-btn')); }
+            }
+        }
+
+        async function sendSupport() {
+            const msg = document.getElementById('support-msg').value;
+            if(msg) {
+                alert("Mensaje enviado al Comando Administrativo.");
+                document.getElementById('support-msg').value = '';
+            }
+        }
+
+        async function logout() { await _api.auth.signOut(); location.reload(); }
     </script>
 </body>
 </html>
