@@ -5,271 +5,310 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ARENA NEON</title>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="https://cdn.tailwindcss.com"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root{
-    --neon:#39ff14;
-    --bg:#020202;
+  --cyan:#36f0ff;
+  --pink:#ff4fd8;
+  --green:#2dff83;
+  --bg:#020409;
 }
 
 body{
-    background:#000;
-    font-family:'Rajdhani',sans-serif;
-    color:#fff;
-    margin:0;
-    min-height:100vh;
+  margin:0;
+  font-family:'Rajdhani',sans-serif;
+  background:radial-gradient(circle at top,#081424,#020409 60%);
+  color:#fff;
+  overflow-x:hidden;
 }
 
-/* NAVBAR */
-header{
-    max-width:1200px;
-    margin:auto;
-    padding:24px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+/* ================= NAVBAR ================= */
+.navbar{
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:100;
+  backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(5,10,20,.85),rgba(5,10,20,.45));
+  border-bottom:1px solid rgba(54,240,255,.25);
 }
-nav a{
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    color:#aaa;
-    font-weight:bold;
+.navbar a{
+  font-size:13px;
+  font-weight:600;
+  color:#cfd9e4;
+  text-transform:capitalize;
+}
+.navbar a.active{
+  color:var(--cyan);
+  text-shadow:0 0 10px rgba(54,240,255,.6);
 }
 
-/* HERO */
+/* ================= HERO ================= */
 .hero{
-    max-width:1200px;
-    margin:20px auto 40px;
-    border-radius:20px;
-    overflow:hidden;
-    position:relative;
-    height:380px;
+  position:relative;
+  max-width:1400px;
+  margin:120px auto 80px;
+  height:520px;
+  border-radius:18px;
+  overflow:hidden;
 }
 .hero img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    opacity:.8;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 .hero::after{
-    content:'';
-    position:absolute;
-    inset:0;
-    background:linear-gradient(90deg,#000 30%,rgba(0,0,0,.4),transparent);
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,#020409 28%,rgba(2,4,9,.75),transparent),
+    linear-gradient(0deg,#020409 0%,transparent 40%);
 }
 .hero-content{
-    position:absolute;
-    inset:0;
-    z-index:1;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    padding:50px;
+  position:relative;
+  z-index:2;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:70px;
 }
-.hero-content h1{
-    font-family:'Orbitron';
-    font-size:48px;
-    font-weight:900;
+.hero h1{
+  font-family:'Orbitron';
+  font-size:64px;
+  font-weight:900;
+  line-height:1.05;
+  letter-spacing:-2px;
+  text-shadow:
+    0 0 25px rgba(54,240,255,.3),
+    0 0 60px rgba(54,240,255,.15);
 }
-.hero-content span{color:var(--neon);}
+.hero-btn{
+  margin-top:26px;
+  background:linear-gradient(90deg,var(--pink),#9a4bff);
+  padding:16px 34px;
+  width:max-content;
+  border-radius:10px;
+  font-family:'Orbitron';
+  font-weight:800;
+  letter-spacing:.5px;
+  box-shadow:0 0 40px rgba(255,79,216,.75);
+  transition:.25s;
+}
+.hero-btn:hover{transform:scale(1.05)}
 
-.btn-neon{
-    background:var(--neon);
-    color:#000;
-    font-family:'Orbitron';
-    font-weight:900;
-    padding:12px 20px;
-    width:max-content;
-    border-radius:6px;
-    margin-top:20px;
-    box-shadow:0 0 20px rgba(57,255,20,.6);
+/* HUD */
+.hud{
+  position:absolute;
+  right:50px;
+  bottom:50px;
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  border:3px solid var(--green);
+  box-shadow:0 0 30px rgba(45,255,131,.7);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  font-family:'Orbitron';
+  background:rgba(0,0,0,.45);
 }
+.hud span{font-size:11px; opacity:.85}
 
-/* FRAME */
-.main-frame{
-    max-width:1200px;
-    margin:auto;
-    border:2px solid var(--neon);
-    border-radius:20px;
-    padding:25px;
-    background:rgba(10,10,10,.8);
-    backdrop-filter:blur(10px);
+/* ================= DASHBOARD ================= */
+.section{
+  max-width:1300px;
+  margin:auto;
+  padding:40px 20px;
+}
+.section-title{
+  font-family:'Orbitron';
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:20px;
+  text-shadow:0 0 12px rgba(54,240,255,.35);
 }
 
 /* GRID */
 .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:22px;
 }
 
 /* PANELS */
 .panel{
-    border:1px solid rgba(57,255,20,.35);
-    border-radius:14px;
-    overflow:hidden;
-    background:rgba(20,20,20,.7);
-    backdrop-filter:blur(8px);
+  background:rgba(10,15,25,.65);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(54,240,255,.25);
+  border-radius:16px;
+  position:relative;
+  overflow:hidden;
 }
-.panel h2{
-    font-family:'Orbitron';
-    font-size:12px;
-    padding:14px;
-    background:linear-gradient(90deg,rgba(57,255,20,.2),transparent);
-    border-bottom:1px solid rgba(57,255,20,.4);
+.panel::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(120deg,transparent,rgba(54,240,255,.15),transparent);
+  opacity:.3;
 }
-.panel-content{padding:18px}
+.panel-header{
+  padding:16px 18px;
+  font-family:'Orbitron';
+  font-size:13px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.panel-content{
+  padding:20px;
+}
 
 /* PROFILE */
 .avatar{
-    width:80px;height:80px;
-    border-radius:50%;
-    border:2px solid var(--neon);
-    margin:auto;
+  width:90px;height:90px;
+  border-radius:50%;
+  border:2px solid var(--cyan);
+  box-shadow:0 0 20px rgba(54,240,255,.6);
+  margin:auto;
 }
 .stat{
-    text-align:center;
+  text-align:center;
 }
 .stat p:first-child{
-    font-size:10px;
-    color:#aaa;
-    text-transform:uppercase;
+  font-size:10px;
+  text-transform:uppercase;
+  color:#9fb5c9;
 }
 .stat p:last-child{
-    font-size:22px;
-    font-weight:bold;
+  font-size:24px;
+  font-weight:700;
 }
 
-/* AUTH */
-#auth{
-    position:fixed;
-    inset:0;
-    background:#000;
-    z-index:999;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+/* TOURNAMENTS */
+.tournament{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:14px;
+  background:rgba(0,0,0,.35);
 }
-.hidden{display:none}
-input,textarea{
-    background:#111;
-    border:1px solid var(--neon);
-    padding:10px;
-    width:100%;
-    border-radius:6px;
-    margin-bottom:12px;
-    color:#fff;
+.tournament h4{
+  font-family:'Orbitron';
+  font-size:12px;
+  color:var(--cyan);
+}
+
+/* RANKING */
+.rank-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+/* FOOTER */
+footer{
+  text-align:center;
+  padding:40px;
+  font-size:12px;
+  color:#7b93aa;
+  opacity:.6;
 }
 </style>
 </head>
 
 <body>
 
-<!-- AUTH -->
-<div id="auth">
-<div class="main-frame" style="max-width:380px">
-<h2 class="text-center font-orbitron text-[var(--neon)] mb-6">ACCESO</h2>
-<input id="email" type="email" placeholder="Email">
-<input id="pass" type="password" placeholder="Password">
-<button class="btn-neon w-full" onclick="login()">INGRESAR</button>
-</div>
-</div>
-
-<!-- NAV -->
-<header>
-<div class="font-orbitron font-black text-xl text-[var(--neon)]">
-ARENA<span class="text-white">NEON</span>
-</div>
-<nav class="flex gap-6">
-<a>Torneos</a>
-<a>Perfil</a>
-<a>Ranking</a>
-<a>Soporte</a>
-</nav>
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="font-orbitron font-black text-xl text-[var(--cyan)]">
+      ARENA<span class="text-white">NEON</span>
+    </div>
+    <nav class="hidden md:flex gap-8">
+      <a class="active">Torneos Activos</a>
+      <a>Mi Perfil</a>
+      <a>Clasificaciones</a>
+      <a>Soporte</a>
+    </nav>
+  </div>
 </header>
 
 <!-- HERO -->
 <section class="hero">
-<img src="https://images.unsplash.com/photo-1605902711622-cfb43c4437d1">
-<div class="hero-content">
-<h1>TU ARENA<br><span>TE ESPERA</span></h1>
-<button class="btn-neon">EXPLORAR TORNEOS</button>
-</div>
+  <img src="https://images.unsplash.com/photo-1605902711622-cfb43c4437d1">
+  <div class="hero-content">
+    <h1>TU ARENA<br>TE ESPERA.</h1>
+    <button class="hero-btn">EXPLORA TORNEOS</button>
+  </div>
+  <div class="hud">
+    <div class="text-2xl font-black">147.352</div>
+    <span>JUGADORES<br>UNIDOS</span>
+  </div>
 </section>
 
 <!-- DASHBOARD -->
-<div class="main-frame hidden" id="app">
+<section class="section">
+  <div class="grid">
 
-<div class="grid">
+    <div class="panel">
+      <div class="panel-header">MI PERFIL</div>
+      <div class="panel-content text-center">
+        <img class="avatar mb-4" src="https://api.dicebear.com/7.x/bottts/svg?seed=NEON">
+        <h3 class="font-orbitron text-lg mb-6">PLAYER_NEO</h3>
+        <div class="flex justify-around">
+          <div class="stat"><p>Victorias</p><p>32</p></div>
+          <div class="stat"><p>XP</p><p class="text-[var(--cyan)]">1240</p></div>
+        </div>
+      </div>
+    </div>
 
-<div class="panel">
-<h2>MI PERFIL</h2>
-<div class="panel-content text-center">
-<img id="avatar" class="avatar mb-4">
-<h3 id="nick" class="font-orbitron text-lg mb-6">---</h3>
-<div class="flex justify-around">
-<div class="stat"><p>Victorias</p><p id="wins">0</p></div>
-<div class="stat"><p>XP</p><p id="xp" class="text-[var(--neon)]">0</p></div>
-</div>
-</div>
-</div>
+    <div class="panel">
+      <div class="panel-header">TORNEOS ACTIVOS</div>
+      <div class="panel-content">
+        <div class="tournament">
+          <h4>VALORANT</h4>
+          <p class="text-sm font-bold">Neon Clash</p>
+        </div>
+        <div class="tournament">
+          <h4>CS2</h4>
+          <p class="text-sm font-bold">Cyber League</p>
+        </div>
+      </div>
+    </div>
 
-<div class="panel">
-<h2>TORNEOS ACTIVOS</h2>
-<div class="panel-content" id="torneos"></div>
-</div>
+    <div class="panel">
+      <div class="panel-header">CLASIFICACIÓN GLOBAL</div>
+      <div class="panel-content">
+        <div class="rank-item"><span>#1 NEOX</span><span class="text-[var(--cyan)]">9000 XP</span></div>
+        <div class="rank-item"><span>#2 CYBER</span><span>8420 XP</span></div>
+        <div class="rank-item"><span>#3 PULSE</span><span>7700 XP</span></div>
+      </div>
+    </div>
 
-<div class="panel">
-<h2>RANKING</h2>
-<div class="panel-content" id="ranking"></div>
-</div>
+    <div class="panel">
+      <div class="panel-header">SOPORTE</div>
+      <div class="panel-content">
+        <textarea class="w-full bg-black/40 border border-white/10 rounded p-3 text-sm" rows="4"
+        placeholder="Mensaje al comando central..."></textarea>
+        <button class="hero-btn mt-4 w-full text-center">ENVIAR</button>
+      </div>
+    </div>
 
-<div class="panel">
-<h2>SOPORTE</h2>
-<div class="panel-content">
-<textarea placeholder="Mensaje al admin"></textarea>
-<button class="btn-neon w-full">ENVIAR</button>
-</div>
-</div>
+  </div>
+</section>
 
-</div>
-</div>
-
-<script>
-const supabase = window.supabase.createClient(
-'https://qxvqxdsfcvdmanxtzmkn.supabase.co',
-'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07'
-);
-
-async function login(){
-const email=document.getElementById('email').value;
-const password=document.getElementById('pass').value;
-const {data,error}=await supabase.auth.signInWithPassword({email,password});
-if(error) return alert('Error');
-init();
-}
-
-async function init(){
-document.getElementById('auth').classList.add('hidden');
-document.getElementById('app').classList.remove('hidden');
-const user=(await supabase.auth.getUser()).data.user;
-const {data}=await supabase.from('perfiles').select('*').eq('id',user.id).single();
-document.getElementById('nick').innerText=data.nombre;
-document.getElementById('xp').innerText=data.xp;
-document.getElementById('wins').innerText=data.victorias;
-document.getElementById('avatar').src=`https://api.dicebear.com/7.x/bottts/svg?seed=${data.nombre}`;
-}
-
-(async()=>{
-const session=await supabase.auth.getSession();
-if(session.data.session) init();
-})();
-</script>
+<footer>
+ARENA NEON — Plataforma competitiva de nueva generación
+</footer>
 
 </body>
 </html>
