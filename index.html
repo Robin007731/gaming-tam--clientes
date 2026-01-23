@@ -14,13 +14,13 @@
             --neon: #00f2ff;
             --pink: #ff00ff;
             --dark: #020408;
-            --glass: rgba(7, 10, 15, 0.85);
+            --glass: rgba(7, 10, 15, 0.88);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; min-height: 100vh; }
 
-        /* --- FONDOS 4K DINÁMICOS --- */
+        /* --- FONDOS 4K DINÁMICOS SIN ZOOM AGRESIVO --- */
         .video-bg-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2; overflow: hidden; background: #000;
@@ -29,9 +29,10 @@
             position: absolute; width: 100%; height: 100%;
             background-size: cover; background-position: center;
             opacity: 0;
-            animation: kenBurns 48s linear infinite;
+            animation: softFade 48s linear infinite;
         }
 
+        /* Imágenes HD de Gaming */
         .slide:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=2070'); animation-delay: 0s; }
         .slide:nth-child(2) { background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=2070'); animation-delay: 8s; }
         .slide:nth-child(3) { background-image: url('https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&q=80&w=2070'); animation-delay: 16s; }
@@ -39,21 +40,21 @@
         .slide:nth-child(5) { background-image: url('https://images.unsplash.com/photo-1614027164847-1b2809eb1895?auto=format&fit=crop&q=80&w=2070'); animation-delay: 32s; }
         .slide:nth-child(6) { background-image: url('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&q=80&w=2070'); animation-delay: 40s; }
 
-        @keyframes kenBurns {
-            0% { opacity: 0; transform: scale(1.05); }
-            10% { opacity: 0.35; }
-            20% { opacity: 0.35; }
-            30% { opacity: 0; transform: scale(1.0); }
+        @keyframes softFade {
+            0% { opacity: 0; transform: scale(1.02); }
+            8% { opacity: 0.35; }
+            16% { opacity: 0.35; }
+            24% { opacity: 0; transform: scale(1.0); }
             100% { opacity: 0; }
         }
 
         .overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(2,4,8,0.4), var(--dark));
+            background: linear-gradient(to bottom, transparent 0%, var(--dark) 90%);
             z-index: -1;
         }
 
-        /* --- UI COMPONENTS --- */
+        /* --- COMPONENTES UI --- */
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
         .glass { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.06); }
         
@@ -62,18 +63,21 @@
             color: white; font-family: 'Orbitron'; font-weight: 700; font-size: 10px;
             text-transform: uppercase; letter-spacing: 3px;
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            cursor: pointer; padding: 16px 40px;
+            transition: all 0.4s ease;
+            cursor: pointer; padding: 16px 45px;
         }
-        .btn-cyber:hover { background: var(--neon); color: black; box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); transform: translateY(-2px); }
+        .btn-cyber:hover { background: var(--neon); color: black; box-shadow: 0 0 25px rgba(0, 242, 255, 0.4); transform: scale(1.05); }
 
         .app-view { display: none; }
-        .app-view.active { display: block; animation: fadeIn 1s ease; }
+        .app-view.active { display: flex; flex-direction: column; animation: fadeIn 0.8s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        #loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .avatar-card { width: 100%; border-radius: 12px; border: 2px solid transparent; opacity: 0.5; cursor: pointer; transition: 0.3s; }
-        .avatar-card.selected { border-color: var(--neon); opacity: 1; filter: drop-shadow(0 0 5px var(--neon)); }
+        #loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
+        .avatar-card { width: 100%; border-radius: 12px; border: 2px solid transparent; opacity: 0.4; cursor: pointer; transition: 0.3s; }
+        .avatar-card.selected { border-color: var(--neon); opacity: 1; filter: drop-shadow(0 0 8px var(--neon)); }
+
+        input { background: rgba(0,0,0,0.5) !important; border: 1px solid rgba(255,255,255,0.05) !important; }
+        input:focus { border-color: var(--neon) !important; }
     </style>
 </head>
 <body>
@@ -89,75 +93,72 @@
     </div>
 
     <div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-6">
-        <div class="glass p-10 rounded-[2rem] w-full max-w-md shadow-2xl">
-            <h2 class="font-orbitron text-3xl font-black text-center mb-10 tracking-tighter uppercase">Arena<span class="text-cyan-400">Neon</span></h2>
+        <div class="glass p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl border-t-2 border-cyan-500/20">
+            <h2 class="font-orbitron text-3xl font-black text-center mb-10 tracking-tighter uppercase">ARENA<span class="text-cyan-400">NEON</span></h2>
             <form id="auth-form" class="space-y-4">
                 <div id="reg-extra" class="hidden">
-                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest text-center mb-4">Selecciona tu Identidad</p>
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest text-center mb-4">Elige tu Avatar</p>
                     <div id="avatar-grid-auth" class="grid grid-cols-5 gap-3 mb-6 p-3 bg-black/40 rounded-2xl max-h-40 overflow-y-auto"></div>
-                    <input id="reg-name" type="text" placeholder="APODO" class="w-full bg-black/60 border border-white/5 p-4 rounded-xl text-white font-bold uppercase mb-4 text-center">
+                    <input id="reg-name" type="text" placeholder="APODO DE GUERRERO" class="w-full p-4 rounded-xl text-white font-bold uppercase mb-4 text-center">
                 </div>
-                <input id="auth-email" type="email" placeholder="EMAIL" class="w-full bg-black/60 border border-white/5 p-4 rounded-xl text-white font-bold" required>
-                <input id="auth-pass" type="password" placeholder="PASSWORD" class="w-full bg-black/60 border border-white/5 p-4 rounded-xl text-white font-bold" required>
-                <button type="submit" id="auth-btn" class="w-full btn-cyber mt-4">Conectarse</button>
+                <input id="auth-email" type="email" placeholder="EMAIL" class="w-full p-4 rounded-xl text-white font-bold" required>
+                <input id="auth-pass" type="password" placeholder="PASSWORD" class="w-full p-4 rounded-xl text-white font-bold" required>
+                <button type="submit" id="auth-btn" class="w-full btn-cyber mt-4">Conectar</button>
             </form>
-            <button onclick="toggleAuth()" id="auth-toggle" class="w-full text-center mt-8 text-[10px] font-bold text-zinc-500 uppercase tracking-widest hover:text-white transition">Registrar nueva cuenta</button>
+            <button onclick="toggleAuth()" id="auth-toggle" class="w-full text-center mt-8 text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] hover:text-white transition">Registrar nueva identidad</button>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
         <header class="fixed top-0 w-full z-50 glass p-5 flex justify-between items-center border-b border-white/5">
-            <h1 class="font-orbitron text-[9px] font-black tracking-[0.3em] text-cyan-400 uppercase">System_Link v17</h1>
-            <button onclick="logout()" class="text-[9px] font-black text-red-500 uppercase tracking-widest opacity-60 hover:opacity-100 transition">Log_Out</button>
+            <h1 class="font-orbitron text-[9px] font-black tracking-[0.4em] text-cyan-400 uppercase">System_v17.5</h1>
+            <button onclick="logout()" class="text-[9px] font-black text-red-500 uppercase tracking-widest opacity-60 hover:opacity-100 transition">Desconectar</button>
         </header>
 
-        <main class="pt-32 pb-32 px-6 max-w-5xl mx-auto">
+        <main class="pt-28 pb-32 px-6 max-w-5xl mx-auto min-h-screen">
             
-            <section id="view-home" class="app-view active flex flex-col items-center justify-center min-h-[60vh]">
-                <div class="mb-2 w-12 h-[1px] bg-cyan-500"></div>
-                <p class="text-cyan-400 font-bold tracking-[0.6em] text-[10px] uppercase mb-8">Red de Combate Activa</p>
+            <section id="view-home" class="app-view active items-center justify-center text-center min-h-[70vh]">
+                <div class="w-12 h-[1px] bg-cyan-500/50 mb-6"></div>
+                <p class="text-cyan-400 font-bold tracking-[0.6em] text-[10px] uppercase mb-6">Red Operativa</p>
                 
-                <h2 class="font-orbitron text-4xl md:text-6xl font-black italic mb-6 tracking-tighter leading-tight text-center">
+                <h2 class="font-orbitron text-4xl md:text-5xl font-black italic mb-4 tracking-tighter leading-tight">
                     TU LEYENDA <br> <span class="text-cyan-400">EMPIEZA AQUÍ.</span>
                 </h2>
                 
-                <p class="text-zinc-400 text-sm md:text-base max-w-xs text-center mb-12 font-light leading-relaxed">
-                    Domina las arenas, asciende en el ranking y demuestra quién manda en el campo de batalla.
+                <p class="text-zinc-400 text-sm max-w-xs mb-10 font-light leading-relaxed">
+                    Asciende en el ranking global y domina las arenas de combate más exigentes.
                 </p>
 
-                <div class="glass py-6 px-10 rounded-[1.5rem] border-white/5 mb-12 flex flex-col items-center shadow-xl">
-                    <p id="u-name" class="font-orbitron text-xl text-white uppercase tracking-widest">---</p>
-                    <div class="flex items-center gap-3 mt-2">
-                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                        <p id="u-xp" class="text-[10px] font-bold text-zinc-500 tracking-widest uppercase">PUNTOS XP: 0</p>
-                    </div>
+                <div class="glass py-5 px-12 rounded-2xl border-white/5 mb-10 shadow-xl border-b border-cyan-500/10">
+                    <p id="u-name" class="font-orbitron text-xl text-white tracking-widest uppercase">---</p>
+                    <p id="u-xp" class="text-[9px] font-bold text-zinc-500 tracking-[0.3em] uppercase mt-1">XP: 0</p>
                 </div>
 
-                <button onclick="nav('torneos')" class="btn-cyber">Entrar a los Torneos</button>
+                <button onclick="nav('torneos')" class="btn-cyber">Ver Torneos</button>
             </section>
 
             <section id="view-torneos" class="app-view">
-                <h3 class="font-orbitron text-xl mb-10 uppercase italic border-l-2 border-cyan-500 pl-4 tracking-widest">Competiciones</h3>
+                <h3 class="font-orbitron text-xl mb-10 uppercase italic border-l-2 border-cyan-500 pl-4 tracking-widest">Competiciones Activas</h3>
                 <div id="torneos-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
             </section>
 
             <section id="view-ranking" class="app-view max-w-xl mx-auto">
-                <h3 class="font-orbitron text-2xl text-center mb-12 tracking-widest italic">TOP OPERATIVOS</h3>
+                <h3 class="font-orbitron text-2xl text-center mb-10 italic tracking-widest">TOP GUERREROS</h3>
                 <div id="ranking-list" class="space-y-2"></div>
             </section>
 
             <section id="view-perfil" class="app-view max-w-sm mx-auto">
-                <div class="glass p-8 rounded-[2rem] text-center border-t-2 border-cyan-500">
-                    <img id="u-avatar" src="" class="w-20 h-20 rounded-2xl mx-auto border border-cyan-500/30 mb-6 bg-black">
-                    <h4 id="u-name-profile" class="font-orbitron text-xl font-black uppercase tracking-widest">---</h4>
-                    <div class="grid grid-cols-2 gap-4 mt-8">
-                        <div class="bg-black/20 p-4 rounded-xl border border-white/5">
-                            <p class="text-[8px] text-zinc-500 uppercase font-bold">Wins</p>
+                <div class="glass p-8 rounded-[2rem] text-center border-t border-cyan-500/30">
+                    <img id="u-avatar" src="" class="w-20 h-20 rounded-2xl mx-auto border border-white/10 mb-6 bg-black shadow-2xl">
+                    <h4 id="u-name-profile" class="font-orbitron text-xl font-black uppercase tracking-widest text-white">---</h4>
+                    <div class="grid grid-cols-2 gap-3 mt-8">
+                        <div class="bg-black/30 p-4 rounded-xl border border-white/5">
+                            <p class="text-[8px] text-zinc-500 uppercase font-bold">Victorias</p>
                             <p id="u-wins" class="text-xl font-orbitron text-pink-500">0</p>
                         </div>
-                        <div class="bg-black/20 p-4 rounded-xl border border-white/5">
-                            <p class="text-[8px] text-zinc-500 uppercase font-bold">Nivel</p>
-                            <p class="text-xl font-orbitron text-cyan-400">LVL 1</p>
+                        <div class="bg-black/30 p-4 rounded-xl border border-white/5">
+                            <p class="text-[8px] text-zinc-500 uppercase font-bold">Puntos XP</p>
+                            <p id="u-xp-profile" class="text-xl font-orbitron text-cyan-400">0</p>
                         </div>
                     </div>
                 </div>
@@ -165,10 +166,10 @@
         </main>
 
         <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 glass rounded-[2rem] flex justify-around items-center p-4 w-[85%] max-w-xs border-white/10 shadow-2xl">
-            <button onclick="nav('home')" class="p-2 hover:text-cyan-400 transition">🏠</button>
-            <button onclick="nav('torneos')" class="p-2 hover:text-cyan-400 transition">⚔️</button>
-            <button onclick="nav('ranking')" class="p-2 hover:text-cyan-400 transition">🏆</button>
-            <button onclick="nav('perfil')" class="p-2 hover:text-cyan-400 transition">👤</button>
+            <button onclick="nav('home')" class="p-2 opacity-50 hover:opacity-100 transition nav-btn" id="btn-home">🏠</button>
+            <button onclick="nav('torneos')" class="p-2 opacity-50 hover:opacity-100 transition nav-btn" id="btn-torneos">⚔️</button>
+            <button onclick="nav('ranking')" class="p-2 opacity-50 hover:opacity-100 transition nav-btn" id="btn-ranking">🏆</button>
+            <button onclick="nav('perfil')" class="p-2 opacity-50 hover:opacity-100 transition nav-btn" id="btn-perfil">👤</button>
         </nav>
     </div>
 
@@ -179,20 +180,28 @@
 
         let session = null;
         let isLogin = true;
-        let selAvatar = "https://api.dicebear.com/7.x/bottts/svg?seed=1";
+        let selAvatar = "https://api.dicebear.com/7.x/bottts/svg?seed=neon1&backgroundColor=020408";
 
         window.onload = async () => {
             renderAvatars();
             const { data } = await _supa.auth.getSession();
-            if (data.session) { session = data.session; await loadProfile(); } 
-            else { showAuth(); }
-            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 1000);
+            if (data.session) { 
+                session = data.session; 
+                await loadProfile(); 
+            } else { 
+                showAuth(); 
+            }
+            setTimeout(() => { 
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 1200);
         };
 
         function renderAvatars() {
             const grid = document.getElementById('avatar-grid-auth');
             for(let i=1; i<=15; i++) {
-                const url = `https://api.dicebear.com/7.x/bottts/svg?seed=neon${i}&backgroundColor=020408`;
+                const url = `https://api.dicebear.com/7.x/bottts/svg?seed=arena${i}&backgroundColor=020408`;
                 const img = document.createElement('img');
                 img.src = url; img.className = 'avatar-card';
                 if(i===1) img.classList.add('selected');
@@ -205,68 +214,92 @@
         }
 
         async function loadProfile() {
-            const { data } = await _supa.from('perfiles').select('*').eq('id', session.user.id).single();
+            const { data, error } = await _supa.from('perfiles').select('*').eq('id', session.user.id).single();
             if (data) {
                 document.getElementById('u-name').innerText = data.nombre;
                 document.getElementById('u-name-profile').innerText = data.nombre;
                 document.getElementById('u-xp').innerText = `PUNTOS XP: ${data.xp}`;
+                document.getElementById('u-xp-profile').innerText = data.xp;
                 document.getElementById('u-wins').innerText = data.victorias;
                 document.getElementById('u-avatar').src = data.avatar_url;
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
+                nav('home');
+            } else { 
+                logout(); 
             }
         }
 
         function toggleAuth() {
             isLogin = !isLogin;
             document.getElementById('reg-extra').classList.toggle('hidden', isLogin);
-            document.getElementById('auth-btn').innerText = isLogin ? 'Conectarse' : 'Registrarse';
+            document.getElementById('auth-btn').innerText = isLogin ? 'Conectar' : 'Registrar';
+            document.getElementById('auth-toggle').innerText = isLogin ? 'Registrar nueva identidad' : '¿Ya tienes cuenta? Conectar';
         }
 
         document.getElementById('auth-form').onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
+            
             if (isLogin) {
                 const { error } = await _supa.auth.signInWithPassword({ email, password: pass });
-                if (error) alert(error.message); else location.reload();
+                if (error) alert("Error: " + error.message); else location.reload();
             } else {
                 const name = document.getElementById('reg-name').value;
+                if(!name) return alert("Ingresa un apodo.");
                 const { data, error } = await _supa.auth.signUp({ email, password: pass });
                 if (error) return alert(error.message);
-                await _supa.from('perfiles').insert({ id: data.user.id, nombre: name.toUpperCase(), avatar_url: selAvatar });
+                
+                await _supa.from('perfiles').insert({ 
+                    id: data.user.id, 
+                    nombre: name.toUpperCase(), 
+                    avatar_url: selAvatar,
+                    xp: 0,
+                    victorias: 0
+                });
+                alert("REGISTRO COMPLETADO. BIENVENIDO.");
                 location.reload();
             }
         };
 
         function nav(id) {
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.add('opacity-50'));
+            
             document.getElementById('view-' + id).classList.add('active');
+            document.getElementById('btn-' + id).classList.remove('opacity-50');
+            
             if(id === 'torneos') loadTorneos();
             if(id === 'ranking') loadRanking();
         }
 
         async function loadTorneos() {
-            const { data: torneos } = await _supa.from('torneos').select('*');
-            document.getElementById('torneos-list').innerHTML = torneos.map(t => `
-                <div class="glass p-6 rounded-2xl border-l-2 border-cyan-500">
-                    <p class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1">${t.juego}</p>
-                    <h4 class="font-orbitron text-lg font-black uppercase text-white mb-6">${t.nombre}</h4>
-                    <button class="w-full btn-cyber py-3 !px-4">Unirse</button>
+            const { data: torneos } = await _supa.from('torneos').select('*').order('created_at', {ascending: false});
+            const list = document.getElementById('torneos-list');
+            list.innerHTML = (torneos || []).map(t => `
+                <div class="glass p-6 rounded-2xl border-l-2 border-cyan-500 flex flex-col justify-between">
+                    <div>
+                        <p class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest mb-1">${t.juego}</p>
+                        <h4 class="font-orbitron text-lg font-black uppercase text-white mb-2">${t.nombre}</h4>
+                        <p class="text-[10px] text-cyan-400 font-bold mb-6">${t.inscritos}/${t.capacidad} PARTICIPANTES</p>
+                    </div>
+                    <button class="btn-cyber !py-3 !px-2 w-full text-[9px]">Unirse</button>
                 </div>
             `).join('');
         }
 
         async function loadRanking() {
             const { data } = await _supa.from('perfiles').select('*').order('xp', {ascending: false}).limit(15);
-            document.getElementById('ranking-list').innerHTML = data.map((u, i) => `
+            const list = document.getElementById('ranking-list');
+            list.innerHTML = (data || []).map((u, i) => `
                 <div class="glass p-4 rounded-xl flex items-center justify-between border border-white/5">
                     <div class="flex items-center gap-4">
-                        <span class="text-[10px] font-black text-cyan-500">#${i+1}</span>
-                        <img src="${u.avatar_url}" class="w-8 h-8 rounded-lg bg-black">
+                        <span class="text-[10px] font-black ${i < 3 ? 'text-amber-500' : 'text-zinc-600'}">#${(i+1).toString().padStart(2, '0')}</span>
+                        <img src="${u.avatar_url}" class="w-8 h-8 rounded-lg bg-black border border-white/5">
                         <span class="font-bold text-[10px] uppercase tracking-wider">${u.nombre}</span>
                     </div>
-                    <span class="font-orbitron text-xs font-black">${u.xp} XP</span>
+                    <span class="font-orbitron text-xs font-black text-cyan-400">${u.xp} XP</span>
                 </div>
             `).join('');
         }
