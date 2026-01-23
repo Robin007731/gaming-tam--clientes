@@ -1,313 +1,236 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ARENA NEON</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARENA NEON | Ultimate Gaming Hub</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-:root{
-  --cyan:#36f0ff;
-  --pink:#ff4fd8;
-  --green:#2dff83;
-  --bg:#020409;
-}
+    <style>
+        :root {
+            --cyan: #36f0ff;
+            --pink: #ff4fd8;
+            --green: #2dff83;
+            --bg: #020409;
+        }
 
-body{
-  margin:0;
-  font-family:'Rajdhani',sans-serif;
-  background:radial-gradient(circle at top,#081424,#020409 60%);
-  color:#fff;
-  overflow-x:hidden;
-}
+        body {
+            margin: 0;
+            font-family: 'Rajdhani', sans-serif;
+            background: radial-gradient(circle at top, #081424, #020409 60%);
+            color: #fff;
+            overflow-x: hidden;
+        }
 
-/* ================= NAVBAR ================= */
-.navbar{
-  position:fixed;
-  top:0;
-  width:100%;
-  z-index:100;
-  backdrop-filter:blur(14px);
-  background:linear-gradient(180deg,rgba(5,10,20,.85),rgba(5,10,20,.45));
-  border-bottom:1px solid rgba(54,240,255,.25);
-}
-.navbar a{
-  font-size:13px;
-  font-weight:600;
-  color:#cfd9e4;
-  text-transform:capitalize;
-}
-.navbar a.active{
-  color:var(--cyan);
-  text-shadow:0 0 10px rgba(54,240,255,.6);
-}
+        /* Scrollbar Cyberpunk */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: #1a2332; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
 
-/* ================= HERO ================= */
-.hero{
-  position:relative;
-  max-width:1400px;
-  margin:120px auto 80px;
-  height:520px;
-  border-radius:18px;
-  overflow:hidden;
-}
-.hero img{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-.hero::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(90deg,#020409 28%,rgba(2,4,9,.75),transparent),
-    linear-gradient(0deg,#020409 0%,transparent 40%);
-}
-.hero-content{
-  position:relative;
-  z-index:2;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  padding:70px;
-}
-.hero h1{
-  font-family:'Orbitron';
-  font-size:64px;
-  font-weight:900;
-  line-height:1.05;
-  letter-spacing:-2px;
-  text-shadow:
-    0 0 25px rgba(54,240,255,.3),
-    0 0 60px rgba(54,240,255,.15);
-}
-.hero-btn{
-  margin-top:26px;
-  background:linear-gradient(90deg,var(--pink),#9a4bff);
-  padding:16px 34px;
-  width:max-content;
-  border-radius:10px;
-  font-family:'Orbitron';
-  font-weight:800;
-  letter-spacing:.5px;
-  box-shadow:0 0 40px rgba(255,79,216,.75);
-  transition:.25s;
-}
-.hero-btn:hover{transform:scale(1.05)}
+        /* NAVBAR */
+        .navbar {
+            position: fixed;
+            top: 0; width: 100%; z-index: 100;
+            backdrop-filter: blur(14px);
+            background: linear-gradient(180deg, rgba(5,10,20,.85), rgba(5,10,20,.45));
+            border-bottom: 1px solid rgba(54,240,255,.25);
+        }
 
-/* HUD */
-.hud{
-  position:absolute;
-  right:50px;
-  bottom:50px;
-  width:150px;
-  height:150px;
-  border-radius:50%;
-  border:3px solid var(--green);
-  box-shadow:0 0 30px rgba(45,255,131,.7);
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  font-family:'Orbitron';
-  background:rgba(0,0,0,.45);
-}
-.hud span{font-size:11px; opacity:.85}
+        /* HERO */
+        .hero {
+            position: relative;
+            max-width: 1400px;
+            margin: 100px auto 40px;
+            height: 500px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(54,240,255,0.1);
+        }
+        .hero img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            filter: brightness(0.6);
+        }
+        .hero::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, var(--bg) 20%, transparent 80%);
+        }
 
-/* ================= DASHBOARD ================= */
-.section{
-  max-width:1300px;
-  margin:auto;
-  padding:40px 20px;
-}
-.section-title{
-  font-family:'Orbitron';
-  font-size:22px;
-  font-weight:800;
-  margin-bottom:20px;
-  text-shadow:0 0 12px rgba(54,240,255,.35);
-}
+        .hero-content {
+            position: relative; z-index: 2;
+            height: 100%; display: flex; flex-direction: column;
+            justify-content: center; padding: 0 5%;
+        }
 
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:22px;
-}
+        /* HUD & ANIMATIONS */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(45,255,131,0.3); transform: scale(1); }
+            50% { box-shadow: 0 0 40px rgba(45,255,131,0.6); transform: scale(1.02); }
+        }
+        .hud {
+            position: absolute; right: 40px; bottom: 40px;
+            width: 140px; height: 140px;
+            border-radius: 50%; border: 2px solid var(--green);
+            background: rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            animation: pulse-glow 3s infinite ease-in-out;
+            z-index: 5;
+        }
 
-/* PANELS */
-.panel{
-  background:rgba(10,15,25,.65);
-  backdrop-filter:blur(14px);
-  border:1px solid rgba(54,240,255,.25);
-  border-radius:16px;
-  position:relative;
-  overflow:hidden;
-}
-.panel::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    linear-gradient(120deg,transparent,rgba(54,240,255,.15),transparent);
-  opacity:.3;
-}
-.panel-header{
-  padding:16px 18px;
-  font-family:'Orbitron';
-  font-size:13px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.panel-content{
-  padding:20px;
-}
+        /* PANELS */
+        .panel {
+            background: rgba(10,15,25,0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .panel:hover {
+            border-color: var(--cyan);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(54,240,255,0.1);
+        }
 
-/* PROFILE */
-.avatar{
-  width:90px;height:90px;
-  border-radius:50%;
-  border:2px solid var(--cyan);
-  box-shadow:0 0 20px rgba(54,240,255,.6);
-  margin:auto;
-}
-.stat{
-  text-align:center;
-}
-.stat p:first-child{
-  font-size:10px;
-  text-transform:uppercase;
-  color:#9fb5c9;
-}
-.stat p:last-child{
-  font-size:24px;
-  font-weight:700;
-}
+        .xp-bar {
+            width: 100%; height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px; overflow: hidden;
+            margin-top: 8px;
+        }
+        .xp-progress {
+            width: 75%; height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--pink));
+            box-shadow: 0 0 10px var(--cyan);
+        }
 
-/* TOURNAMENTS */
-.tournament{
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
-  padding:14px;
-  margin-bottom:14px;
-  background:rgba(0,0,0,.35);
-}
-.tournament h4{
-  font-family:'Orbitron';
-  font-size:12px;
-  color:var(--cyan);
-}
-
-/* RANKING */
-.rank-item{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,.06);
-}
-
-/* FOOTER */
-footer{
-  text-align:center;
-  padding:40px;
-  font-size:12px;
-  color:#7b93aa;
-  opacity:.6;
-}
-</style>
+        .btn-neon {
+            background: linear-gradient(90deg, var(--pink), #9a4bff);
+            font-family: 'Orbitron';
+            transition: 0.3s;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        .btn-neon:hover {
+            box-shadow: 0 0 30px var(--pink);
+            transform: scale(1.05);
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- NAVBAR -->
 <header class="navbar">
-  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-    <div class="font-orbitron font-black text-xl text-[var(--cyan)]">
-      ARENA<span class="text-white">NEON</span>
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="font-orbitron font-black text-2xl tracking-tighter text-[var(--cyan)]">
+            ARENA<span class="text-white">NEON</span>
+        </div>
+        <nav class="hidden md:flex gap-8 font-medium">
+            <a href="#" class="text-[var(--cyan)]">Torneos</a>
+            <a href="#" class="hover:text-[var(--cyan)] transition">Ranking</a>
+            <a href="#" class="hover:text-[var(--cyan)] transition">Comunidad</a>
+            <a href="#" class="hover:text-[var(--cyan)] transition">Soporte</a>
+        </nav>
+        <div class="flex items-center gap-4">
+            <span class="text-sm font-bold hidden sm:block">PLAYER_NEO</span>
+            <img class="w-10 h-10 rounded-full border border-[var(--cyan)]" src="https://api.dicebear.com/7.x/bottts/svg?seed=NEON">
+        </div>
     </div>
-    <nav class="hidden md:flex gap-8">
-      <a class="active">Torneos Activos</a>
-      <a>Mi Perfil</a>
-      <a>Clasificaciones</a>
-      <a>Soporte</a>
-    </nav>
-  </div>
 </header>
 
-<!-- HERO -->
-<section class="hero">
-  <img src="https://images.unsplash.com/photo-1605902711622-cfb43c4437d1">
-  <div class="hero-content">
-    <h1>TU ARENA<br>TE ESPERA.</h1>
-    <button class="hero-btn">EXPLORA TORNEOS</button>
-  </div>
-  <div class="hud">
-    <div class="text-2xl font-black">147.352</div>
-    <span>JUGADORES<br>UNIDOS</span>
-  </div>
+<section class="px-4">
+    <div class="hero">
+        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80">
+        <div class="hero-content">
+            <h1 class="font-orbitron text-5xl md:text-7xl font-black leading-none mb-4">
+                DOMINA LA<br><span class="text-[var(--cyan)]">NUEVA ERA.</span>
+            </h1>
+            <p class="max-w-md text-gray-300 mb-8 font-semibold uppercase tracking-widest text-sm">
+                Únete a la liga de élite y compite por premios en cripto y equipo gaming.
+            </p>
+            <button class="btn-neon px-8 py-4 rounded-xl font-bold w-max">INSCRIBIRSE AHORA</button>
+        </div>
+        <div class="hud hidden md:flex">
+            <div class="text-2xl font-black font-orbitron">147k</div>
+            <span class="text-[9px] text-center opacity-70 tracking-tighter uppercase font-bold">Soldados en<br>línea</span>
+        </div>
+    </div>
 </section>
 
-<!-- DASHBOARD -->
-<section class="section">
-  <div class="grid">
+<section class="max-w-7xl mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-    <div class="panel">
-      <div class="panel-header">MI PERFIL</div>
-      <div class="panel-content text-center">
-        <img class="avatar mb-4" src="https://api.dicebear.com/7.x/bottts/svg?seed=NEON">
-        <h3 class="font-orbitron text-lg mb-6">PLAYER_NEO</h3>
-        <div class="flex justify-around">
-          <div class="stat"><p>Victorias</p><p>32</p></div>
-          <div class="stat"><p>XP</p><p class="text-[var(--cyan)]">1240</p></div>
+        <div class="panel p-6 flex flex-col items-center">
+            <div class="relative mb-4">
+                <img class="w-24 h-24 rounded-full border-2 border-[var(--cyan)] p-1" src="https://api.dicebear.com/7.x/bottts/svg?seed=NEON">
+                <div class="absolute bottom-0 right-0 w-6 h-6 bg-[var(--green)] border-4 border-[#020409] rounded-full"></div>
+            </div>
+            <h3 class="font-orbitron font-bold text-xl mb-1">PLAYER_NEO</h3>
+            <p class="text-[var(--cyan)] text-xs font-bold mb-4 tracking-widest uppercase">Nivel 24 Elite</p>
+            <div class="w-full">
+                <div class="flex justify-between text-[10px] font-bold mb-1 uppercase text-gray-400">
+                    <span>Progreso XP</span>
+                    <span>75%</span>
+                </div>
+                <div class="xp-bar"><div class="xp-progress"></div></div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <div class="panel">
-      <div class="panel-header">TORNEOS ACTIVOS</div>
-      <div class="panel-content">
-        <div class="tournament">
-          <h4>VALORANT</h4>
-          <p class="text-sm font-bold">Neon Clash</p>
+        <div class="panel flex flex-col">
+            <div class="p-4 border-b border-white/5 font-orbitron text-xs font-bold tracking-widest">TORNEOS ACTIVOS</div>
+            <div class="p-4 space-y-3 flex-grow">
+                <div class="bg-white/5 p-3 rounded-xl border-l-4 border-[var(--cyan)]">
+                    <p class="text-[10px] text-[var(--cyan)] font-bold">VALORANT</p>
+                    <p class="text-sm font-bold">Neon Clash 2024</p>
+                </div>
+                <div class="bg-white/5 p-3 rounded-xl border-l-4 border-[var(--pink)]">
+                    <p class="text-[10px] text-[var(--pink)] font-bold">LEAGUE OF LEGENDS</p>
+                    <p class="text-sm font-bold">Cyber Trophy</p>
+                </div>
+            </div>
         </div>
-        <div class="tournament">
-          <h4>CS2</h4>
-          <p class="text-sm font-bold">Cyber League</p>
+
+        <div class="panel">
+            <div class="p-4 border-b border-white/5 font-orbitron text-xs font-bold tracking-widest">TOP PLAYERS</div>
+            <div class="p-4 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="text-[var(--cyan)] font-black italic">#1</span>
+                        <span class="text-sm font-bold">NEOX_01</span>
+                    </div>
+                    <span class="text-xs font-bold">9.2k XP</span>
+                </div>
+                <div class="flex items-center justify-between opacity-70">
+                    <div class="flex items-center gap-3">
+                        <span class="font-black italic">#2</span>
+                        <span class="text-sm font-bold">CYBER_K</span>
+                    </div>
+                    <span class="text-xs font-bold">8.4k XP</span>
+                </div>
+                <div class="flex items-center justify-between opacity-50">
+                    <div class="flex items-center gap-3">
+                        <span class="font-black italic">#3</span>
+                        <span class="text-sm font-bold">PULSE_9</span>
+                    </div>
+                    <span class="text-xs font-bold">7.7k XP</span>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <div class="panel">
-      <div class="panel-header">CLASIFICACIÓN GLOBAL</div>
-      <div class="panel-content">
-        <div class="rank-item"><span>#1 NEOX</span><span class="text-[var(--cyan)]">9000 XP</span></div>
-        <div class="rank-item"><span>#2 CYBER</span><span>8420 XP</span></div>
-        <div class="rank-item"><span>#3 PULSE</span><span>7700 XP</span></div>
-      </div>
-    </div>
+        <div class="panel p-4">
+            <div class="font-orbitron text-xs font-bold tracking-widest mb-4">COMANDO CENTRAL</div>
+            <textarea class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-[var(--cyan)] transition" 
+                rows="3" placeholder="Solicitar asistencia..."></textarea>
+            <button class="w-full mt-3 bg-white/5 hover:bg-white/10 text-[var(--cyan)] font-bold py-2 rounded-lg text-xs transition uppercase tracking-widest border border-[var(--cyan)]/20">
+                Enviar Reporte
+            </button>
+        </div>
 
-    <div class="panel">
-      <div class="panel-header">SOPORTE</div>
-      <div class="panel-content">
-        <textarea class="w-full bg-black/40 border border-white/10 rounded p-3 text-sm" rows="4"
-        placeholder="Mensaje al comando central..."></textarea>
-        <button class="hero-btn mt-4 w-full text-center">ENVIAR</button>
-      </div>
     </div>
-
-  </div>
 </section>
 
-<footer>
-ARENA NEON — Plataforma competitiva de nueva generación
+<footer class="text-center py-10 border-t border-white/5">
+    <p class="text-[10px] tracking-[5px] uppercase opacity-40 font-bold">Arena Neon © 2026 Protocolo de Juego Iniciado</p>
 </footer>
 
 </body>
