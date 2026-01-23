@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARENA NEON | PRE-LOADED V90</title>
+    <title>ARENA NEON | GLITCHCORE</title>
     
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,82 +13,135 @@
         :root {
             --neon: #39ff14;
             --neon-glow: rgba(57, 255, 20, 0.4);
+            --dark-bg: #1a1a1a; /* Un negro menos absoluto para profundidad */
+            --glitch-color: #ff00ff; /* Color para el efecto glitch */
         }
 
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background: #000; color: #fff; font-family: 'Rajdhani', sans-serif;
-            overflow: hidden;
+            background: #000; /* Fondo negro puro */
+            color: #fff; font-family: 'Rajdhani', sans-serif;
+            overflow: hidden; /* No hay scroll en el cuerpo principal */
         }
 
-        /* --- MOTOR DE FONDOS REALES (AUTO-AJUSTABLES) --- */
-        #bg-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -2;
-        }
-
-        .bg-slide {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover; /* Ajusta la imagen para cubrir todo sin deformar */
-            background-position: center center;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-            filter: brightness(0.6) contrast(1.1); /* Mejora el color sin oscurecer demasiado */
-        }
-
-        .bg-slide.active { opacity: 1; }
-
-        /* Capa para suavizar los bordes y mejorar lectura */
-        .vignette {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        /* --- EFECTO GLITCH DE FONDO (SUBTIL) --- */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(0,0,0,0.05),
+                rgba(0,0,0,0.05) 1px,
+                transparent 1px,
+                transparent 3px
+            );
             z-index: -1;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+            opacity: 0.1; /* Muy sutil */
+            animation: glitchBg 10s infinite alternate;
         }
 
-        /* --- INTERFAZ SIN RECUADROS PESADOS --- */
+        @keyframes glitchBg {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 1px); }
+            75% { transform: translate(1px, 1px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* --- CONTENEDOR PRINCIPAL (SCROLLABLE) --- */
         #main-view {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            overflow-y: auto; scroll-behavior: smooth;
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
+            background: transparent; /* Permite ver el glitch de fondo */
         }
 
-        .view { display: none; padding: 5rem 1.5rem 8rem 1.5rem; max-width: 450px; margin: 0 auto; }
-        .view.active { display: block; animation: fadeIn 0.5s ease; }
+        .view { display: none; padding: 5rem 1rem 8rem 1rem; max-width: 450px; margin: 0 auto; }
+        .view.active { display: block; animation: slideIn 0.4s ease-out; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Tarjetas de cristal (Glassmorphism) */
-        .glass {
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(12px);
-            border-radius: 15px;
-            padding: 20px;
+        /* --- PANELES CON BORDES NEON --- */
+        .neon-panel {
+            background: var(--dark-bg);
+            border: 2px solid var(--neon); /* Borde neón flúor */
+            border-radius: 8px;
+            padding: 25px;
             margin-bottom: 20px;
-            border: 1px solid rgba(57, 255, 20, 0.2);
+            box-shadow: 0 0 15px var(--neon-glow);
+            position: relative;
+            overflow: hidden;
+            animation: neonBorderPulse 5s infinite alternate; /* Efecto de pulso */
         }
 
-        .btn-neon {
+        @keyframes neonBorderPulse {
+            0% { box-shadow: 0 0 10px var(--neon-glow); }
+            100% { box-shadow: 0 0 25px var(--neon); }
+        }
+
+        /* --- BOTONES GLITCH-NEON --- */
+        .btn-glitch-neon {
             background: var(--neon); color: #000;
             font-family: 'Orbitron'; font-weight: 900;
-            padding: 16px; border-radius: 6px;
+            padding: 16px; border-radius: 4px;
             text-transform: uppercase; font-size: 0.8rem;
             box-shadow: 0 0 15px var(--neon-glow);
-            width: 100%; cursor: pointer; border: none; transition: 0.3s;
+            width: 100%; cursor: pointer; border: none;
+            position: relative; overflow: hidden;
+            transition: 0.3s;
         }
-        .btn-neon:hover { box-shadow: 0 0 25px var(--neon); transform: scale(1.02); }
+        .btn-glitch-neon:hover { transform: scale(1.02); box-shadow: 0 0 25px var(--neon); }
 
+        /* Efecto Glitch en botones (al pasar el ratón) */
+        .btn-glitch-neon::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(
+                90deg,
+                var(--glitch-color) 0%,
+                transparent 10%,
+                transparent 90%,
+                var(--glitch-color) 100%
+            );
+            opacity: 0;
+            mix-blend-mode: overlay;
+            animation: none;
+        }
+        .btn-glitch-neon:hover::before { animation: buttonGlitch 0.4s infinite; }
+
+        @keyframes buttonGlitch {
+            0% { opacity: 0; transform: translateX(0); }
+            20% { opacity: 1; transform: translateX(5px); }
+            40% { opacity: 0; transform: translateX(-5px); }
+            60% { opacity: 1; transform: translateX(5px); }
+            80% { opacity: 0; transform: translateX(-5px); }
+            100% { opacity: 0; transform: translateX(0); }
+        }
+
+
+        /* --- INPUTS ESTILO HACKER --- */
         input, select, textarea {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(57, 255, 20, 0.3);
-            color: #fff; padding: 12px; width: 100%;
-            border-radius: 8px; margin-bottom: 12px; outline: none;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--neon); /* Borde neón para inputs */
+            color: var(--neon); /* Texto en neón */
+            padding: 12px; width: 100%;
+            border-radius: 4px; margin-bottom: 12px; outline: none;
+            text-shadow: 0 0 5px var(--neon-glow);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--neon);
+            box-shadow: 0 0 8px var(--neon-glow);
         }
 
-        /* Navegación Gamer */
+        /* --- NAVEGACIÓN INFERIOR --- */
         nav {
             position: fixed; bottom: 0; width: 100%;
             display: flex; justify-content: space-around;
-            padding: 1.2rem 0; background: rgba(0,0,0,0.9);
-            border-top: 2px solid var(--neon); z-index: 100;
+            padding: 1.2rem 0; background: #000;
+            border-top: 2px solid var(--neon); /* Borde neón arriba del nav */
+            z-index: 100;
         }
         .nav-item { color: #666; font-size: 0.6rem; font-weight: 800; cursor: pointer; text-align: center; }
         .nav-item.active { color: var(--neon); text-shadow: 0 0 8px var(--neon); }
@@ -96,24 +149,21 @@
 </head>
 <body>
 
-    <div id="bg-container"></div>
-    <div class="vignette"></div>
-
     <div id="main-view">
         
         <div id="view-auth" class="min-h-screen flex items-center justify-center p-6">
-            <div class="glass w-full text-center">
-                <h1 class="font-orbitron text-3xl font-black text-[var(--neon)] mb-8 italic">ARENA NEON</h1>
+            <div class="neon-panel w-full text-center">
+                <h1 class="font-orbitron text-3xl font-black text-[var(--neon)] mb-8 italic drop-shadow-[0_0_10px_rgba(57,255,20,0.8)]">ARENA NEON</h1>
                 <form id="auth-form">
                     <div id="reg-extra" class="hidden">
-                        <input type="text" id="reg-nick" placeholder="TU APODO GAMER">
+                        <input type="text" id="reg-nick" placeholder="CODENAME_OPERATIVO">
                     </div>
-                    <input type="email" id="auth-email" placeholder="CORREO" required>
-                    <input type="password" id="auth-pass" placeholder="CONTRASEÑA" required>
-                    <button type="submit" class="btn-neon">ENTRAR AL SISTEMA</button>
+                    <input type="email" id="auth-email" placeholder="CREDENTIAL_EMAIL" required>
+                    <input type="password" id="auth-pass" placeholder="ACCESS_KEY" required>
+                    <button type="submit" class="btn-glitch-neon">Sincronizar ADN</button>
                 </form>
                 <p onclick="toggleAuth()" class="mt-6 text-[10px] text-zinc-400 font-bold uppercase cursor-pointer">
-                    ¿No tienes cuenta? <span class="text-white underline">REGÍSTRATE</span>
+                    ¿Sin Unidad? <span class="text-white underline">Registrar Nuevo Perfil</span>
                 </p>
             </div>
         </div>
@@ -121,40 +171,41 @@
         <div id="app-content" class="hidden">
             
             <section id="v-home" class="view active">
-                <div class="glass text-center">
-                    <img id="u-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="w-20 h-20 mx-auto rounded-full border-2 border-[var(--neon)] p-1 mb-4 shadow-[0_0_15px_var(--neon)]">
-                    <h2 id="u-nick" class="font-orbitron text-2xl font-black uppercase">PLAYER</h2>
-                    <div class="flex justify-around mt-6 pt-4 border-t border-white/10">
-                        <div><p id="u-wins" class="text-xl font-bold">0</p><p class="text-[9px] text-zinc-500 font-bold">WINS</p></div>
+                <div class="neon-panel text-center">
+                    <img id="u-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Glitch" class="w-20 h-20 mx-auto rounded-full border-2 border-[var(--neon)] p-1 mb-4 shadow-[0_0_15px_var(--neon)]">
+                    <h2 id="u-nick" class="font-orbitron text-2xl font-black uppercase drop-shadow-[0_0_8px_var(--neon)]">PLAYER_001</h2>
+                    <div class="flex justify-around mt-6 pt-4 border-t border-[var(--neon)]/30">
+                        <div><p id="u-wins" class="text-xl font-bold">0</p><p class="text-[9px] text-zinc-500 font-bold">VICTORIAS</p></div>
                         <div><p id="u-xp" class="text-xl font-bold text-[var(--neon)]">0</p><p class="text-[9px] text-zinc-500 font-bold">XP TOTAL</p></div>
                     </div>
                 </div>
-                <button onclick="changeV('arenas')" class="btn-neon">VER TORNEOS ACTIVOS</button>
+                <button onclick="changeV('arenas')" class="btn-glitch-neon">ACCEDER A LAS ARENAS</button>
             </section>
 
             <section id="v-arenas" class="view">
-                <h3 class="font-orbitron text-xs text-center mb-6 text-[var(--neon)] tracking-widest uppercase">Zonas de Combate</h3>
+                <h3 class="font-orbitron text-xs text-center mb-6 text-[var(--neon)] tracking-widest uppercase drop-shadow-[0_0_5px_var(--neon)]">Sectores de Combate</h3>
                 <div id="arena-list"></div>
             </section>
 
             <section id="v-ranking" class="view">
-                <h3 class="font-orbitron text-xs text-center mb-6 text-[var(--neon)] tracking-widest uppercase">Top Operativos</h3>
-                <div id="rank-list" class="glass !p-0 overflow-hidden"></div>
+                <h3 class="font-orbitron text-xs text-center mb-6 text-[var(--neon)] tracking-widest uppercase drop-shadow-[0_0_5px_var(--neon)]">Jerarquía Global</h3>
+                <div id="rank-list" class="neon-panel !p-0 overflow-hidden"></div>
             </section>
 
             <section id="v-settings" class="view">
-                <div class="glass">
-                    <h3 class="font-orbitron text-xs mb-4 uppercase">Perfil & Soporte</h3>
-                    <input type="text" id="set-nick" placeholder="Cambiar Nick">
+                <div class="neon-panel">
+                    <h3 class="font-orbitron text-xs mb-4 uppercase text-[var(--neon)] drop-shadow-[0_0_5px_var(--neon)]">Configurar Operativo</h3>
+                    <input type="text" id="set-nick" placeholder="Cambiar CODENAME">
                     <select id="set-avatar" onchange="previewAv()">
-                        <option value="Felix">Estilo Neon</option>
-                        <option value="Max">Estilo Combat</option>
-                        <option value="Jade">Estilo Phantom</option>
+                        <option value="Glitch">Estilo GlitchCore</option>
+                        <option value="Cyber">Estilo CyberPunk</option>
+                        <option value="Bot">Estilo Robotico</option>
                     </select>
-                    <button onclick="saveP()" class="btn-neon mb-4">GUARDAR CAMBIOS</button>
-                    <hr class="border-white/10 my-4">
-                    <textarea id="support-msg" placeholder="¿Problemas? Escribe al admin..." rows="3"></textarea>
-                    <button onclick="sendS()" class="btn-neon !bg-zinc-800 !text-white !shadow-none">ENVIAR A SOPORTE</button>
+                    <button onclick="saveP()" class="btn-glitch-neon mb-4">Actualizar Datos</button>
+                    <hr class="border-[var(--neon)]/30 my-4">
+                    <h3 class="font-orbitron text-xs mb-4 uppercase text-[var(--neon)] drop-shadow-[0_0_5px_var(--neon)]">Reporte de Fallos</h3>
+                    <textarea id="support-msg" placeholder="Describa su incidencia..." rows="3"></textarea>
+                    <button onclick="sendS()" class="btn-glitch-neon !bg-red-700 !shadow-none">ENVIAR A CUARENTENA</button>
                 </div>
             </section>
 
@@ -165,7 +216,7 @@
         <div class="nav-item active" onclick="changeV('home', this)">HOME</div>
         <div class="nav-item" onclick="changeV('arenas', this)">ARENAS</div>
         <div class="nav-item" onclick="changeV('ranking', this)">TOP</div>
-        <div class="nav-item" onclick="changeV('settings', this)">SOPORTE</div>
+        <div class="nav-item" onclick="changeV('settings', this)">AJUSTES</div>
     </nav>
 
     <script>
@@ -175,36 +226,6 @@
 
         let user = null;
         let isLogin = true;
-
-        // --- IMÁGENES DE ALTA CALIDAD CARGADAS ---
-        const gameImages = [
-            'https://images8.alphacoders.com/107/1073860.png', // Valorant
-            'https://images2.alphacoders.com/132/1328006.jpeg', // FC25 / FIFA
-            'https://images.alphacoders.com/114/1149723.jpg',  // Minecraft RTX
-            'https://images7.alphacoders.com/112/1125211.jpg',  // Free Fire
-            'https://images3.alphacoders.com/135/1351111.jpeg', // Fortnite
-            'https://images5.alphacoders.com/130/1306383.jpg'   // Roblox
-        ];
-
-        function startBgs() {
-            const container = document.getElementById('bg-container');
-            gameImages.forEach((url, i) => {
-                const div = document.createElement('div');
-                div.className = `bg-slide ${i === 0 ? 'active' : ''}`;
-                div.style.backgroundImage = `url('${url}')`;
-                container.appendChild(div);
-            });
-
-            let cur = 0;
-            setInterval(() => {
-                const slides = document.querySelectorAll('.bg-slide');
-                slides[cur].classList.remove('active');
-                cur = (cur + 1) % slides.length;
-                slides[cur].classList.add('active');
-            }, 6000);
-        }
-
-        startBgs();
 
         // --- LÓGICA DE USUARIOS ---
         window.onload = async () => {
@@ -260,27 +281,27 @@
         async function loadA() {
             const { data } = await _db.from('torneos').select('*');
             document.getElementById('arena-list').innerHTML = (data || []).map(t => `
-                <div class="glass">
+                <div class="neon-panel">
                     <p class="text-[10px] text-[var(--neon)] font-bold uppercase tracking-widest">${t.juego}</p>
-                    <h4 class="font-orbitron text-xl font-black italic uppercase text-white">${t.nombre}</h4>
-                    <p class="text-xs text-zinc-400 mb-6">${t.inscritos}/${t.capacidad} JUGADORES</p>
-                    <button onclick="join('${t.id}', ${t.inscritos})" class="btn-neon">INSCRIBIRSE</button>
+                    <h4 class="font-orbitron text-xl font-black italic uppercase text-white drop-shadow-[0_0_5px_var(--neon)]">${t.nombre}</h4>
+                    <p class="text-xs text-zinc-400 mb-6">${t.inscritos}/${t.capacidad} PARTICIPANTES</p>
+                    <button onclick="join('${t.id}', ${t.inscritos})" class="btn-glitch-neon">ENTRAR EN LA ARENA</button>
                 </div>
             `).join('');
         }
 
         async function join(id, cur) {
             await _db.from('torneos').update({ inscritos: cur + 1 }).eq('id', id);
-            alert("¡Inscrito!");
+            alert("¡Inscripción Exitosa! Acceso concedido.");
             loadA();
         }
 
         async function loadR() {
             const { data } = await _db.from('perfiles').select('*').order('xp', {ascending: false});
             document.getElementById('rank-list').innerHTML = (data || []).map((u, i) => `
-                <div class="flex justify-between items-center p-4 border-b border-white/5 ${u.id === user.id ? 'bg-[var(--neon)]/10' : ''}">
+                <div class="flex justify-between items-center p-4 border-b border-[var(--neon)]/20 ${u.id === user.id ? 'bg-[var(--neon)]/10' : ''}">
                     <span class="text-xs font-bold text-zinc-600">#${i+1}</span>
-                    <span class="flex-1 font-bold ml-4 uppercase">${u.nombre}</span>
+                    <span class="flex-1 font-bold ml-4 uppercase text-white">${u.nombre}</span>
                     <span class="font-orbitron text-[var(--neon)] font-black">${u.xp}</span>
                 </div>
             `).join('');
@@ -296,11 +317,11 @@
             if(n) {
                 await _db.from('perfiles').update({ nombre: n.toUpperCase() }).eq('id', user.id);
                 loadP();
-                alert("Guardado");
+                alert("Perfil Actualizado");
             }
         }
 
-        function sendS() { alert("Reporte enviado al Admin."); document.getElementById('support-msg').value = ''; }
+        function sendS() { alert("Reporte enviado al Centro de Control. Gracias por su cooperación."); document.getElementById('support-msg').value = ''; }
     </script>
 </body>
 </html>
