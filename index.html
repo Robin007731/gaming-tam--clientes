@@ -3,241 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEON ARENA | Player Client</title>
+    <title>Zona Gamer - Cliente</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --cyan: #36f0ff; --pink: #ff4fd8; --bg: #010206; }
-        body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: #fff; overflow-x: hidden; }
-        .glass { background: rgba(10, 15, 25, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; }
-        .neon-border { border: 1px solid var(--cyan); box-shadow: 0 0 15px rgba(54, 240, 255, 0.2); }
-        .neon-text { text-shadow: 0 0 10px var(--cyan); }
-        .neon-btn { background: linear-gradient(90deg, var(--pink), #9a4bff); transition: 0.3s; }
-        .neon-btn:hover { box-shadow: 0 0 25px var(--pink); transform: scale(1.02); }
-        input, select, textarea { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; outline: none; }
-        input:focus { border-color: var(--cyan) !important; }
-        .hidden { display: none; }
-        .tab-btn.active { color: var(--cyan); border-bottom: 2px solid var(--cyan); }
+        .active-tab { color: #3b82f6; border-top: 3px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
+        .rank-1 { background: linear-gradient(90deg, #ffd700, #b8860b); color: black; font-weight: bold; }
+        .rank-2 { background: linear-gradient(90deg, #c0c0c0, #708090); color: black; font-weight: bold; }
+        .rank-3 { background: linear-gradient(90deg, #cd7f32, #8b4513); color: black; font-weight: bold; }
+        .rank-last { border: 1px solid #ef4444; color: #ef4444; opacity: 0.8; } /* Distinción últimos */
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="pb-24">
 
-    <div id="auth-screen" class="fixed inset-0 z-[100] bg-[#020409] flex items-center justify-center p-4">
-        <div class="glass max-w-md w-full p-8 text-center">
-            <h1 class="font-orbitron text-3xl font-black mb-2 text-[var(--cyan)]">NEON<span class="text-white">ARENA</span></h1>
-            <p class="text-xs text-gray-500 font-bold uppercase tracking-[4px] mb-8">Acceso al Sistema</p>
-            
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center px-4">
+        <div class="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700">
+            <h2 class="text-4xl font-black mb-2 text-center text-blue-500">ZONA GAMER</h2>
+            <p class="text-center text-slate-400 mb-8 text-sm">Tu arena de combate digital</p>
             <div class="space-y-4">
-                <input type="email" id="auth-email" placeholder="Email" class="w-full p-3 rounded-lg">
-                <input type="password" id="auth-pass" placeholder="Contraseña" class="w-full p-3 rounded-lg">
-                <button onclick="handleLogin()" class="w-full neon-btn py-3 rounded-xl font-orbitron font-bold text-sm uppercase">Iniciar Sesión</button>
-                <button onclick="handleSignup()" class="w-full bg-white/5 border border-white/10 py-3 rounded-xl font-orbitron font-bold text-xs uppercase hover:bg-white/10">Crear Nueva Cuenta</button>
+                <input type="email" id="email" placeholder="Correo electrónico" class="w-full p-3 rounded-lg bg-slate-900 border border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
+                <input type="password" id="password" placeholder="Contraseña" class="w-full p-3 rounded-lg bg-slate-900 border border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
+                <div class="grid grid-cols-2 gap-4 pt-2">
+                    <button onclick="handleAuth('login')" class="bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-bold transition">Entrar</button>
+                    <button onclick="handleAuth('signup')" class="bg-slate-700 hover:bg-slate-600 p-3 rounded-lg font-bold transition">Registrarse</button>
+                </div>
             </div>
-            <p id="auth-msg" class="text-pink-500 text-[10px] mt-4 uppercase font-bold"></p>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 w-full bg-[#050810]/90 backdrop-blur-md border-t border-white/5 p-4 flex justify-around z-50 lg:top-0 lg:bottom-auto lg:border-t-0 lg:border-b">
-        <button onclick="showSection('sec-torneos')" class="tab-btn active px-4 py-2 font-orbitron text-[10px] font-bold uppercase tracking-widest">Torneos</button>
-        <button onclick="showSection('sec-perfil')" class="tab-btn px-4 py-2 font-orbitron text-[10px] font-bold uppercase tracking-widest">Perfil</button>
-        <button onclick="showSection('sec-soporte')" class="tab-btn px-4 py-2 font-orbitron text-[10px] font-bold uppercase tracking-widest">Soporte</button>
-        <button onclick="logout()" class="text-red-500 font-orbitron text-[10px] font-bold uppercase">Salir</button>
-    </nav>
+    <div id="main-screen" class="hidden">
+        <header class="p-6 border-b border-slate-800">
+            <span class="text-xl font-bold text-blue-500">Zona Gamer</span>
+        </header>
 
-    <main class="p-6 lg:pt-24 pb-24 max-w-7xl mx-auto">
-
-        <section id="sec-torneos" class="section-content">
-            <div class="flex justify-between items-end mb-8">
-                <div>
-                    <h2 class="font-orbitron text-4xl font-black italic">ARENA <span class="text-[var(--cyan)]">LIVE</span></h2>
-                    <p class="text-gray-500 text-xs font-bold uppercase">Sincronizado con Supabase Realtime</p>
+        <main id="content" class="p-6">
+            <section id="tab-inicio" class="tab-content">
+                <div class="bg-gradient-to-br from-blue-600 to-purple-700 p-8 rounded-3xl shadow-lg">
+                    <h1 class="text-3xl font-black mb-2">¡Bienvenido a tu Arena!</h1>
+                    <p class="opacity-90">Sube de nivel, compite en torneos y domina el ranking global.</p>
                 </div>
-            </div>
-            <div id="torneos-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
-        </section>
+            </section>
 
-        <section id="sec-perfil" class="section-content hidden">
-            <div class="max-w-2xl mx-auto glass p-8">
-                <div class="flex items-center gap-6 mb-8">
-                    <img id="user-avatar" src="" class="w-24 h-24 rounded-full border-2 border-[var(--cyan)]">
-                    <div>
-                        <h2 id="user-name" class="font-orbitron text-3xl font-black">PLAYER_NAME</h2>
-                        <p id="user-id-text" class="text-[10px] font-mono text-gray-500"></p>
+            <section id="tab-torneos" class="tab-content hidden">
+                <h2 class="text-2xl font-bold mb-6">Torneos Disponibles</h2>
+                <div id="lista-torneos" class="space-y-4"></div>
+            </section>
+
+            <section id="tab-ranking" class="tab-content hidden">
+                <h2 class="text-2xl font-bold mb-6">Ranking de Leyendas</h2>
+                <div id="lista-ranking" class="space-y-3"></div>
+            </section>
+
+            <section id="tab-perfil" class="tab-content hidden">
+                <div class="bg-slate-800 p-8 rounded-2xl text-center border border-slate-700">
+                    <div class="w-24 h-24 bg-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold border-4 border-slate-700">
+                        <span id="p-initial">G</span>
+                    </div>
+                    <h2 id="p-name" class="text-2xl font-bold mb-1 italic">Cargando...</h2>
+                    <p id="p-email" class="text-slate-400 mb-6 text-sm"></p>
+                    <div class="grid gap-3">
+                        <button onclick="window.location.href='mailto:admin@zonagamer.com'" class="bg-slate-700 p-3 rounded-lg font-semibold">Contactar Soporte</button>
+                        <button onclick="logout()" class="text-red-400 p-2 text-sm hover:underline">Cerrar Sesión</button>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white/5 p-4 rounded-xl">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase">Victorias</p>
-                        <p id="user-wins" class="text-2xl font-orbitron font-black text-[var(--cyan)]">0</p>
-                    </div>
-                    <div class="bg-white/5 p-4 rounded-xl">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase">Puntos XP</p>
-                        <p id="user-xp" class="text-2xl font-orbitron font-black text-[var(--pink)]">0</p>
-                    </div>
-                </div>
-                <div class="mt-8 border-t border-white/10 pt-6">
-                    <h3 class="font-orbitron text-sm font-bold mb-4 uppercase">Mis Inscripciones</h3>
-                    <div id="my-tournaments" class="space-y-3"></div>
-                </div>
-            </div>
-        </section>
+            </section>
+        </main>
 
-        <section id="sec-soporte" class="section-content hidden">
-            <div class="max-w-md mx-auto glass p-8">
-                <h2 class="font-orbitron text-2xl font-black mb-6 italic">CENTRO DE <span class="text-yellow-500">SOPORTE</span></h2>
-                <div class="space-y-4">
-                    <input type="text" id="sop-asunto" placeholder="Asunto del problema" class="w-full p-3 rounded-lg">
-                    <textarea id="sop-msg" placeholder="Describe tu problema..." class="w-full p-3 rounded-lg h-32"></textarea>
-                    <button onclick="sendTicket()" class="w-full neon-btn py-3 rounded-xl font-orbitron font-bold text-xs uppercase">Enviar Ticket</button>
-                    <p id="sop-status" class="text-center text-[10px] font-bold uppercase"></p>
-                </div>
-            </div>
-        </section>
-
-    </main>
+        <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex justify-around items-center h-20 px-2 shadow-2xl">
+            <button onclick="showTab('inicio')" class="nav-btn flex flex-col items-center flex-1 py-2 rounded-xl transition" id="nav-inicio">
+                <span class="text-[10px] font-bold uppercase tracking-widest">Inicio</span>
+            </button>
+            <button onclick="showTab('torneos')" class="nav-btn flex flex-col items-center flex-1 py-2 rounded-xl transition" id="nav-torneos">
+                <span class="text-[10px] font-bold uppercase tracking-widest">Torneos</span>
+            </button>
+            <button onclick="showTab('ranking')" class="nav-btn flex flex-col items-center flex-1 py-2 rounded-xl transition" id="nav-ranking">
+                <span class="text-[10px] font-bold uppercase tracking-widest">Ranking</span>
+            </button>
+            <button onclick="showTab('perfil')" class="nav-btn flex flex-col items-center flex-1 py-2 rounded-xl transition" id="nav-perfil">
+                <span class="text-[10px] font-bold uppercase tracking-widest">Perfil</span>
+            </button>
+        </nav>
+    </div>
 
     <script>
-        // CONFIGURACIÓN DE SUPABASE
-        const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_X2_itSXVSMUgkZeDLSE3KQ_HxD1Jf07';
+        const SUPABASE_URL = "https://jwvgiezqjgfjllbdpmlc.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3dmdpZXF6amdmamxsYmRwbWxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyMjI1MzIsImV4cCI6MjA4NDc5ODUzMn0.xyjrWZlDgnrhNtHkVwKV9bFiBnqGvmXB8vWRa3iv2Ok";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let currentUser = null;
-
-        // --- SISTEMA DE AUTENTICACIÓN ---
-        async function checkSession() {
-            const { data: { session } } = await _supabase.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                document.getElementById('auth-screen').classList.add('hidden');
-                loadUserData();
-                loadTournaments();
-            }
+        // NAVEGACIÓN
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('nav-' + tabId).classList.add('active-tab');
+            if(tabId === 'torneos') loadTorneos();
+            if(tabId === 'ranking') loadRanking();
         }
 
-        async function handleLogin() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-pass').value;
-            const { error } = await _supabase.auth.signInWithPassword({ email, password });
-            if (error) document.getElementById('auth-msg').innerText = error.message;
-            else checkSession();
-        }
-
-        async function handleSignup() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-pass').value;
-            const { error } = await _supabase.auth.signUp({ email, password });
-            if (error) document.getElementById('auth-msg').innerText = error.message;
-            else alert("¡Registro exitoso! Ya puedes iniciar sesión.");
-        }
-
-        async function logout() {
-            await _supabase.auth.signOut();
-            location.reload();
-        }
-
-        // --- CARGA DE DATOS ---
-        async function loadUserData() {
-            const { data, error } = await _supabase.from('perfiles').select('*').eq('id', currentUser.id).single();
-            if (data) {
-                if(data.baneado) {
-                    alert("TU CUENTA HA SIDO BANEADA POR EL ADMINISTRADOR.");
-                    logout();
-                }
-                document.getElementById('user-name').innerText = data.nombre;
-                document.getElementById('user-avatar').src = data.avatar_url;
-                document.getElementById('user-wins').innerText = data.victorias;
-                document.getElementById('user-xp').innerText = data.xp;
-                document.getElementById('user-id-text').innerText = `UUID: ${data.id}`;
-            }
-            loadMyInscriptions();
-        }
-
-        async function loadTournaments() {
-            const { data } = await _supabase.from('torneos').select('*').order('created_at', { ascending: false });
-            const grid = document.getElementById('torneos-grid');
-            grid.innerHTML = data.map(t => `
-                <div class="glass p-6 border-b-2 border-[var(--cyan)] hover:bg-white/[0.02] transition">
-                    <p class="text-[var(--cyan)] text-[10px] font-black tracking-widest uppercase mb-1">${t.juego}</p>
-                    <h3 class="font-orbitron font-bold text-xl mb-4">${t.nombre}</h3>
-                    <div class="flex justify-between text-[11px] font-bold mb-2 uppercase text-gray-400">
-                        <span>Slots: ${t.inscritos}/${t.capacidad}</span>
-                        <span class="${t.estado === 'abierto' ? 'text-green-500' : 'text-red-500'}">${t.estado}</span>
-                    </div>
-                    <div class="w-full h-1 bg-white/10 rounded-full mb-6">
-                        <div class="bg-[var(--cyan)] h-full transition-all" style="width: ${(t.inscritos/t.capacidad)*100}%"></div>
-                    </div>
-                    <button onclick="inscribirse('${t.id}', ${t.inscritos}, ${t.capacidad})" 
-                        class="w-full py-3 ${t.inscritos >= t.capacidad || t.estado !== 'abierto' ? 'bg-gray-800' : 'neon-btn'} rounded-xl font-orbitron font-bold text-[10px] uppercase">
-                        ${t.inscritos >= t.capacidad ? 'TORNEO LLENO' : 'INSCRIBIRSE AHORA'}
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        async function inscribirse(torneoId, current, max) {
-            if (current >= max) return;
-            const { error } = await _supabase.from('inscripciones').insert([{
-                torneo_id: torneoId,
-                user_id: currentUser.id
-            }]);
-            
-            if (error) {
-                alert("Ya estás inscrito en este torneo.");
+        // AUTH
+        async function handleAuth(type) {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            if (type === 'signup') {
+                const { error } = await _supabase.auth.signUp({ email, password });
+                if (error) alert(error.message); else alert("¡Registro exitoso! Ya puedes entrar.");
             } else {
-                await _supabase.from('torneos').update({ inscritos: current + 1 }).eq('id', torneoId);
-                alert("¡Inscripción exitosa!");
-                loadTournaments();
-                loadMyInscriptions();
+                const { error } = await _supabase.auth.signInWithPassword({ email, password });
+                if (error) alert(error.message);
             }
         }
 
-        async function loadMyInscriptions() {
-            const { data } = await _supabase.from('inscripciones').select('torneos(*)').eq('user_id', currentUser.id);
-            const container = document.getElementById('my-tournaments');
-            if (data.length === 0) container.innerHTML = '<p class="text-xs text-gray-600">No participas en ningún torneo aún.</p>';
-            else container.innerHTML = data.map(ins => `
-                <div class="bg-white/5 p-3 rounded-lg flex justify-between items-center">
-                    <p class="text-xs font-bold uppercase">${ins.torneos.nombre}</p>
-                    <span class="text-[10px] bg-[var(--cyan)]/20 text-[var(--cyan)] px-2 py-1 rounded">Listo</span>
+        async function logout() { await _supabase.auth.signOut(); }
+
+        _supabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('main-screen').classList.remove('hidden');
+                document.getElementById('p-email').innerText = session.user.email;
+                document.getElementById('p-name').innerText = session.user.email.split('@')[0];
+                document.getElementById('p-initial').innerText = session.user.email[0].toUpperCase();
+                showTab('inicio');
+            } else {
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('main-screen').classList.add('hidden');
+            }
+        });
+
+        // CARGAR TORNEOS
+        async function loadTorneos() {
+            const { data: torneos } = await _supabase.from('torneos').select('*');
+            const container = document.getElementById('lista-torneos');
+            container.innerHTML = torneos.map(t => `
+                <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-lg">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-bold text-blue-400">${t.nombre}</h3>
+                        <span class="text-xs bg-slate-700 px-2 py-1 rounded">${t.inscritos}/${t.cupos_max}</span>
+                    </div>
+                    <p class="text-slate-400 text-sm mb-4">${t.descripcion}</p>
+                    <div class="flex gap-2">
+                        <a href="${t.enlace}" target="_blank" class="flex-1 text-center bg-slate-700 p-2 rounded-lg text-sm font-bold">Ver Info</a>
+                        <button onclick="inscribirse(${t.id})" class="flex-1 bg-blue-600 p-2 rounded-lg text-sm font-bold">Inscribirse</button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        async function sendTicket() {
-            const asunto = document.getElementById('sop-asunto').value;
-            const mensaje = document.getElementById('sop-msg').value;
-            const { error } = await _supabase.from('tickets_soporte').insert([{
-                user_id: currentUser.id, asunto, mensaje
-            }]);
+        // CARGAR RANKING (CON DISTINCIÓN ESPECIAL)
+        async function loadRanking() {
+            const { data: users } = await _supabase.from('profiles').select('*').order('points', { ascending: false });
+            const container = document.getElementById('lista-ranking');
             
-            const status = document.getElementById('sop-status');
-            if (error) { status.innerText = "Error al enviar"; status.className = "text-red-500"; }
-            else { 
-                status.innerText = "Ticket enviado con éxito"; 
-                status.className = "text-green-500";
-                document.getElementById('sop-asunto').value = '';
-                document.getElementById('sop-msg').value = '';
-            }
+            container.innerHTML = users.map((u, index) => {
+                let rankClass = "bg-slate-800";
+                if (index === 0) rankClass = "rank-1";
+                else if (index === 1) rankClass = "rank-2";
+                else if (index === 2) rankClass = "rank-3";
+                else if (index >= users.length - 3) rankClass = "rank-last"; // Últimos 3
+
+                return `
+                    <div class="p-4 rounded-xl flex justify-between items-center ${rankClass} transition-all">
+                        <div class="flex items-center gap-4">
+                            <span class="font-black text-lg">#${index + 1}</span>
+                            <span>${u.username || u.email.split('@')[0]}</span>
+                        </div>
+                        <span class="font-bold">${u.points} PTS</span>
+                    </div>
+                `;
+            }).join('');
         }
 
-        // --- NAVEGACIÓN ---
-        function showSection(id) {
-            document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.remove('hidden');
-            event.currentTarget.classList.add('active');
+        async function inscribirse(id) {
+            const { data: { user } } = await _supabase.auth.getUser();
+            const { error } = await _supabase.from('inscripciones').insert({ user_id: user.id, torneo_id: id });
+            if (error) alert("Ya estás en este torneo.");
+            else alert("¡Inscrito! Prepárate para ganar.");
+            loadTorneos();
         }
-
-        // --- REALTIME ---
-        _supabase.channel('arena-global')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'torneos' }, () => loadTournaments())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'perfiles' }, () => loadUserData())
-        .subscribe();
-
-        checkSession();
     </script>
 </body>
 </html>
