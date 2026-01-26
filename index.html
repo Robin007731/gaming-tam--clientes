@@ -2,198 +2,128 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZONA GAMER - Official App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZONA GAMER</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- VARIABLES Y RESET --- */
         :root {
-            --primary: #00d4ff; /* Cyan Neón */
-            --secondary: #9d50bb; /* Morado Pro */
+            --primary: #00d4ff;
+            --secondary: #9d50bb;
             --bg: #05050a;
             --card-bg: #12121f;
             --text-main: #ffffff;
             --text-dim: #94a3b8;
-            --success: #00ff88;
-            --error: #ff4d4d;
-            --accent-glow: rgba(0, 212, 255, 0.4);
+            --accent-glow: rgba(0, 212, 255, 0.3);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); line-height: 1.4; }
 
-        body {
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* --- UTILIDADES --- */
         .hidden { display: none !important; }
-        .container { padding: 20px; max-width: 500px; margin: 0 auto; }
+        .container { padding: 15px; max-width: 400px; margin: 0 auto; }
 
-        /* --- PANTALLA DE AUTENTICACIÓN MEJORADA --- */
+        /* --- AUTH SCREEN COMPACTO --- */
         #auth-screen {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 30px;
-            background: radial-gradient(circle at top, #1a1a2e 0%, #05050a 100%);
-            animation: fadeIn 0.8s ease;
+            padding: 15px;
+            background: radial-gradient(circle at top, #111122 0%, #05050a 100%);
         }
 
-        .auth-header { text-align: center; margin-bottom: 40px; }
+        .auth-header { text-align: center; margin-bottom: 20px; }
         .auth-header h1 { 
-            font-size: 2.8rem; 
+            font-size: 1.8rem; 
             color: var(--primary); 
-            text-transform: uppercase; 
-            letter-spacing: 4px;
-            text-shadow: 0 0 20px var(--accent-glow);
-            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--accent-glow);
         }
-        .auth-header p { color: var(--text-dim); font-size: 0.9rem; margin-top: 5px; }
 
         .auth-form-container {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 25px;
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
         }
 
         input {
             width: 100%;
-            padding: 16px;
-            margin-bottom: 15px;
-            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            border-radius: 8px;
             border: 1px solid #2a2b3d;
-            background: #161625;
+            background: #0d0d16;
             color: white;
-            font-size: 1rem;
-            transition: 0.3s;
+            font-size: 0.9rem;
         }
 
-        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px var(--accent-glow); }
-
-        /* Selección de Avatar Mejorada */
-        .avatar-label { margin: 15px 0 10px; display: block; font-weight: bold; color: var(--primary); font-size: 0.85rem; text-transform: uppercase; }
+        /* --- AVATARES COMPACTOS --- */
+        .avatar-label { margin: 10px 0 5px; font-size: 0.75rem; color: var(--primary); font-weight: bold; }
         .avatar-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-            max-height: 240px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+            max-height: 140px;
             overflow-y: auto;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 12px;
-            border-radius: 15px;
-            border: 1px solid #2a2b3d;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px;
+            border-radius: 10px;
         }
-
-        /* Scrollbar para la grid de avatares */
-        .avatar-grid::-webkit-scrollbar { width: 5px; }
-        .avatar-grid::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
         .avatar-img {
             width: 100%;
             aspect-ratio: 1;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             background: #1e1e2f;
         }
 
         .avatar-img.selected {
             border-color: var(--primary);
-            transform: scale(1.15);
-            box-shadow: 0 0 15px var(--primary);
-            z-index: 2;
+            box-shadow: 0 0 8px var(--primary);
+            transform: scale(1.05);
         }
 
         .btn-main {
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             color: white;
             border: none;
-            padding: 18px;
+            padding: 12px;
             width: 100%;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.4s;
-            text-transform: uppercase;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-main:hover { filter: brightness(1.2); transform: translateY(-3px); box-shadow: 0 6px 20px var(--accent-glow); }
-
-        /* --- APP PRINCIPAL --- */
-        #main-app { padding-bottom: 90px; }
-
-        .header-app {
-            padding: 30px 20px;
-            background: linear-gradient(to bottom, #12121f, var(--bg));
-            text-align: center;
-        }
-
-        .header-app h2 { font-size: 1.5rem; letter-spacing: 1px; }
-
-        .gaming-phrase {
-            font-style: italic;
-            color: var(--primary);
+            border-radius: 8px;
+            font-weight: bold;
             font-size: 0.9rem;
-            margin-top: 10px;
-            opacity: 0.8;
+            text-transform: uppercase;
+            cursor: pointer;
         }
 
-        /* Tarjetas de Torneo */
+        /* --- MAIN APP --- */
+        .header-app { padding: 15px; text-align: center; background: var(--card-bg); }
         .tournament-card {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 18px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            position: relative;
-            overflow: hidden;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--primary);
         }
 
-        .tournament-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);
-        }
-
-        /* Barra Inferior */
+        /* BARRA INFERIOR */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             width: 100%;
-            background: rgba(18, 18, 31, 0.95);
+            background: #0d0d16;
             display: flex;
             justify-content: space-around;
-            padding: 15px 0;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(15px);
-            z-index: 100;
+            padding: 10px 0;
+            border-top: 1px solid #222;
         }
 
-        .nav-item {
-            text-decoration: none;
-            color: var(--text-dim);
-            font-size: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .nav-item span { font-size: 22px; }
-        .nav-item.active { color: var(--primary); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-item { color: var(--text-dim); font-size: 10px; text-align: center; cursor: pointer; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -201,78 +131,73 @@
     <div id="auth-screen">
         <div class="auth-header">
             <h1>ZONA GAMER</h1>
-            <p id="auth-subtitle">NIVEL 1: AUTENTICACIÓN</p>
+            <p id="auth-subtitle" style="font-size: 0.7rem; color: var(--text-dim);">BIENVENIDO AL SISTEMA</p>
         </div>
 
         <div class="auth-form-container">
-            <div id="reg-fields">
-                <input type="text" id="reg-name" placeholder="Tu Nombre o GamerTag">
-                <input type="tel" id="reg-whatsapp" placeholder="WhatsApp (Ej: +123...)">
-                <span class="avatar-label">Elige tu Avatar (50 disponibles)</span>
+            <div id="reg-fields" class="hidden">
+                <input type="text" id="reg-name" placeholder="GamerTag">
+                <input type="tel" id="reg-whatsapp" placeholder="WhatsApp">
+                <p class="avatar-label">ELIGE TU AVATAR (50)</p>
                 <div class="avatar-grid" id="avatar-picker"></div>
             </div>
 
-            <input type="email" id="email" placeholder="Correo Electrónico">
+            <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Contraseña">
 
-            <button class="btn-main" id="btn-auth" onclick="handleAuth()">Iniciar Aventura</button>
+            <button class="btn-main" id="btn-auth" onclick="handleAuth()">INGRESAR</button>
             
-            <p onclick="toggleAuthMode()" id="toggle-text" style="text-align: center; margin-top: 25px; font-size: 0.85rem; cursor: pointer; color: var(--text-dim);">
-                ¿No tienes cuenta? <span style="color: var(--primary); font-weight: bold;">REGÍSTRATE AQUÍ</span>
+            <p onclick="toggleAuthMode()" id="toggle-text" style="text-align: center; margin-top: 15px; font-size: 0.75rem; cursor: pointer; color: var(--text-dim);">
+                ¿No tienes cuenta? <span style="color: var(--primary);">REGÍSTRATE</span>
             </p>
         </div>
     </div>
 
     <div id="main-app" class="hidden">
         <header class="header-app">
-            <h2 id="welcome-title">HOLA, GAMER</h2>
-            <p id="frase-gaming" class="gaming-phrase"></p>
+            <h2 id="welcome-title" style="font-size: 1.1rem;">HOLA, GAMER</h2>
+            <p id="frase-gaming" style="font-size: 0.75rem; color: var(--primary); opacity: 0.8; margin-top: 5px;"></p>
         </header>
 
         <main class="container">
             <div id="tab-inicio" class="tab-content">
-                <h3 style="margin-bottom:15px; font-size: 1.1rem;">🎮 TORNEOS DISPONIBLES</h3>
+                <p style="font-size: 0.8rem; margin-bottom: 10px; font-weight: bold;">TORNEOS</p>
                 <div id="tournaments-container"></div>
             </div>
 
             <div id="tab-rankings" class="tab-content hidden">
-                <h3 style="margin-bottom:15px; font-size: 1.1rem;">🏆 RANKING GLOBAL</h3>
+                <p style="font-size: 0.8rem; margin-bottom: 10px; font-weight: bold;">RANKING</p>
                 <div id="rankings-container"></div>
             </div>
 
             <div id="tab-perfil" class="tab-content hidden">
-                <div id="profile-card" style="text-align: center; background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05);">
-                </div>
-                <br>
-                <a href="https://chat.whatsapp.com/FsKHwkSsDjuIKU5Wh4QWa3" target="_blank" style="text-decoration: none;">
-                    <button class="btn-main" style="background: var(--success); color: #000;">COMUNIDAD WHATSAPP</button>
-                </a>
-                <button onclick="logout()" style="background: none; border: none; color: var(--error); width: 100%; margin-top: 30px; cursor: pointer; font-size: 0.8rem; font-weight: bold; letter-spacing: 1px;">ABANDONAR PARTIDA (LOGOUT)</button>
+                <div id="profile-card" style="background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center;"></div>
+                <button class="btn-main" style="background: #25D366; color: #000; margin-top: 15px;" onclick="window.open('https://chat.whatsapp.com/FsKHwkSsDjuIKU5Wh4QWa3')">WHATSAPP GRUPO</button>
+                <button onclick="logout()" style="background: none; border: none; color: #ff4d4d; width: 100%; margin-top: 20px; font-size: 0.7rem; cursor: pointer;">CERRAR SESIÓN</button>
             </div>
         </main>
 
         <nav class="bottom-nav">
-            <div class="nav-item active" onclick="showTab('inicio')"><span>🏠</span>Inicio</div>
-            <div class="nav-item" onclick="showTab('rankings')"><span>🏆</span>Ranking</div>
-            <div class="nav-item" onclick="showTab('perfil')"><span>👤</span>Perfil</div>
+            <div class="nav-item active" onclick="showTab('inicio')">🏠<br>Inicio</div>
+            <div class="nav-item" onclick="showTab('rankings')">🏆<br>Ranking</div>
+            <div class="nav-item" onclick="showTab('perfil')">👤<br>Perfil</div>
         </nav>
     </div>
 
     <script>
-        // --- CONFIGURACIÓN SUPABASE ---
+        // REEMPLAZAR CON TUS CREDENCIALES
         const SUPABASE_URL = 'TU_URL_AQUI';
-        const SUPABASE_KEY = 'TU_KEY_ANON_AQUI';
+        const SUPABASE_KEY = 'TU_KEY_AQUI';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let isLoginMode = true; // Empezamos en modo Login para usuarios existentes
+        let isLoginMode = true;
         let selectedAvatarId = 1;
 
-        // 1. GENERAR 50 AVATARES DE ALTA CALIDAD (Librería Adventurer)
-        const avatarPicker = document.getElementById('avatar-picker');
+        // Generar 50 Avatares
+        const picker = document.getElementById('avatar-picker');
         for (let i = 1; i <= 50; i++) {
             const img = document.createElement('img');
-            // Usamos la versión 'adventurer' que es más detallada y profesional
-            img.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=Gamer${i}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+            img.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=Gamer${i}&backgroundColor=b6e3f4`;
             img.className = 'avatar-img';
             img.onclick = () => {
                 document.querySelectorAll('.avatar-img').forEach(el => el.classList.remove('selected'));
@@ -280,48 +205,37 @@
                 selectedAvatarId = i;
             };
             if(i === 1) img.classList.add('selected');
-            avatarPicker.appendChild(img);
+            picker.appendChild(img);
         }
 
-        // 2. TOGGLE LOGIN/REGISTRO
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
-            document.getElementById('auth-subtitle').innerText = isLoginMode ? 'NIVEL 1: AUTENTICACIÓN' : 'CREAR NUEVO PERSONAJE';
             document.getElementById('reg-fields').classList.toggle('hidden', isLoginMode);
-            document.getElementById('btn-auth').innerText = isLoginMode ? 'Iniciar Aventura' : 'Confirmar Registro';
+            document.getElementById('btn-auth').innerText = isLoginMode ? 'INGRESAR' : 'REGISTRARME';
             document.getElementById('toggle-text').innerHTML = isLoginMode ? 
-                '¿No tienes cuenta? <span style="color: var(--primary); font-weight: bold;">REGÍSTRATE AQUÍ</span>' : 
-                '¿Ya tienes cuenta? <span style="color: var(--primary); font-weight: bold;">INICIA SESIÓN</span>';
+                '¿No tienes cuenta? <span style="color: var(--primary);">REGÍSTRATE</span>' : 
+                '¿Ya tienes cuenta? <span style="color: var(--primary);">INICIA SESIÓN</span>';
         }
-
-        // Inicializar el estado de la pantalla
-        toggleAuthMode(); // Llama una vez para ajustar a modo Registro por defecto o Login
 
         async function handleAuth() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const btn = document.getElementById('btn-auth');
 
-            if (!email || !password) return alert("Faltan datos.");
-            
-            btn.disabled = true;
-            btn.innerText = "CARGANDO...";
+            if (!email || !password) return alert("Completa los datos");
+            btn.disabled = true; btn.innerText = "...";
 
             if (isLoginMode) {
                 const { error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) { alert("Error: " + error.message); btn.disabled = false; btn.innerText = 'Iniciar Aventura'; }
+                if (error) { alert(error.message); btn.disabled = false; btn.innerText = 'INGRESAR'; }
             } else {
                 const username = document.getElementById('reg-name').value;
                 const whatsapp = document.getElementById('reg-whatsapp').value;
-                if (!username || !whatsapp) { alert("Completa tu nombre y WhatsApp."); btn.disabled = false; return; }
-
                 const { error } = await supabase.auth.signUp({
-                    email, password,
-                    options: { data: { username, whatsapp, avatar_id: selectedAvatarId } }
+                    email, password, options: { data: { username, whatsapp, avatar_id: selectedAvatarId } }
                 });
-
                 if (error) { alert(error.message); btn.disabled = false; }
-                else { alert("¡Registro exitoso! Ya puedes entrar."); isLoginMode = false; toggleAuthMode(); }
+                else { alert("¡Listo! Inicia sesión."); isLoginMode = false; toggleAuthMode(); btn.disabled = false; }
             }
             checkSession();
         }
@@ -336,50 +250,31 @@
         }
 
         function initApp(user) {
-            const frases = [
-                "¡GG WP! Hoy se domina el servidor.",
-                "Cargando skill... 99%",
-                "No hay lag que te detenga.",
-                "Prepárate para el clutch del siglo.",
-                "ZONA GAMER: Donde nacen las leyendas."
-            ];
+            const frases = ["¡GG WP! Domina el juego.", "Modo Tryhard activado.", "Sin lag, sin miedo.", "ZONA GAMER te espera."];
             document.getElementById('frase-gaming').innerText = frases[Math.floor(Math.random() * frases.length)];
             document.getElementById('welcome-title').innerText = `HOLA, ${user.user_metadata.username?.toUpperCase() || 'GAMER'}`;
             showTab('inicio');
         }
 
         async function loadTournaments() {
-            const container = document.getElementById('tournaments-container');
             const { data } = await supabase.from('tournaments').select('*').order('created_at', { ascending: false });
-            if (data?.length > 0) {
-                container.innerHTML = data.map(t => `
-                    <div class="tournament-card">
-                        <h4 style="color:var(--primary)">${t.name}</h4>
-                        <p style="margin:5px 0">${t.description}</p>
-                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold;">
-                            <span>CUPOS: ${t.capacity}</span>
-                            <span style="color:var(--success)">● ABIERTO</span>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                container.innerHTML = '<p style="text-align:center; opacity:0.5;">No hay torneos activos...</p>';
-            }
+            const container = document.getElementById('tournaments-container');
+            container.innerHTML = data?.length ? data.map(t => `
+                <div class="tournament-card">
+                    <h4 style="font-size:0.9rem; color:var(--primary)">${t.name}</h4>
+                    <p style="font-size:0.75rem; opacity:0.8;">Cupos: ${t.capacity}</p>
+                </div>
+            `).join('') : '<p style="font-size:0.7rem; opacity:0.5;">No hay torneos...</p>';
         }
 
         async function loadProfile() {
             const { data: { user } } = await supabase.auth.getUser();
-            const profileDiv = document.getElementById('profile-card');
             const meta = user.user_metadata;
-            profileDiv.innerHTML = `
-                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Gamer${meta.avatar_id}&backgroundColor=b6e3f4" style="width:140px; border-radius:25px; border:3px solid var(--primary); margin-bottom:15px; background:#1e1e2f">
-                <h2 style="color:var(--primary)">${meta.username}</h2>
-                <p style="color:var(--text-dim); margin-bottom:15px;">${user.email}</p>
-                <div style="text-align:left; background:rgba(0,0,0,0.2); padding:15px; border-radius:15px; font-size:0.9rem;">
-                    <p>📱 WhatsApp: ${meta.whatsapp}</p>
-                    <p>🎮 Rango: Recluta</p>
-                    <p>🏆 Torneos Ganados: 0</p>
-                </div>
+            document.getElementById('profile-card').innerHTML = `
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Gamer${meta.avatar_id}" style="width:80px; border-radius:50%; border:2px solid var(--primary); background:#1e1e2f">
+                <h3 style="font-size:1rem; margin-top:10px;">${meta.username}</h3>
+                <p style="font-size:0.7rem; opacity:0.6;">${user.email}</p>
+                <p style="font-size:0.8rem; margin-top:5px;">📱 ${meta.whatsapp}</p>
             `;
         }
 
@@ -387,9 +282,6 @@
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.getElementById('tab-' + tabId).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(n => n.innerText.toLowerCase().includes(tabId));
-            if(activeNav) activeNav.classList.add('active');
-
             if (tabId === 'inicio') loadTournaments();
             if (tabId === 'perfil') loadProfile();
         }
