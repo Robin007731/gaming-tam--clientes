@@ -58,39 +58,45 @@
         </header>
         <div class="content" id="main-cont"></div>
         <nav class="nav">
-            <div class="nav-item active" onclick="switchTab('inicio', this)">🏠<br>INICIO</div>
-            <div class="nav-item" onclick="switchTab('perfil', this)">👤<br>PERFIL</div>
+            <div id="nav-inicio" class="nav-item active" onclick="switchTab('inicio')">🏠<br>INICIO</div>
+            <div id="nav-perfil" class="nav-item" onclick="switchTab('perfil')">👤<br>PERFIL</div>
         </nav>
     </div>
 
     <script>
-        // NUEVA BASE DE DATOS CONFIGURADA
+        // 1. VARIABLES INICIALIZADAS PRIMERO PARA EVITAR ERRORES
         const URL = "https://imgngakonqjruixxaafe.supabase.co";
         const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltZ25nYWtvbnFqcnVpeHhhYWZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzOTk5OTAsImV4cCI6MjA4NDk3NTk5MH0.a26M4PX7rNmjBbBsmVIWL2_DnwXkomeKkEtm15UwFok";
         const sb = supabase.createClient(URL, KEY);
 
-        let isLogin = true, avSel = 1;
+        let isLogin = true;
+        let avSel = 1;
 
-        // Cargar Avatares
+        // 2. FUNCIONES
+        function toggleMode() {
+            isLogin = !isLogin;
+            document.getElementById('reg-fields').classList.toggle('hidden', isLogin);
+            document.getElementById('btn-auth').innerText = isLogin ? 'INGRESAR' : 'CREAR CUENTA';
+            document.getElementById('tog-text').innerHTML = isLogin ? '¿No tienes cuenta? <span style="color:var(--p)">Regístrate</span>' : '¿Ya tienes cuenta? <span style="color:var(--p)">Inicia sesión</span>';
+        }
+
         const grid = document.getElementById('av-grid');
         for(let i=1; i<=50; i++) {
             const img = document.createElement('img');
             img.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${i}`;
             img.className = 'av-item';
-            img.onclick = () => { document.querySelectorAll('.av-item').forEach(x=>x.classList.remove('sel')); img.classList.add('sel'); avSel=i; };
+            img.onclick = () => { 
+                document.querySelectorAll('.av-item').forEach(x=>x.classList.remove('sel')); 
+                img.classList.add('sel'); 
+                avSel=i; 
+            };
             if(i===1) img.classList.add('sel');
             grid.appendChild(img);
         }
 
-        function toggleMode() {
-            isLogin = !isLogin;
-            document.getElementById('reg-fields').classList.toggle('hidden');
-            document.getElementById('btn-auth').innerText = isLogin ? 'INGRESAR' : 'CREAR CUENTA';
-        }
-
         async function handleAuth() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('pass').value.trim();
             if(!email || pass.length < 6) return alert("Datos inválidos");
 
             try {
@@ -98,9 +104,14 @@
                     const { error } = await sb.auth.signInWithPassword({ email, password: pass });
                     if(error) throw error;
                 } else {
-                    const nick = document.getElementById('nick').value;
-                    const wa = document.getElementById('wa').value;
-                    const { error } = await sb.auth.signUp({ email, password: pass, options: { data: { username: nick, whatsapp: wa, av: avSel } } });
+                    const nick = document.getElementById('nick').value.trim();
+                    const wa = document.getElementById('wa').value.trim();
+                    if(!nick || !wa) return alert("Completa todos los campos");
+                    const { error } = await sb.auth.signUp({ 
+                        email, 
+                        password: pass, 
+                        options: { data: { username: nick, whatsapp: wa, av: avSel } } 
+                    });
                     if(error) throw error;
                     alert("¡Registro exitoso! Ya puedes entrar.");
                     toggleMode();
@@ -114,40 +125,49 @@
             if(user) {
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-shell').classList.remove('hidden');
-                document.getElementById('u-name').innerText = user.user_metadata.username.toUpperCase();
+                document.getElementById('u-name').innerText = (user.user_metadata.username || 'PLAYER').toUpperCase();
                 switchTab('inicio');
             }
         }
 
-        async function switchTab(tab, el) {
+        async function switchTab(tab) {
             const cont = document.getElementById('main-cont');
-            if(el) { document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
+            document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+            document.getElementById('nav-' + tab).classList.add('active');
             
             if(tab === 'inicio') {
                 cont.innerHTML = "<h3>TORNEOS ACTIVOS</h3>";
                 const { data } = await sb.from('tournaments').select('*');
-                if(data) {
+                if(data && data.length > 0) {
                     cont.innerHTML += data.map(t => `
                         <div class="card">
                             <h3>${t.name}</h3>
                             <p>${t.description}</p>
-                            <button onclick="inscribir('${t.id}')" style="margin-top:10px; padding:8px; font-size:0.7rem;">INSCRIBIRME</button>
+                            <button onclick="inscribir('${t.id}')" style="margin-top:10px; padding:8px; font-size:0.7rem; width:auto;">INSCRIBIRME</button>
                         </div>
                     `).join('');
+                } else {
+                    cont.innerHTML += "<p style='margin-top:20px; opacity:0.5;'>No hay torneos creados.</p>";
                 }
             } else {
                 const { data: { user } } = await sb.auth.getUser();
                 cont.innerHTML = `<h3>MI PERFIL</h3><div class="card" style="text-align:center;">
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${user.user_metadata.av}" style="width:80px; border-radius:50%; border:2px solid var(--p); background:#000;">
-                    <h2>${user.user_metadata.username}</h2><p>WhatsApp: ${user.user_metadata.whatsapp}</p>
-                    <button onclick="sb.auth.signOut().then(()=>location.reload())" style="background:red; margin-top:20px;">SALIR</button>
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${user.user_metadata.av}" style="width:80px; border-radius:50%; border:2px solid var(--p); background:#000; margin-bottom:10px;">
+                    <h2>${user.user_metadata.username}</h2>
+                    <p style="color:#888;">WhatsApp: ${user.user_metadata.whatsapp}</p>
+                    <button onclick="sb.auth.signOut().then(()=>location.reload())" style="background:red; margin-top:20px; width:auto; padding:8px 20px;">CERRAR SESIÓN</button>
                 </div>`;
             }
         }
 
         async function inscribir(id) {
             const { data: { user } } = await sb.auth.getUser();
-            const { error } = await sb.from('participants').insert([{ tournament_id: id, user_id: user.id, gamer_tag: user.user_metadata.username, whatsapp: user.user_metadata.whatsapp }]);
+            const { error } = await sb.from('participants').insert([{ 
+                tournament_id: id, 
+                user_id: user.id, 
+                gamer_tag: user.user_metadata.username, 
+                whatsapp: user.user_metadata.whatsapp 
+            }]);
             if(error) alert("Ya estás inscrito o hubo un error.");
             else alert("¡Inscripción Exitosa!");
         }
