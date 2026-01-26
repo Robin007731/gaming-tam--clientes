@@ -3,276 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZONA GAMER | Pro Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <title>Gaming Tournaments - App</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary: #7289da;
-            --bg: #05070a;
-            --card: rgba(26, 29, 36, 0.75);
-            --text: #ffffff;
-            --accent: #00ff88;
-            --neon-blue: #00d2ff;
-            --glass: rgba(255, 255, 255, 0.08);
-            --whatsapp: #25d366;
+            --dark: #1e1e2e;
+            --accent: #f5c2e7;
+            --bg: #11111b;
         }
 
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background: radial-gradient(circle at top, #1a1d24 0%, #05070a 100%);
-            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: white;
             margin: 0;
-            padding-bottom: 110px;
-            min-height: 100vh;
-            overflow-x: hidden;
+            padding-bottom: 70px; /* Espacio para la barra inferior */
         }
 
-        /* --- Animaciones --- */
-        .screen { display: none; padding: 25px; animation: fadeIn 0.4s ease-out; }
-        .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- Contenedores Pro --- */
-        .glass-card { 
-            background: var(--card); border: 1px solid var(--glass); 
-            padding: 25px; border-radius: 20px; backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        
-        input { 
-            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; 
-            border: 1px solid #333; background: rgba(0,0,0,0.4); color: white; 
-            box-sizing: border-box; font-size: 16px; font-family: 'Rajdhani';
+        /* --- PANTALLA DE REGISTRO/LOGIN --- */
+        #auth-screen {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* --- Avatares --- */
-        .avatar-grid { 
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; 
-            margin: 15px 0; max-height: 160px; overflow-y: auto; padding: 10px;
-            background: rgba(0,0,0,0.3); border-radius: 15px; border: 1px solid var(--glass);
-        }
-        .avatar-item { width: 100%; aspect-ratio: 1; cursor: pointer; border-radius: 50%; border: 2px solid transparent; transition: 0.3s; filter: grayscale(0.5); }
-        .avatar-item.selected { filter: grayscale(0); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); transform: scale(1.1); }
-
-        /* --- Botones --- */
-        .btn-main { 
-            width: 100%; padding: 15px; background: var(--primary); color: white; 
-            border: none; border-radius: 12px; font-weight: bold; cursor: pointer; 
-            text-transform: uppercase; font-family: 'Rajdhani'; font-size: 18px;
-            transition: 0.3s; margin-top: 10px;
-        }
-        .btn-wa { 
-            display: flex; align-items: center; justify-content: center; text-decoration: none;
-            background: linear-gradient(45deg, #128C7E, #25D366); color: white; 
-            padding: 14px; border-radius: 12px; font-weight: bold; margin-top: 15px;
-            text-transform: uppercase; letter-spacing: 1px; font-size: 16px;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-        }
-        .btn-edit {
-            background: transparent; border: 1px solid var(--accent); color: var(--accent);
-            padding: 8px 15px; border-radius: 10px; cursor: pointer; margin-top: 15px;
-            font-family: 'Rajdhani'; font-weight: bold;
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #181825;
+            padding: 10px;
+            border-radius: 10px;
         }
 
-        /* --- UI Elements --- */
-        .gaming-phrase { font-size: 1.2rem; color: var(--accent); text-align: center; margin: 20px 0; font-weight: 700; text-shadow: 0 0 10px var(--accent); height: 1.5rem; }
-        .tournament-card { position: relative; overflow: hidden; margin-bottom: 20px; border-left: 4px solid var(--accent); }
-        .badge { position: absolute; top: 15px; right: 15px; background: var(--accent); color: #000; padding: 3px 10px; border-radius: 5px; font-size: 10px; font-weight: bold; }
+        .avatar-item {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid transparent;
+        }
 
-        /* --- Nav Flotante --- */
+        .avatar-item.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: none;
+            background: #313244;
+            color: white;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* --- PANTALLA PRINCIPAL --- */
+        .page { display: none; padding: 20px; }
+        .page.active { display: block; }
+
+        .gaming-phrase {
+            font-style: italic;
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .tournament-card {
+            background: #181825;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary);
+        }
+
+        /* --- BARRA INFERIOR --- */
         .bottom-nav {
-            position: fixed; bottom: 20px; width: 90%; left: 5%; height: 75px;
-            background: rgba(11, 14, 20, 0.95); backdrop-filter: blur(20px);
-            display: flex; justify-content: space-around; align-items: center;
-            border-radius: 30px; border: 1px solid var(--glass); z-index: 1000;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #181825;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid #313244;
         }
-        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; font-weight: bold; }
-        .nav-item.active-nav { color: var(--accent); text-shadow: 0 0 15px var(--accent); transform: translateY(-3px); }
-        .nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+
+        .nav-item {
+            text-decoration: none;
+            color: #a6adc8;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nav-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen" class="screen active">
-        <div style="max-width: 400px; margin: auto; padding-top: 30px;">
-            <h1 style="text-align: center; color: var(--accent); font-size: 3rem; margin-bottom: 10px; text-shadow: 0 0 20px var(--accent);">ZONA GAMER</h1>
-            <div class="glass-card">
-                <h2 id="auth-title" style="text-align: center; margin-top: 0;">INICIAR SESIÓN</h2>
-                <div id="register-fields" style="display: none;">
-                    <input type="text" id="reg-name" placeholder="NICKNAME / USUARIO">
-                    <input type="tel" id="reg-whatsapp" placeholder="TU WHATSAPP">
-                    <p style="text-align: center; font-size: 14px; margin-bottom: 5px;">ELIGE TU AVATAR</p>
-                    <div class="avatar-grid" id="avatar-container-reg"></div>
+    <div id="auth-screen">
+        <h2 id="auth-title">Registrarse</h2>
+        <div id="register-fields">
+            <input type="text" id="reg-name" placeholder="Nombre de Usuario">
+            <input type="tel" id="reg-whatsapp" placeholder="WhatsApp">
+            <p>Elige tu Avatar:</p>
+            <div class="avatar-grid" id="avatar-selector">
                 </div>
-                <input type="email" id="auth-email" placeholder="CORREO ELECTRÓNICO">
-                <input type="password" id="auth-password" placeholder="CONTRASEÑA">
-                <button onclick="handleAuth()" class="btn-main" id="btn-auth">INGRESAR AL SISTEMA</button>
-                <p onclick="toggleAuthMode()" id="toggle-text" style="text-align:center; cursor:pointer; color: var(--primary); margin-top: 25px; font-weight: bold;">¿ERES NUEVO? REGÍSTRATE AQUÍ</p>
-            </div>
         </div>
+        <input type="email" id="email" placeholder="Correo">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button id="auth-btn" onclick="handleAuth()">Crear Cuenta</button>
+        <p onclick="toggleAuthMode()" style="font-size: 12px; cursor: pointer; margin-top: 15px;">¿Ya tienes cuenta? Inicia sesión</p>
     </div>
 
-    <div id="home-screen" class="screen">
-        <div id="frase-gaming" class="gaming-phrase"></div>
-        <h2 style="padding-left: 10px; font-size: 1.5rem; color: white;">TORNEOS DISPONIBLES</h2>
-        <div id="tournaments-list">Buscando misiones...</div>
-    </div>
-
-    <div id="rankings-screen" class="screen">
-        <h2 style="padding-left: 10px; color: var(--neon-blue);">TOP JUGADORES</h2>
-        <div class="glass-card" id="rankings-list">
-            Cargando base de datos de la comunidad...
-        </div>
-    </div>
-
-    <div id="profile-screen" class="screen">
-        <h2 style="padding-left: 10px; color: var(--primary);">MI PERFIL GAMER</h2>
-        <div id="profile-content" class="glass-card" style="text-align: center;"></div>
-        
-        <div id="edit-form" class="glass-card" style="display: none; margin-top: 20px;">
-            <h3 style="margin-top: 0; color: var(--accent);">EDITAR MIS DATOS</h3>
-            <input type="text" id="edit-name" placeholder="NUEVO NICKNAME">
-            <input type="tel" id="edit-whatsapp" placeholder="NUEVO WHATSAPP">
-            <div class="avatar-grid" id="avatar-container-edit"></div>
-            <button onclick="updateProfile()" class="btn-main">GUARDAR CAMBIOS</button>
-            <button onclick="toggleEdit(false)" style="background:none; border:none; color:#888; width:100%; margin-top:10px; cursor:pointer;">CANCELAR</button>
+    <div id="app-content" style="display: none;">
+        <div id="inicio" class="page active">
+            <h1 id="welcome-user">Hola, Gamer</h1>
+            <p id="frase-gaming" class="gaming-phrase"></p>
+            <h3>Torneos Activos</h3>
+            <div id="lista-torneos">
+                </div>
         </div>
 
-        <button onclick="logout()" style="width:100%; margin-top:25px; background:rgba(255,0,0,0.1); color:#ff4d4d; border:1px solid #ff4d4d; padding:12px; border-radius:15px; cursor:pointer; font-family:'Rajdhani'; font-weight: bold;">CERRAR SESIÓN</button>
-    </div>
+        <div id="rankings" class="page">
+            <h2>🏆 Rankings</h2>
+            <p>Próximamente: Tabla de posiciones de la comunidad.</p>
+        </div>
 
-    <nav id="main-nav" class="bottom-nav" style="display: none;">
-        <div class="nav-item active-nav" onclick="showScreen('home-screen', this)"><span class="nav-icon">🏠</span>INICIO</div>
-        <div class="nav-item" onclick="showScreen('rankings-screen', this)"><span class="nav-icon">🏆</span>RANKINGS</div>
-        <div class="nav-item" onclick="showScreen('profile-screen', this)"><span class="nav-icon">👤</span>PERFIL</div>
-    </nav>
+        <div id="perfil" class="page">
+            <h2>Mi Perfil</h2>
+            <div id="user-info"></div>
+            <br>
+            <a href="https://chat.whatsapp.com/FsKHwkSsDjuIKU5Wh4QWa3" target="_blank" style="text-decoration: none;">
+                <button style="background-color: #25D366;">Unirse al Grupo de WhatsApp</button>
+            </a>
+            <button onclick="logout()" style="background: transparent; color: red; margin-top: 20px;">Cerrar Sesión</button>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" onclick="showPage('inicio')">🏠<br>Inicio</a>
+            <a href="#" class="nav-item" onclick="showPage('rankings')">🏆<br>Rankings</a>
+            <a href="#" class="nav-item" onclick="showPage('perfil')">👤<br>Perfil</a>
+        </nav>
+    </div>
 
     <script>
-        const SUPABASE_URL = 'https://oeczrnwfuqsifthqvktp.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lY3pybndmdXFzaWZ0aHF2a3RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzOTI2NTEsImV4cCI6MjA4NDk2ODY1MX0.j9juk2V3p_BGwz--P4foShZ3aBj28q7L41Va95aP2VQ';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // CONFIGURACIÓN SUPABASE
+        const SUPABASE_URL = 'TU_URL_DE_SUPABASE';
+        const SUPABASE_KEY = 'TU_KEY_ANON_DE_SUPABASE';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- LINK DEL GRUPO DE WHATSAPP ---
-        // Pega aquí el enlace de tu grupo real
-        const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/TU_LINK_DEL_GRUPO";
+        let selectedAvatar = 1;
+        let isLoginMode = false;
 
-        const frases = ["ERROR 404: SKILL NOT FOUND.", "¡UN NIVEL MÁS Y ME ACUESTO!", "LAG IS MY ONLY ENEMY.", "STAY FROSTY, SOLDADO.", "GG WP PARTIDA FINALIZADA."];
-
-        let selectedAvatarId = 1;
-        let currentUser = null;
-        let isRegisterMode = false;
-
-        function fillAvatars(containerId) {
-            const box = document.getElementById(containerId);
-            box.innerHTML = '';
-            for(let i=1; i<=30; i++) {
-                const img = document.createElement('img');
-                img.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=game${i}`;
-                img.className = 'avatar-item';
-                img.onclick = () => {
-                    document.querySelectorAll(`#${containerId} .avatar-item`).forEach(el => el.classList.remove('selected'));
-                    img.classList.add('selected');
-                    selectedAvatarId = i;
-                };
-                box.appendChild(img);
-            }
+        // Generar 30 Avatares
+        const grid = document.getElementById('avatar-selector');
+        for (let i = 1; i <= 30; i++) {
+            const img = document.createElement('img');
+            img.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${i}`; // Generador de avatares gaming
+            img.className = 'avatar-item';
+            img.onclick = () => {
+                document.querySelectorAll('.avatar-item').forEach(el => el.classList.remove('selected'));
+                img.classList.add('selected');
+                selectedAvatar = i;
+            };
+            grid.appendChild(img);
         }
-        fillAvatars('avatar-container-reg');
-        fillAvatars('avatar-container-edit');
 
+        // Cambio entre Login y Registro
         function toggleAuthMode() {
-            isRegisterMode = !isRegisterMode;
-            document.getElementById('auth-title').innerText = isRegisterMode ? 'CREAR CUENTA' : 'INICIAR SESIÓN';
-            document.getElementById('register-fields').style.display = isRegisterMode ? 'block' : 'none';
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? 'Iniciar Sesión' : 'Registrarse';
+            document.getElementById('register-fields').style.display = isLoginMode ? 'none' : 'block';
+            document.getElementById('auth-btn').innerText = isLoginMode ? 'Entrar' : 'Crear Cuenta';
         }
 
+        // Lógica de Autenticación
         async function handleAuth() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            if (isRegisterMode) {
-                const { error } = await _supabase.auth.signUp({
-                    email, password, options: { data: { 
-                        username: document.getElementById('reg-name').value, 
-                        whatsapp: document.getElementById('reg-whatsapp').value,
-                        avatar_id: selectedAvatarId 
-                    }}
-                });
-                if(error) alert(error.message); else alert("¡EXITO! INICIA SESIÓN.");
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (isLoginMode) {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) alert(error.message);
+                else checkUser();
             } else {
-                const { error } = await _supabase.auth.signInWithPassword({ email, password });
-                if(error) alert("DATOS INCORRECTOS"); else initApp();
+                const username = document.getElementById('reg-name').value;
+                const whatsapp = document.getElementById('reg-whatsapp').value;
+                const { data, error } = await supabase.auth.signUp({
+                    email, password,
+                    options: { data: { username, whatsapp, avatar_id: selectedAvatar } }
+                });
+                if (error) alert(error.message);
+                else alert('¡Registro exitoso! Ya puedes iniciar sesión.');
             }
         }
 
-        async function initApp() {
-            const { data } = await _supabase.auth.getUser();
-            currentUser = data.user;
-            document.getElementById('auth-screen').classList.remove('active');
-            document.getElementById('main-nav').style.display = 'flex';
-            escribirFrase(frases[Math.floor(Math.random()*frases.length)]);
-            showScreen('home-screen', document.querySelector('.nav-item'));
+        // Verificar Sesión
+        async function checkUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                loadHome(user);
+            }
         }
 
-        function escribirFrase(texto) {
-            let i = 0; const el = document.getElementById('frase-gaming'); el.innerHTML = '';
-            const timer = setInterval(() => {
-                if(i < texto.length) { el.innerHTML += texto.charAt(i); i++; } else clearInterval(timer);
-            }, 60);
+        function loadHome(user) {
+            const frases = ["¡GG WP! A ganar.", "No es lag, es falta de skill.", "El último en morir paga las pizzas.", "Modo Tryhard: Activado."];
+            document.getElementById('frase-gaming').innerText = frases[Math.floor(Math.random() * frases.length)];
+            document.getElementById('welcome-user').innerText = `Hola, ${user.user_metadata.username || 'Gamer'}`;
+            fetchTournaments();
         }
 
-        function showScreen(id, navEl) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
-            if(navEl) navEl.classList.add('active-nav');
-            if(id === 'home-screen') loadTournaments();
-            if(id === 'profile-screen') loadProfile();
-        }
-
-        async function loadTournaments() {
-            const { data } = await _supabase.from('tournaments').select('*').order('created_at', {ascending: false});
-            document.getElementById('tournaments-list').innerHTML = data.map(t => `
-                <div class="glass-card tournament-card">
-                    <div class="badge">ONLINE</div>
-                    <h3 style="color:var(--accent); margin:0;">${t.name.toUpperCase()}</h3>
-                    <p style="color:#aaa; font-size:14px; margin: 10px 0;">${t.description}</p>
-                    <div style="font-size:13px; color:var(--neon-blue); font-weight: bold;">👥 CAPACIDAD: ${t.capacity} JUGADORES</div>
-                    <a href="${WHATSAPP_GROUP_LINK}" target="_blank" class="btn-wa">
-                        📲 UNIRSE AL GRUPO
-                    </a>
+        async function fetchTournaments() {
+            const { data } = await supabase.from('tournaments').select('*');
+            const lista = document.getElementById('lista-torneos');
+            lista.innerHTML = data.map(t => `
+                <div class="tournament-card">
+                    <h4>${t.name}</h4>
+                    <p>Capacidad: ${t.capacity} jugadores</p>
+                    <small>${t.description}</small>
                 </div>
-            `).join('') || "NO HAY MISIONES DISPONIBLES.";
+            `).join('');
         }
 
-        async function loadProfile() {
-            const { data: profile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-            document.getElementById('profile-content').innerHTML = `
-                <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=game${profile.avatar_id}" style="width:100px; border:3px solid var(--accent); border-radius:50%; background:#111; padding:8px;">
-                <h2 style="color:var(--accent); margin:15px 0 5px 0;">${profile.username.toUpperCase()}</h2>
-                <p style="color:#888; margin-bottom:20px;">📱 ${profile.whatsapp}</p>
-                <button onclick="toggleEdit(true)" class="btn-edit">EDITAR MI PERFIL</button>
-            `;
-            document.getElementById('edit-name').value = profile.username;
-            document.getElementById('edit-whatsapp').value = profile.whatsapp;
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.currentTarget.classList.add('active');
         }
 
-        async function updateProfile() {
-            const { error } = await _supabase.from('profiles').update({
-                username: document.getElementById('edit-name').value,
-                whatsapp: document.getElementById('edit-whatsapp').value,
-                avatar_id: selectedAvatarId
-            }).eq('id', currentUser.id);
-            if(error) alert("ERROR AL ACTUALIZAR"); else { toggleEdit(false); loadProfile(); }
+        async function logout() {
+            await supabase.auth.signOut();
+            location.reload();
         }
 
-        function toggleEdit(show) {
-            document.getElementById('profile-content').style.display = show ? 'none' : 'block';
-            document.getElementById('edit-form').style.display = show ? 'block' : 'none';
-        }
-
-        async function logout() { await _supabase.auth.signOut(); location.reload(); }
+        checkUser();
     </script>
 </body>
 </html>
