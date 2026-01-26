@@ -16,23 +16,22 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
             padding-bottom: 80px;
         }
 
-        .screen { display: none; padding: 20px; animation: fadeIn 0.3s; }
-        .active { display: block; }
-
+        .screen { display: none; padding: 20px; }
+        .active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Auth Styles */
-        .auth-container { max-width: 400px; margin: 40px auto; text-align: center; padding: 20px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: #2a2d35; color: white; box-sizing: border-box; }
+        /* Auth */
+        .auth-container { max-width: 400px; margin: 40px auto; text-align: center; padding: 0 20px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: #2a2d35; color: white; box-sizing: border-box; font-size: 16px; }
         
-        /* Avatar Selector */
+        /* Avatar Grid */
         .avatar-grid { 
             display: grid; 
             grid-template-columns: repeat(5, 1fr); 
@@ -54,43 +53,27 @@
         }
         .avatar-item.selected { border-color: var(--accent); transform: scale(1.1); background: #333; }
 
-        /* UI Elements */
+        /* Cards */
         .tournament-card {
             background: var(--card);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
             border-left: 4px solid var(--primary);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .gaming-phrase { 
-            font-size: 1.1rem;
-            color: var(--accent); 
-            text-align: center; 
-            margin: 20px 0; 
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(0,255,136,0.3);
-        }
+        .gaming-phrase { font-size: 1.1rem; color: var(--accent); text-align: center; margin: 20px 0; font-weight: bold; }
 
-        /* Bottom Navigation */
+        /* Nav */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 65px;
-            background: #161920;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid #333;
-            z-index: 100;
+            position: fixed; bottom: 0; width: 100%; height: 65px;
+            background: #161920; display: flex; justify-content: space-around;
+            align-items: center; border-top: 1px solid #333; z-index: 100;
         }
-        .nav-item { color: #888; text-align: center; font-size: 10px; cursor: pointer; flex: 1; }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
-        .nav-item.active-nav { color: var(--accent); }
+        .nav-item { color: #888; text-align: center; font-size: 11px; cursor: pointer; flex: 1; }
+        .nav-item.active-nav { color: var(--accent); font-weight: bold; }
 
-        .btn-main { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-main { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-wa { background: var(--whatsapp); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; }
     </style>
 </head>
@@ -98,38 +81,37 @@
 
     <div id="auth-screen" class="screen active">
         <div class="auth-container">
-            <h2 id="auth-title">Bienvenido Gamer</h2>
+            <h2 id="auth-title">Inicia Sesión</h2>
             
             <div id="register-fields" style="display: none;">
-                <input type="text" id="reg-name" placeholder="Tu Nombre o Nickname">
+                <input type="text" id="reg-name" placeholder="Tu Nickname">
                 <input type="tel" id="reg-whatsapp" placeholder="Tu WhatsApp">
-                <p style="font-size: 14px; margin-top: 15px;">Elige tu Avatar Gaming:</p>
+                <p style="font-size: 14px;">Elige tu Avatar:</p>
                 <div class="avatar-grid" id="avatar-container"></div>
             </div>
 
-            <input type="email" id="auth-email" placeholder="Correo Electrónico">
+            <input type="email" id="auth-email" placeholder="Correo">
             <input type="password" id="auth-password" placeholder="Contraseña">
             
-            <button onclick="handleAuth()" class="btn-main" id="btn-auth">Iniciar Sesión</button>
-            <p onclick="toggleAuthMode()" id="toggle-text" style="cursor:pointer; font-size:14px; color: var(--primary); margin-top: 20px;">¿No tienes cuenta? Regístrate aquí</p>
+            <button onclick="handleAuth()" class="btn-main" id="btn-auth">Entrar</button>
+            <p onclick="toggleAuthMode()" id="toggle-text" style="cursor:pointer; font-size:14px; color: var(--primary); margin-top: 20px;">¿No tienes cuenta? Regístrate</p>
         </div>
     </div>
 
     <div id="home-screen" class="screen">
         <div id="frase-gaming" class="gaming-phrase"></div>
-        <h3 style="border-bottom: 1px solid #333; padding-bottom: 10px;">🏆 Torneos Disponibles</h3>
-        <div id="tournaments-list">Buscando partidas...</div>
+        <h3>🏆 Torneos Activos</h3>
+        <div id="tournaments-list">Cargando torneos...</div>
     </div>
 
     <div id="rankings-screen" class="screen">
-        <h3>📊 Rankings de Jugadores</h3>
-        <div id="rankings-list">Próximamente se mostrarán las estadísticas...</div>
+        <h3>📊 Rankings</h3>
+        <div id="rankings-list">Lista de jugadores próximamente...</div>
     </div>
 
     <div id="profile-screen" class="screen">
         <h3>👤 Tu Perfil</h3>
-        <div id="profile-data" style="text-align: center; background: var(--card); padding: 20px; border-radius: 15px;">
-            </div>
+        <div id="profile-data" style="text-align: center; background: var(--card); padding: 20px; border-radius: 15px;"></div>
         <button onclick="logout()" style="background:#ff4d4d; color:white; border:none; padding:12px; width:100%; border-radius:8px; margin-top:20px;">Cerrar Sesión</button>
     </div>
 
@@ -140,14 +122,16 @@
     </nav>
 
     <script>
+        // CONFIGURACIÓN - PEGA TU KEY AQUÍ
         const SUPABASE_URL = 'https://oeczrnwfuqsifthqvktp.supabase.co';
-        const SUPABASE_KEY = 'TU_KEY_ANON_AQUI'; // <--- PEGA TU KEY AQUÍ
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lY3pybndmdXFzaWZ0aHF2a3RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzOTI2NTEsImV4cCI6MjA4NDk2ODY1MX0.j9juk2V3p_BGwz--P4foShZ3aBj28q7L41Va95aP2VQ'; 
+        
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let isRegisterMode = false;
         let selectedAvatarId = 1;
 
-        // Cargar 30 avatares gaming
+        // Generar Avatares
         const avatarBox = document.getElementById('avatar-container');
         for(let i=1; i<=30; i++) {
             const img = document.createElement('img');
@@ -161,20 +145,13 @@
             avatarBox.appendChild(img);
         }
 
-        const frases = [
-            "¡Un nivel más y me acuesto!",
-            "El lag es el único enemigo invencible.",
-            "GG WP. ¡A darlo todo!",
-            "Stay Frosty, la victoria es nuestra.",
-            "No es un bug, es una característica del juego."
-        ];
+        const frases = ["¡Un nivel más y me acuesto!", "Lag is my only enemy.", "GG WP!", "Stay Frosty.", "Noobs everywhere..."];
 
         function toggleAuthMode() {
             isRegisterMode = !isRegisterMode;
-            document.getElementById('auth-title').innerText = isRegisterMode ? 'Crea tu Cuenta' : 'Bienvenido Gamer';
+            document.getElementById('auth-title').innerText = isRegisterMode ? 'Regístrate' : 'Inicia Sesión';
             document.getElementById('register-fields').style.display = isRegisterMode ? 'block' : 'none';
-            document.getElementById('btn-auth').innerText = isRegisterMode ? 'Registrarse' : 'Iniciar Sesión';
-            document.getElementById('toggle-text').innerText = isRegisterMode ? '¿Ya tienes cuenta? Entra' : '¿No tienes cuenta? Regístrate aquí';
+            document.getElementById('btn-auth').innerText = isRegisterMode ? 'Crear Cuenta' : 'Entrar';
         }
 
         async function handleAuth() {
@@ -188,11 +165,11 @@
                     email, password,
                     options: { data: { username, whatsapp, avatar_id: selectedAvatarId } }
                 });
-                if (error) alert(error.message);
-                else alert("¡Registro exitoso! Ya puedes iniciar sesión.");
+                if (error) alert("Error en registro: " + error.message);
+                else alert("¡Cuenta creada! Ya puedes entrar.");
             } else {
                 const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-                if (error) alert("Error: " + error.message);
+                if (error) alert("Error de acceso: " + error.message);
                 else initApp();
             }
         }
@@ -200,10 +177,8 @@
         function showScreen(screenId, navEl) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
-            
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
             if(navEl) navEl.classList.add('active-nav');
-
             if(screenId === 'home-screen') loadTournaments();
             if(screenId === 'profile-screen') loadProfile();
         }
@@ -216,34 +191,32 @@
         }
 
         async function loadTournaments() {
-            const { data } = await _supabase.from('tournaments').select('*').order('created_at', {ascending: false});
+            const { data, error } = await _supabase.from('tournaments').select('*');
+            if(error) return console.log(error);
             const list = document.getElementById('tournaments-list');
             list.innerHTML = data.map(t => `
                 <div class="tournament-card">
                     <h3 style="margin:0; color:var(--accent);">${t.name}</h3>
-                    <p style="font-size:14px; color:#ccc;">${t.description}</p>
-                    <div style="font-size:12px; margin-bottom:10px;">👥 Capacidad: <strong>${t.capacity}</strong></div>
+                    <p>${t.description}</p>
+                    <small>👥 Capacidad: ${t.capacity}</small>
                     <button class="btn-wa" onclick="alert('🚀 Próximamente disponible')">Unirse al Grupo</button>
                 </div>
-            `).join('') || "No hay torneos activos aún.";
+            `).join('') || "No hay torneos.";
         }
 
         async function loadProfile() {
             const { data: { user } } = await _supabase.auth.getUser();
             const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
-            
-            document.getElementById('profile-data').innerHTML = `
-                <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=game${profile.avatar_id}" style="width:100px; border-radius:50%; background:#333; padding:10px;">
-                <h2>${profile.username}</h2>
-                <p>📧 ${user.email}</p>
-                <p>📱 WhatsApp: ${profile.whatsapp}</p>
-            `;
+            if(profile) {
+                document.getElementById('profile-data').innerHTML = `
+                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=game${profile.avatar_id}" style="width:80px; background:#333; border-radius:50%; padding:10px;">
+                    <h2>${profile.username}</h2>
+                    <p>📱 ${profile.whatsapp}</p>
+                `;
+            }
         }
 
-        async function logout() {
-            await _supabase.auth.signOut();
-            location.reload();
-        }
+        async function logout() { await _supabase.auth.signOut(); location.reload(); }
     </script>
 </body>
 </html>
