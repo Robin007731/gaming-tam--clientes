@@ -3,176 +3,432 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZONA GAMER | V3.0</title>
+    <title>ZONA GAMER PRO | V4.0</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --p: #00d4ff; --s: #9d50bb; --bg: #05050a; --c: #0f0f1e; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; }
-        body { background: var(--bg); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .hidden { display: none !important; }
-        
-        /* AUTH */
-        #auth-screen { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-box { width: 100%; max-width: 360px; background: var(--c); padding: 25px; border-radius: 20px; border: 1px solid #222; }
-        h1 { font-family: 'Orbitron'; text-align: center; color: var(--p); margin-bottom: 20px; font-size: 1.5rem; }
-        input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; outline: none; }
-        
-        /* AVATARES */
-        .av-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; max-height: 100px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; margin-bottom: 15px; }
-        .av-item { width: 100%; aspect-ratio: 1; border-radius: 5px; cursor: pointer; opacity: 0.4; border: 2px solid transparent; }
-        .av-item.sel { opacity: 1; border-color: var(--p); transform: scale(1.1); }
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: linear-gradient(90deg, var(--p), var(--s)); color: white; font-weight: bold; font-family: 'Orbitron'; cursor: pointer; }
+    <style>
+        :root {
+            --p: #00d4ff; /* Cyan */
+            --s: #9d50bb; /* Purple */
+            --bg: #05050a;
+            --card: rgba(15, 15, 30, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--p); border-radius: 10px; }
+
+        .hidden { display: none !important; }
+        .gradient-text { background: linear-gradient(90deg, var(--p), var(--s)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* --- ACCESO / AUTH --- */
+        #auth-screen {
+            position: fixed; inset: 0; z-index: 9999;
+            background: radial-gradient(circle at center, #111, #000);
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .auth-box {
+            width: 100%; max-width: 400px; background: var(--card); padding: 30px;
+            border-radius: 24px; border: 1px solid var(--border);
+            backdrop-filter: blur(10px); box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+        .auth-box h1 { font-family: 'Orbitron'; font-size: 1.8rem; text-align: center; margin-bottom: 30px; text-shadow: 0 0 10px var(--p); }
         
-        /* APP */
-        .header { padding: 15px; background: var(--c); border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 80px; }
-        .card { background: var(--c); padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 4px solid var(--p); }
-        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #222; }
-        .nav-item { color: #666; font-size: 0.7rem; text-align: center; cursor: pointer; }
-        .nav-item.active { color: var(--p); font-weight: bold; }
+        input, select, textarea {
+            width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px;
+            background: rgba(0,0,0,0.5); border: 1px solid #333; color: #fff;
+            font-size: 1rem; transition: 0.3s;
+        }
+        input:focus { border-color: var(--p); box-shadow: 0 0 10px rgba(0,212,255,0.2); outline: none; }
+
+        .av-selector {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+            max-height: 110px; overflow-y: auto; background: #000; padding: 10px;
+            border-radius: 12px; margin-bottom: 15px; border: 1px solid #222;
+        }
+        .av-img { width: 100%; aspect-ratio: 1; border-radius: 8px; cursor: pointer; border: 2px solid transparent; opacity: 0.4; }
+        .av-img.sel { border-color: var(--p); opacity: 1; background: var(--glass); transform: scale(1.05); }
+
+        .btn {
+            width: 100%; padding: 16px; border-radius: 12px; border: none;
+            background: linear-gradient(90deg, var(--p), var(--s));
+            color: white; font-weight: bold; font-family: 'Orbitron'; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-secondary { background: #222; margin-top: 10px; }
+
+        /* --- HEADER --- */
+        .header {
+            padding: 20px; background: rgba(10, 10, 20, 0.9);
+            border-bottom: 1px solid var(--border); display: flex;
+            justify-content: space-between; align-items: center; backdrop-filter: blur(10px);
+        }
+        .user-pill {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--glass); padding: 5px 15px 5px 5px; border-radius: 30px;
+            border: 1px solid var(--border);
+        }
+        .user-pill img { width: 35px; height: 35px; border-radius: 50%; background: #000; border: 1px solid var(--p); }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        .section-title { font-family: 'Orbitron'; font-size: 1.1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        /* CARDS */
+        .t-card {
+            background: var(--card); border-radius: 20px; overflow: hidden;
+            margin-bottom: 20px; border: 1px solid var(--border);
+            animation: fadeInUp 0.5s ease backwards;
+        }
+        .t-banner { width: 100%; height: 120px; background: #1a1a2e; object-fit: cover; }
+        .t-info { padding: 15px; }
+        .t-info h3 { font-family: 'Orbitron'; color: var(--p); margin-bottom: 5px; }
+        .t-stats { display: flex; gap: 15px; font-size: 0.8rem; color: #888; margin-top: 10px; }
+        .stat-item { display: flex; align-items: center; gap: 5px; }
+
+        /* RANKING */
+        .rank-item {
+            display: flex; align-items: center; gap: 15px; padding: 12px;
+            background: var(--glass); border-radius: 15px; margin-bottom: 10px;
+            border: 1px solid var(--border);
+        }
+        .rank-pos { font-family: 'Orbitron'; width: 30px; font-size: 1.2rem; color: var(--p); }
+
+        /* --- NAVEGACIÓN --- */
+        .nav {
+            position: fixed; bottom: 0; width: 100%; background: rgba(5, 5, 10, 0.95);
+            display: flex; justify-content: space-around; padding: 12px 0;
+            border-top: 1px solid var(--border); backdrop-filter: blur(15px);
+        }
+        .nav-item { color: #555; text-align: center; font-size: 0.7rem; cursor: pointer; font-weight: 700; transition: 0.3s; }
+        .nav-item i { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+        .nav-item.active { color: var(--p); }
+
+        /* --- PANEL ADMIN --- */
+        .admin-modal {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            padding: 20px; display: flex; flex-direction: column;
+        }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+        /* ANIMACIONES */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen">
+    <section id="auth-screen">
         <div class="auth-box">
-            <h1>ZONA GAMER</h1>
+            <h1 class="gradient-text">ZONA GAMER</h1>
+            
             <div id="reg-fields" class="hidden">
-                <input type="text" id="nick" placeholder="GamerTag">
-                <input type="tel" id="wa" placeholder="WhatsApp">
-                <div class="av-grid" id="av-grid"></div>
+                <input type="text" id="reg-nick" placeholder="GamerTag (Ej: GhostRipper)">
+                <input type="tel" id="reg-wa" placeholder="WhatsApp (Ej: +52...)">
+                <p style="font-size: 0.8rem; color: var(--p); margin-bottom: 5px; font-weight: bold;">ELIGE TU AVATAR</p>
+                <div class="av-selector" id="av-selector"></div>
             </div>
-            <input type="email" id="email" placeholder="Correo">
-            <input type="password" id="pass" placeholder="Contraseña (6+)">
-            <button id="btn-auth" onclick="handleAuth()">INGRESAR</button>
-            <p onclick="toggleMode()" id="tog-text" style="text-align:center; font-size:0.8rem; margin-top:15px; color:#888; cursor:pointer;">¿No tienes cuenta? <span style="color:var(--p)">Regístrate</span></p>
+
+            <input type="email" id="auth-email" placeholder="Correo electrónico">
+            <input type="password" id="auth-pass" placeholder="Contraseña">
+
+            <button class="btn" id="btn-auth" onclick="handleAuth()">Ingresar al Sistema</button>
+            
+            <p id="tog-btn" onclick="toggleAuth()" style="text-align: center; margin-top: 20px; font-size: 0.9rem; cursor: pointer; color: #888;">
+                ¿No tienes cuenta? <span style="color: var(--p); font-weight: bold;">Registrarse</span>
+            </p>
         </div>
-    </div>
+    </section>
+
+    <section id="admin-panel" class="admin-modal hidden">
+        <div class="admin-header">
+            <h2 class="gradient-text" style="font-family:'Orbitron'">ADMIN CONTROL</h2>
+            <button onclick="closeAdmin()" style="background:none; border:none; color:#fff; font-size:1.5rem;">✕</button>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+            <div class="card" style="background:var(--glass); padding:15px; border-radius:15px;">
+                <h3>CREAR TORNEO</h3>
+                <input type="text" id="adm-t-name" placeholder="Nombre del Torneo">
+                <textarea id="adm-t-desc" placeholder="Descripción y Premios" rows="3"></textarea>
+                <input type="number" id="adm-t-cap" placeholder="Capacidad de Jugadores">
+                <button class="btn" onclick="createTournament()">Publicar Torneo</button>
+            </div>
+            <div id="adm-list" style="margin-top: 20px;">
+                </div>
+        </div>
+    </section>
 
     <div id="app-shell" class="hidden">
         <header class="header">
-            <h2 id="u-name" style="font-size:0.9rem; font-family:'Orbitron'; color:var(--p);">PLAYER</h2>
-            <div style="font-size:0.6rem; color:#0f0; border:1px solid #0f0; padding:2px 8px; border-radius:10px;">ONLINE</div>
+            <div class="user-pill" onclick="switchTab('perfil')">
+                <img id="u-avatar" src="" alt="">
+                <span id="u-name" style="font-weight: bold; font-size: 0.9rem;">PLAYER</span>
+            </div>
+            <div id="admin-btn" class="hidden" onclick="openAdmin()" style="color:gold; font-size:1.2rem; cursor:pointer;">⚙️</div>
+            <div style="font-size: 0.6rem; background: #00ff00; color: #000; padding: 2px 8px; border-radius: 10px; font-weight: bold;">ONLINE</div>
         </header>
-        <div class="content" id="main-cont"></div>
+
+        <main class="main-scroll" id="main-content">
+            <div id="tab-inicio">
+                <h3 class="section-title">TORNEOS DISPONIBLES</h3>
+                <div id="tourney-list"></div>
+            </div>
+
+            <div id="tab-ranking" class="hidden">
+                <h3 class="section-title">RANKING GLOBAL</h3>
+                <div id="ranking-list"></div>
+            </div>
+
+            <div id="tab-perfil" class="hidden">
+                <h3 class="section-title">MI PERFIL</h3>
+                <div id="profile-card" class="t-card" style="text-align:center; padding:30px;">
+                    </div>
+                <div id="mis-inscripciones">
+                    <h4 style="margin: 20px 0 10px;">Mis Inscripciones</h4>
+                    <div id="my-t-list"></div>
+                </div>
+                <button class="btn btn-secondary" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </main>
+
         <nav class="nav">
-            <div id="nav-inicio" class="nav-item active" onclick="switchTab('inicio')">🏠<br>INICIO</div>
-            <div id="nav-perfil" class="nav-item" onclick="switchTab('perfil')">👤<br>PERFIL</div>
+            <div class="nav-item active" id="n-inicio" onclick="switchTab('inicio')">🏠<br>INICIO</div>
+            <div class="nav-item" id="n-ranking" onclick="switchTab('ranking')">🏆<br>RANKING</div>
+            <div class="nav-item" id="n-perfil" onclick="switchTab('perfil')">👤<br>PERFIL</div>
         </nav>
     </div>
 
     <script>
-        // 1. VARIABLES INICIALIZADAS PRIMERO PARA EVITAR ERRORES
-        const URL = "https://imgngakonqjruixxaafe.supabase.co";
-        const KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltZ25nYWtvbnFqcnVpeHhhYWZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzOTk5OTAsImV4cCI6MjA4NDk3NTk5MH0.a26M4PX7rNmjBbBsmVIWL2_DnwXkomeKkEtm15UwFok";
-        const sb = supabase.createClient(URL, KEY);
+        // --- CONFIGURACIÓN ---
+        const SB_URL = "https://imgngakonqjruixxaafe.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltZ25nYWtvbnFqcnVpeHhhYWZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzOTk5OTAsImV4cCI6MjA4NDk3NTk5MH0.a26M4PX7rNmjBbBsmVIWL2_DnwXkomeKkEtm15UwFok";
+        const sb = supabase.createClient(SB_URL, SB_KEY);
 
         let isLogin = true;
-        let avSel = 1;
+        let selectedAv = 1;
+        let userData = null;
 
-        // 2. FUNCIONES
-        function toggleMode() {
-            isLogin = !isLogin;
-            document.getElementById('reg-fields').classList.toggle('hidden', isLogin);
-            document.getElementById('btn-auth').innerText = isLogin ? 'INGRESAR' : 'CREAR CUENTA';
-            document.getElementById('tog-text').innerHTML = isLogin ? '¿No tienes cuenta? <span style="color:var(--p)">Regístrate</span>' : '¿Ya tienes cuenta? <span style="color:var(--p)">Inicia sesión</span>';
+        // --- INICIALIZACIÓN ---
+        window.onload = () => {
+            initAvatars();
+            checkSession();
+        };
+
+        function initAvatars() {
+            const grid = document.getElementById('av-selector');
+            for(let i=1; i<=50; i++) {
+                const img = document.createElement('img');
+                img.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${i}&backgroundColor=000,05050a`;
+                img.className = 'av-img';
+                img.onclick = () => {
+                    document.querySelectorAll('.av-img').forEach(el => el.classList.remove('sel'));
+                    img.classList.add('sel');
+                    selectedAv = i;
+                };
+                if(i===1) img.classList.add('sel');
+                grid.appendChild(img);
+            }
         }
 
-        const grid = document.getElementById('av-grid');
-        for(let i=1; i<=50; i++) {
-            const img = document.createElement('img');
-            img.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${i}`;
-            img.className = 'av-item';
-            img.onclick = () => { 
-                document.querySelectorAll('.av-item').forEach(x=>x.classList.remove('sel')); 
-                img.classList.add('sel'); 
-                avSel=i; 
-            };
-            if(i===1) img.classList.add('sel');
-            grid.appendChild(img);
+        // --- AUTENTICACIÓN ---
+        function toggleAuth() {
+            isLogin = !isLogin;
+            document.getElementById('reg-fields').classList.toggle('hidden', isLogin);
+            document.getElementById('btn-auth').innerText = isLogin ? 'Ingresar al Sistema' : 'Crear mi Cuenta';
+            document.getElementById('tog-btn').innerHTML = isLogin ? 
+                '¿No tienes cuenta? <span style="color:var(--p)">Registrarse</span>' : 
+                '¿Ya tienes cuenta? <span style="color:var(--p)">Inicia sesión</span>';
         }
 
         async function handleAuth() {
-            const email = document.getElementById('email').value.trim();
-            const pass = document.getElementById('pass').value.trim();
-            if(!email || pass.length < 6) return alert("Datos inválidos");
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const btn = document.getElementById('btn-auth');
+
+            if(!email || pass.length < 6) return alert("Verifica los datos");
+
+            btn.innerText = "PROCESANDO...";
+            btn.disabled = true;
 
             try {
                 if(isLogin) {
                     const { error } = await sb.auth.signInWithPassword({ email, password: pass });
                     if(error) throw error;
                 } else {
-                    const nick = document.getElementById('nick').value.trim();
-                    const wa = document.getElementById('wa').value.trim();
-                    if(!nick || !wa) return alert("Completa todos los campos");
-                    const { error } = await sb.auth.signUp({ 
-                        email, 
-                        password: pass, 
-                        options: { data: { username: nick, whatsapp: wa, av: avSel } } 
+                    const nick = document.getElementById('reg-nick').value;
+                    const wa = document.getElementById('reg-wa').value;
+                    if(!nick || !wa) throw new Error("Llena todos los campos");
+
+                    const { error } = await sb.auth.signUp({
+                        email, password: pass,
+                        options: { data: { username: nick, whatsapp: wa, av: selectedAv, role: 'user' } }
                     });
                     if(error) throw error;
-                    alert("¡Registro exitoso! Ya puedes entrar.");
-                    toggleMode();
+                    alert("¡Registro exitoso! Inicia sesión.");
+                    toggleAuth();
                 }
-            } catch (e) { alert("Error: " + e.message); }
-            check();
+                checkSession();
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = isLogin ? 'Ingresar al Sistema' : 'Crear mi Cuenta';
+            }
         }
 
-        async function check() {
+        async function checkSession() {
             const { data: { user } } = await sb.auth.getUser();
             if(user) {
+                userData = user;
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-shell').classList.remove('hidden');
-                document.getElementById('u-name').innerText = (user.user_metadata.username || 'PLAYER').toUpperCase();
+                
+                // Cargar perfil
+                const meta = user.user_metadata;
+                document.getElementById('u-name').innerText = meta.username.toUpperCase();
+                document.getElementById('u-avatar').src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${meta.av}`;
+                
+                // Mostrar botón de admin si el correo es el tuyo (CAMBIA ESTO)
+                if(user.email === 'TU_CORREO@GMAIL.COM') { 
+                    document.getElementById('admin-btn').classList.remove('hidden');
+                }
+
                 switchTab('inicio');
             }
         }
 
-        async function switchTab(tab) {
-            const cont = document.getElementById('main-cont');
-            document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
-            document.getElementById('nav-' + tab).classList.add('active');
+        // --- NAVEGACIÓN ---
+        function switchTab(tab) {
+            const tabs = ['inicio', 'ranking', 'perfil'];
+            tabs.forEach(t => {
+                document.getElementById('tab-'+t).classList.add('hidden');
+                document.getElementById('n-'+t).classList.remove('active');
+            });
             
-            if(tab === 'inicio') {
-                cont.innerHTML = "<h3>TORNEOS ACTIVOS</h3>";
-                const { data } = await sb.from('tournaments').select('*');
-                if(data && data.length > 0) {
-                    cont.innerHTML += data.map(t => `
-                        <div class="card">
+            document.getElementById('tab-'+tab).classList.remove('hidden');
+            document.getElementById('n-'+tab).classList.add('active');
+
+            if(tab === 'inicio') loadTournaments();
+            if(tab === 'ranking') loadRanking();
+            if(tab === 'perfil') loadMyProfile();
+        }
+
+        // --- LÓGICA DE TORNEOS ---
+        async function loadTournaments() {
+            const list = document.getElementById('tourney-list');
+            list.innerHTML = '<p style="text-align:center">Cargando...</p>';
+
+            const { data, error } = await sb.from('tournaments').select('*').order('created_at', {ascending: false});
+            
+            if(data) {
+                list.innerHTML = data.map(t => `
+                    <div class="t-card">
+                        <img class="t-banner" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=500&q=80">
+                        <div class="t-info">
                             <h3>${t.name}</h3>
                             <p>${t.description}</p>
-                            <button onclick="inscribir('${t.id}')" style="margin-top:10px; padding:8px; font-size:0.7rem; width:auto;">INSCRIBIRME</button>
+                            <div class="t-stats">
+                                <div class="stat-item">👥 0 / ${t.capacity}</div>
+                                <div class="stat-item">🏆 PREMIO: TOP 1</div>
+                            </div>
+                            <button class="btn" style="margin-top:15px; padding:10px;" onclick="joinTournament('${t.id}', '${t.name}')">Inscribirme Ahora</button>
                         </div>
-                    `).join('');
-                } else {
-                    cont.innerHTML += "<p style='margin-top:20px; opacity:0.5;'>No hay torneos creados.</p>";
-                }
-            } else {
-                const { data: { user } } = await sb.auth.getUser();
-                cont.innerHTML = `<h3>MI PERFIL</h3><div class="card" style="text-align:center;">
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${user.user_metadata.av}" style="width:80px; border-radius:50%; border:2px solid var(--p); background:#000; margin-bottom:10px;">
-                    <h2>${user.user_metadata.username}</h2>
-                    <p style="color:#888;">WhatsApp: ${user.user_metadata.whatsapp}</p>
-                    <button onclick="sb.auth.signOut().then(()=>location.reload())" style="background:red; margin-top:20px; width:auto; padding:8px 20px;">CERRAR SESIÓN</button>
-                </div>`;
+                    </div>
+                `).join('');
             }
         }
 
-        async function inscribir(id) {
-            const { data: { user } } = await sb.auth.getUser();
-            const { error } = await sb.from('participants').insert([{ 
-                tournament_id: id, 
-                user_id: user.id, 
-                gamer_tag: user.user_metadata.username, 
-                whatsapp: user.user_metadata.whatsapp 
+        async function joinTournament(id, name) {
+            const { error } = await sb.from('participants').insert([{
+                tournament_id: id,
+                user_id: userData.id,
+                gamer_tag: userData.user_metadata.username,
+                whatsapp: userData.user_metadata.whatsapp
             }]);
-            if(error) alert("Ya estás inscrito o hubo un error.");
-            else alert("¡Inscripción Exitosa!");
+
+            if(error) {
+                if(error.code === '23505') alert("¡Ya estás inscrito en este torneo!");
+                else alert("Error al inscribirte");
+            } else {
+                alert("¡Inscripción confirmada para: " + name);
+            }
         }
 
-        check();
+        // --- LÓGICA DE RANKING ---
+        async function loadRanking() {
+            const list = document.getElementById('ranking-list');
+            list.innerHTML = '<p style="text-align:center">Calculando puntos...</p>';
+
+            // Simulación de ranking (Basado en la tabla participantes)
+            const { data } = await sb.from('participants').select('gamer_tag, puntos').order('puntos', {ascending: false});
+
+            if(data) {
+                list.innerHTML = data.map((u, i) => `
+                    <div class="rank-item">
+                        <div class="rank-pos">#${i+1}</div>
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${u.gamer_tag}" style="width:40px; border-radius:50%; background:#000;">
+                        <div style="flex:1"><b>${u.gamer_tag}</b></div>
+                        <div style="color:var(--p); font-weight:bold;">${u.puntos} PTS</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // --- PERFIL ---
+        async function loadMyProfile() {
+            const card = document.getElementById('profile-card');
+            const meta = userData.user_metadata;
+            card.innerHTML = `
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=${meta.av}" style="width:120px; border-radius:50%; border:4px solid var(--p); margin-bottom:15px; background:#000;">
+                <h2 style="font-family:'Orbitron'">${meta.username}</h2>
+                <p style="color:#888">${userData.email}</p>
+                <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div style="background:var(--glass); padding:10px; border-radius:10px;">
+                        <small>WHATSAPP</small><br><b>${meta.whatsapp}</b>
+                    </div>
+                    <div style="background:var(--glass); padding:10px; border-radius:10px;">
+                        <small>RANGO</small><br><b style="color:gold;">ORO IV</b>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- PANEL ADMIN ---
+        function openAdmin() { document.getElementById('admin-panel').classList.remove('hidden'); loadAdminData(); }
+        function closeAdmin() { document.getElementById('admin-panel').classList.add('hidden'); }
+
+        async function createTournament() {
+            const n = document.getElementById('adm-t-name').value;
+            const d = document.getElementById('adm-t-desc').value;
+            const c = document.getElementById('adm-t-cap').value;
+
+            const { error } = await sb.from('tournaments').insert([{ name: n, description: d, capacity: c }]);
+            if(error) alert("Error al crear");
+            else { alert("Torneo Creado"); closeAdmin(); loadTournaments(); }
+        }
+
+        async function loadAdminData() {
+            const list = document.getElementById('adm-list');
+            const { data } = await sb.from('participants').select('*');
+            if(data) {
+                list.innerHTML = "<h4>LISTA DE INSCRITOS</h4>" + data.map(p => `
+                    <div style="font-size:0.8rem; background:#111; padding:10px; border-radius:10px; margin-bottom:5px;">
+                        <b>${p.gamer_tag}</b> - ${p.whatsapp} <br>
+                        <small>ID Torneo: ${p.tournament_id}</small>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function logout() { await sb.auth.signOut(); location.reload(); }
     </script>
 </body>
 </html>
