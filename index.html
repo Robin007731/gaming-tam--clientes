@@ -15,6 +15,7 @@
             --accent: #00ff88;
             --neon-blue: #00d2ff;
             --glass: rgba(255, 255, 255, 0.08);
+            --whatsapp: #25d366;
         }
 
         body {
@@ -22,7 +23,7 @@
             background: radial-gradient(circle at top, #1a1d24 0%, #05070a 100%);
             color: var(--text);
             margin: 0;
-            padding-bottom: 100px;
+            padding-bottom: 110px;
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -44,7 +45,6 @@
             border: 1px solid #333; background: rgba(0,0,0,0.4); color: white; 
             box-sizing: border-box; font-size: 16px; font-family: 'Rajdhani';
         }
-        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 10px rgba(0,255,136,0.2); }
 
         /* --- Avatares --- */
         .avatar-grid { 
@@ -63,10 +63,11 @@
             transition: 0.3s; margin-top: 10px;
         }
         .btn-wa { 
-            display: block; text-align: center; text-decoration: none;
+            display: flex; align-items: center; justify-content: center; text-decoration: none;
             background: linear-gradient(45deg, #128C7E, #25D366); color: white; 
             padding: 14px; border-radius: 12px; font-weight: bold; margin-top: 15px;
-            text-transform: uppercase; letter-spacing: 1px;
+            text-transform: uppercase; letter-spacing: 1px; font-size: 16px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
         }
         .btn-edit {
             background: transparent; border: 1px solid var(--accent); color: var(--accent);
@@ -74,9 +75,9 @@
             font-family: 'Rajdhani'; font-weight: bold;
         }
 
-        /* --- Phrase & Cards --- */
+        /* --- UI Elements --- */
         .gaming-phrase { font-size: 1.2rem; color: var(--accent); text-align: center; margin: 20px 0; font-weight: 700; text-shadow: 0 0 10px var(--accent); height: 1.5rem; }
-        .tournament-card { position: relative; overflow: hidden; margin-bottom: 20px; }
+        .tournament-card { position: relative; overflow: hidden; margin-bottom: 20px; border-left: 4px solid var(--accent); }
         .badge { position: absolute; top: 15px; right: 15px; background: var(--accent); color: #000; padding: 3px 10px; border-radius: 5px; font-size: 10px; font-weight: bold; }
 
         /* --- Nav Flotante --- */
@@ -88,7 +89,7 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.8);
         }
         .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; font-weight: bold; }
-        .nav-item.active-nav { color: var(--accent); text-shadow: 0 0 15px var(--accent); transform: translateY(-5px); }
+        .nav-item.active-nav { color: var(--accent); text-shadow: 0 0 15px var(--accent); transform: translateY(-3px); }
         .nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
     </style>
 </head>
@@ -115,30 +116,28 @@
 
     <div id="home-screen" class="screen">
         <div id="frase-gaming" class="gaming-phrase"></div>
-        <h2 style="border-left: 4px solid var(--accent); padding-left: 15px; font-size: 1.5rem;">TORNEOS DISPONIBLES</h2>
+        <h2 style="padding-left: 10px; font-size: 1.5rem; color: white;">TORNEOS DISPONIBLES</h2>
         <div id="tournaments-list">Buscando misiones...</div>
     </div>
 
     <div id="rankings-screen" class="screen">
-        <h2 style="border-left: 4px solid var(--neon-blue); padding-left: 15px;">TOP JUGADORES</h2>
+        <h2 style="padding-left: 10px; color: var(--neon-blue);">TOP JUGADORES</h2>
         <div class="glass-card" id="rankings-list">
             Cargando base de datos de la comunidad...
         </div>
     </div>
 
     <div id="profile-screen" class="screen">
-        <h2 style="border-left: 4px solid var(--primary); padding-left: 15px;">MI PERFIL GAMER</h2>
-        <div id="profile-content" class="glass-card" style="text-align: center;">
-            </div>
+        <h2 style="padding-left: 10px; color: var(--primary);">MI PERFIL GAMER</h2>
+        <div id="profile-content" class="glass-card" style="text-align: center;"></div>
         
-        <div id="edit-form" class="glass-card" style="display: none; margin-top: 20px; animation: fadeIn 0.3s;">
+        <div id="edit-form" class="glass-card" style="display: none; margin-top: 20px;">
             <h3 style="margin-top: 0; color: var(--accent);">EDITAR MIS DATOS</h3>
             <input type="text" id="edit-name" placeholder="NUEVO NICKNAME">
             <input type="tel" id="edit-whatsapp" placeholder="NUEVO WHATSAPP">
-            <p style="font-size: 14px;">CAMBIAR AVATAR:</p>
             <div class="avatar-grid" id="avatar-container-edit"></div>
             <button onclick="updateProfile()" class="btn-main">GUARDAR CAMBIOS</button>
-            <button onclick="toggleEdit(false)" style="background:none; border:none; color:#888; width:100%; margin-top:10px; cursor:pointer; font-family:'Rajdhani';">CANCELAR</button>
+            <button onclick="toggleEdit(false)" style="background:none; border:none; color:#888; width:100%; margin-top:10px; cursor:pointer;">CANCELAR</button>
         </div>
 
         <button onclick="logout()" style="width:100%; margin-top:25px; background:rgba(255,0,0,0.1); color:#ff4d4d; border:1px solid #ff4d4d; padding:12px; border-radius:15px; cursor:pointer; font-family:'Rajdhani'; font-weight: bold;">CERRAR SESIÓN</button>
@@ -155,14 +154,16 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lY3pybndmdXFzaWZ0aHF2a3RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzOTI2NTEsImV4cCI6MjA4NDk2ODY1MX0.j9juk2V3p_BGwz--P4foShZ3aBj28q7L41Va95aP2VQ';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/TU_GRUPO_AQUI";
+        // --- LINK DEL GRUPO DE WHATSAPP ---
+        // Pega aquí el enlace de tu grupo real
+        const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/TU_LINK_DEL_GRUPO";
+
         const frases = ["ERROR 404: SKILL NOT FOUND.", "¡UN NIVEL MÁS Y ME ACUESTO!", "LAG IS MY ONLY ENEMY.", "STAY FROSTY, SOLDADO.", "GG WP PARTIDA FINALIZADA."];
 
         let selectedAvatarId = 1;
         let currentUser = null;
         let isRegisterMode = false;
 
-        // --- Inicialización de Avatares ---
         function fillAvatars(containerId) {
             const box = document.getElementById(containerId);
             box.innerHTML = '';
@@ -181,12 +182,10 @@
         fillAvatars('avatar-container-reg');
         fillAvatars('avatar-container-edit');
 
-        // --- Lógica de Auth ---
         function toggleAuthMode() {
             isRegisterMode = !isRegisterMode;
             document.getElementById('auth-title').innerText = isRegisterMode ? 'CREAR CUENTA' : 'INICIAR SESIÓN';
             document.getElementById('register-fields').style.display = isRegisterMode ? 'block' : 'none';
-            document.getElementById('btn-auth').innerText = isRegisterMode ? 'REGISTRARSE' : 'INGRESAR AL SISTEMA';
         }
 
         async function handleAuth() {
@@ -223,7 +222,6 @@
             }, 60);
         }
 
-        // --- Navegación ---
         function showScreen(id, navEl) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -233,7 +231,6 @@
             if(id === 'profile-screen') loadProfile();
         }
 
-        // --- Carga de Datos ---
         async function loadTournaments() {
             const { data } = await _supabase.from('tournaments').select('*').order('created_at', {ascending: false});
             document.getElementById('tournaments-list').innerHTML = data.map(t => `
@@ -241,10 +238,12 @@
                     <div class="badge">ONLINE</div>
                     <h3 style="color:var(--accent); margin:0;">${t.name.toUpperCase()}</h3>
                     <p style="color:#aaa; font-size:14px; margin: 10px 0;">${t.description}</p>
-                    <div style="font-size:13px; color:var(--neon-blue);">👥 CAPACIDAD: ${t.capacity} JUGADORES</div>
-                    <a href="${WHATSAPP_GROUP_LINK}" target="_blank" class="btn-wa">UNIRSE AL GRUPO</a>
+                    <div style="font-size:13px; color:var(--neon-blue); font-weight: bold;">👥 CAPACIDAD: ${t.capacity} JUGADORES</div>
+                    <a href="${WHATSAPP_GROUP_LINK}" target="_blank" class="btn-wa">
+                        📲 UNIRSE AL GRUPO
+                    </a>
                 </div>
-            `).join('') || "NO HAY MISIONES POR AHORA.";
+            `).join('') || "NO HAY MISIONES DISPONIBLES.";
         }
 
         async function loadProfile() {
@@ -259,16 +258,13 @@
             document.getElementById('edit-whatsapp').value = profile.whatsapp;
         }
 
-        // --- Edición de Perfil ---
         async function updateProfile() {
             const { error } = await _supabase.from('profiles').update({
                 username: document.getElementById('edit-name').value,
                 whatsapp: document.getElementById('edit-whatsapp').value,
                 avatar_id: selectedAvatarId
             }).eq('id', currentUser.id);
-
-            if(error) alert("ERROR AL ACTUALIZAR");
-            else { alert("¡PERFIL ACTUALIZADO!"); toggleEdit(false); loadProfile(); }
+            if(error) alert("ERROR AL ACTUALIZAR"); else { toggleEdit(false); loadProfile(); }
         }
 
         function toggleEdit(show) {
