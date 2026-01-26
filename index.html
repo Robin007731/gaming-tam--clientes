@@ -1,239 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>eSports Arena</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Rajdhani&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg:#05050a;
-  --card:rgba(15,15,30,.85);
-  --neon1:#00d4ff;
-  --neon2:#9d50bb;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:white;
-  font-family:Rajdhani,sans-serif;
-}
-h1,h2{font-family:Orbitron}
-.hidden{display:none}
-.container{padding:16px;padding-bottom:90px}
-.card{
-  background:var(--card);
-  border-radius:16px;
-  padding:15px;
-  margin-bottom:14px;
-  backdrop-filter:blur(12px);
-  animation:fade .3s ease;
-}
-input,button{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:none;
-  margin-bottom:10px;
-}
-button{
-  background:linear-gradient(135deg,var(--neon1),var(--neon2));
-  font-weight:700;
-  cursor:pointer;
-}
-.bottom{
-  position:fixed;bottom:0;left:0;right:0;
-  background:#0a0a1a;
-  display:flex;
-  justify-content:space-around;
-  padding:10px;
-}
-.bottom button{
-  background:none;
-  color:white;
-}
-.avatar-grid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:6px;
-}
-.avatar-grid img{
-  width:100%;
-  border-radius:10px;
-  border:2px solid transparent;
-  cursor:pointer;
-}
-.avatar-grid img.sel{border-color:var(--neon1)}
-@keyframes fade{
-  from{opacity:0;transform:translateY(10px)}
-  to{opacity:1;transform:none}
-}
+body{margin:0;background:#05050a;color:white;font-family:Rajdhani}
+h1{font-family:Orbitron}
+.container{padding:16px}
+.card{background:rgba(15,15,30,.85);padding:14px;border-radius:14px;margin-bottom:12px}
+button{padding:10px;border:none;border-radius:10px;width:100%;background:#00d4ff}
 </style>
 </head>
 
 <body>
-
-<!-- AUTH -->
-<div id="auth" class="container">
-  <h1>Registro</h1>
-  <input id="email" placeholder="Email" />
-  <input id="pass" type="password" placeholder="Password (6+)" />
-  <input id="gamer" placeholder="GamerTag" />
-  <input id="whatsapp" placeholder="WhatsApp" />
-  <h2>Avatar</h2>
-  <div id="avatars" class="avatar-grid"></div>
-  <button onclick="register()">Crear Cuenta</button>
-</div>
-
-<!-- APP -->
-<div id="app" class="hidden">
-  <div id="home" class="container"></div>
-  <div id="ranking" class="container hidden"></div>
-  <div id="profile" class="container hidden"></div>
-  <div id="admin" class="container hidden"></div>
-
-  <div class="bottom">
-    <button onclick="tab('home')">🏆</button>
-    <button onclick="tab('ranking')">📊</button>
-    <button onclick="tab('profile')">👤</button>
-    <button id="adminBtn" class="hidden" onclick="tab('admin')">⚙️</button>
-  </div>
-</div>
+<div id="app" class="container"></div>
 
 <script>
-/* ================== CONFIG ================== */
-const SUPABASE_URL = "https://TU_ID.supabase.co";
-const SUPABASE_ANON_KEY = "TU_ANON_KEY";
-const ADMIN_EMAIL = "robinchagas0@gmail.com";
+const sb = supabase.createClient(
+  "SUPABASE_URL",
+  "SUPABASE_ANON_KEY"
+);
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-let avatar = 1;
-
-/* ================== AVATARS ================== */
-for(let i=1;i<=50;i++){
-  const img=document.createElement("img");
-  img.src=`https://api.dicebear.com/7.x/adventurer/svg?seed=${i}`;
-  img.onclick=()=>selectAvatar(i,img);
-  avatars.appendChild(img);
+async function init(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(!session) return showLogin();
+  loadTournaments();
 }
-function selectAvatar(i,img){
-  avatar=i;
-  document.querySelectorAll(".avatar-grid img").forEach(x=>x.classList.remove("sel"));
-  img.classList.add("sel");
+init();
+
+function showLogin(){
+  app.innerHTML=`
+    <h1>Registro</h1>
+    <input id="email" placeholder="Email"><br><br>
+    <input id="pass" type="password" placeholder="Password"><br><br>
+    <input id="gamer" placeholder="GamerTag"><br><br>
+    <input id="wa" placeholder="WhatsApp"><br><br>
+    <button onclick="register()">Entrar</button>
+  `;
 }
 
-/* ================== AUTH ================== */
 async function register(){
-  if(!email.value || !pass.value || pass.value.length<6){
-    alert("Datos inválidos"); return;
-  }
-  const {error}=await sb.auth.signUp({
+  await sb.auth.signUp({
     email:email.value,
     password:pass.value,
-    options:{data:{
-      gamer:gamer.value,
-      whatsapp:whatsapp.value,
-      avatar
-    }}
+    options:{data:{gamer:gamer.value, whatsapp:wa.value}}
   });
-  if(error) alert(error.message);
-  else alert("Cuenta creada, revisá tu email");
+  location.reload();
 }
 
-/* ================== SESSION ================== */
-async function checkSession(){
-  const {data:{session}}=await sb.auth.getSession();
-  if(session){
-    auth.classList.add("hidden");
-    app.classList.remove("hidden");
-    if(session.user.email===ADMIN_EMAIL) adminBtn.classList.remove("hidden");
-    loadHome(); loadRanking(); loadProfile(); loadAdmin();
-  }
-}
-checkSession();
-
-/* ================== NAV ================== */
-function tab(id){
-  ["home","ranking","profile","admin"].forEach(x=>document.getElementById(x).classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-}
-
-/* ================== HOME ================== */
-async function loadHome(){
-  const {data}=await sb.from("tournaments").select("*").order("created_at");
-  home.innerHTML="<h1>Torneos</h1>";
-  data?.forEach(t=>{
-    home.innerHTML+=`
+async function loadTournaments(){
+  const {data} = await sb.from("tournaments").select("*");
+  app.innerHTML="<h1>Torneos</h1>";
+  data.forEach(t=>{
+    app.innerHTML+=`
       <div class="card">
-        <h2>${t.name}</h2>
-        <p>${t.description||""}</p>
+        <h3>${t.name}</h3>
+        <p>${t.description}</p>
         <button onclick="join('${t.id}')">Inscribirse</button>
-      </div>`;
+      </div>
+    `;
   });
 }
 
 async function join(id){
-  const {data:{user}}=await sb.auth.getUser();
-  const {error}=await sb.from("participants").insert({
+  const {data:{user}} = await sb.auth.getUser();
+  const {error} = await sb.from("participants").insert({
     tournament_id:id,
     user_id:user.id,
     gamer_tag:user.user_metadata.gamer,
     whatsapp:user.user_metadata.whatsapp
   });
-  alert(error ? "Ya estás inscripto" : "Inscripción OK");
-}
-
-/* ================== RANKING ================== */
-async function loadRanking(){
-  const {data}=await sb
-    .from("participants")
-    .select("gamer_tag,puntos")
-    .order("puntos",{ascending:false});
-  ranking.innerHTML="<h1>Ranking</h1>";
-  data?.forEach(p=>{
-    ranking.innerHTML+=`<div class="card">${p.gamer_tag} — ${p.puntos}</div>`;
-  });
-}
-
-/* ================== PROFILE ================== */
-async function loadProfile(){
-  const {data:{user}}=await sb.auth.getUser();
-  profile.innerHTML=`
-    <img width="160" src="https://api.dicebear.com/7.x/adventurer/svg?seed=${user.user_metadata.avatar}">
-    <h2>${user.user_metadata.gamer}</h2>
-    <p>${user.user_metadata.whatsapp}</p>
-    <button onclick="logout()">Salir</button>
-  `;
-}
-async function logout(){
-  await sb.auth.signOut();
-  location.reload();
-}
-
-/* ================== ADMIN ================== */
-function loadAdmin(){
-  admin.innerHTML=`
-    <h1>Admin</h1>
-    <input id="tn" placeholder="Nombre">
-    <input id="td" placeholder="Descripción">
-    <input id="tc" placeholder="Capacidad">
-    <button onclick="addTournament()">Crear Torneo</button>
-  `;
-}
-async function addTournament(){
-  await sb.from("tournaments").insert({
-    name:tn.value,
-    description:td.value,
-    capacity:tc.value
-  });
-  loadHome();
-  alert("Torneo creado");
+  alert(error ? "Ya estás inscripto" : "Inscripción exitosa");
 }
 </script>
-
 </body>
 </html>
